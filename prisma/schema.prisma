@@ -1,0 +1,151 @@
+// ════════════════════════════════════════════════════════════════════════════
+// Leisure Exporting LLC · CRM — Esquema Prisma
+// Multi-agencia: matriz → agencias → subagencias. Aislamiento estricto por
+// agencia salvo el administrador (matriz), que ve el consolidado.
+//
+// Provider: SQLite en desarrollo (file:./dev.db), PostgreSQL en producción.
+// ════════════════════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Agencias ────────────────────────────────────────────────────────────────
+// Jerarquía: matriz → agencia (padreId=matriz) → subagencia (padreId=agencia).
+// puedeCrearSubagencias: permiso que concede ÚNICAMENTE el admin.
+model Agencia {
+  id                   String   @id @default(cuid())
+  nombre               String
+  tipo                 String   @default("agencia") // matriz | agencia | subagencia
+  padreId              String?  // null para matriz
+  direccion            String?
+  ciudad               String?
+  pais                 String?
+  telefono             String?
+  puedeCrearSubagencias Boolean @default(false)
+  activa               Boolean  @default(true)
+  creado               DateTime @default(now())
+
+  padre                Agencia?  @relation("AgenciaJerarquia", fields: [padreId], references: [id])
+  hijos                Agencia[] @relation("AgenciaJerarquia")
+  usuarios             Usuario[]
+  clientes             Cliente[]
+  paquetes             Paquete[]
+  asientos             Asiento[]
+
+  @@index([tipo])
+  @@index([padreId])
+}
+
+// ─── Usuarios ────────────────────────────────────────────────────────────────
+model Usuario {
+  id           String   @id @default(cuid())
+  usuario      String   @unique // login, minúsculas
+  passwordHash String
+  nombre       String
+  rol          String   @default("operario") // admin | agencia | operario | camionero
+  agenciaId    String?
+  activo       Boolean  @default(true)
+  creado       DateTime @default(now())
+
+  agencia      Agencia?  @relation(fields: [agenciaId], references: [id])
+  paquetesCreados Paquete[] @relation("PaqueteCreadoPor")
+  eventos      Evento[]
+
+  @@index([agenciaId])
+}
+
+// ─── Clientes ────────────────────────────────────────────────────────────────
+model Cliente {
+  id        String   @id @default(cuid())
+  nombre    String
+  telefono  String?
+  email     String?
+  direccion String?
+  agenciaId String
+  creado    DateTime @default(now())
+
+  agencia   Agencia @relation(fields: [agenciaId], references: [id])
+  paquetes  Paquete[]
+
+  @@index([agenciaId])
+}
+
+// ─── Paquetes ────────────────────────────────────────────────────────────────
+// codigo = LE-YYYY-NNNN (único). Generado por secuencia segura en codigo.ts.
+model Paquete {
+  codigo        String   @id
+  agenciaId     String
+  clienteId     String?
+  remitente     String   @default("—")
+  destinatario  String   @default("—")
+  destino       String   @default("—")
+  peso          Float    @default(0)
+  contenido     String   @default("Paquete")
+  notas         String   @default("")
+  tarifa        Float    @default(0)
+  monto         Float    @default(0)
+  estado        String   @default("en_origen") // en_origen|en_transito|en_almacen|entregado
+  creado        DateTime @default(now())
+  creadoPorId   String?
+  ultimoEscaneo DateTime?
+
+  agencia       Agencia  @relation(fields: [agenciaId], references: [id])
+  cliente       Cliente? @relation(fields: [clienteId], references: [id])
+  creadoPor     Usuario? @relation("PaqueteCreadoPor", fields: [creadoPorId], references: [id])
+  eventos       Evento[]
+  asientos      Asiento[]
+
+  @@index([agenciaId])
+  @@index([estado])
+  @@index([clienteId])
+}
+
+// ─── Eventos (historial GPS de cada paquete) ─────────────────────────────────
+model Evento {
+  id            String   @id @default(cuid())
+  paqueteCodigo String
+  ts            DateTime @default(now())
+  estado        String
+  nota          String   @default("")
+  operarioId    String?
+  lat           Float?
+  lng           Float?
+  accuracy      Float?
+
+  paquete       Paquete  @relation(fields: [paqueteCodigo], references: [codigo], onDelete: Cascade)
+  operario      Usuario? @relation(fields: [operarioId], references: [id])
+
+  @@index([paqueteCodigo])
+  @@index([estado])
+}
+
+// ─── Asientos contables (doble entrada) ──────────────────────────────────────
+// lineas: JSON [{ cuenta, debito, credito }]
+model Asiento {
+  id            String   @id @default(cuid())
+  fecha         DateTime @default(now())
+  agenciaId     String?
+  paqueteCodigo String?
+  descripcion   String   @default("")
+  lineas        String   @default("[]") // JSON serializado
+  cuadrado      Boolean  @default(true)
+
+  agencia       Agencia? @relation(fields: [agenciaId], references: [id])
+  paquete       Paquete? @relation(fields: [paqueteCodigo], references: [codigo])
+
+  @@index([agenciaId])
+  @@index([paqueteCodigo])
+  @@index([fecha])
+}
+
+// ─── Configuración (key/value) ───────────────────────────────────────────────
+model Config {
+  key   String @id
+  value String
+}

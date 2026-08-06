@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#C23B22" />
+  <meta name="description" content="CRM Leisure Exporting LLC — Paqueterías, agencias/subagencias, etiquetas, rastreo GPS y contabilidad." />
+  <title>Leisure Exporting LLC · CRM</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="icons/logo.svg" />
+  <link rel="stylesheet" href="vendor/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- App Shell (se muestra tras login, que ya pasó el middleware) -->
+  <div id="appShell" class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-logo"><img src="icons/logo.svg" alt="Leisure Exporting LLC" /></span>
+        <div class="brand-text">
+          <strong>Leisure Exporting</strong>
+          <small>CRM · geocabezas</small>
+        </div>
+      </div>
+      <nav class="topnav" id="topnav">
+        <a href="#dashboard" class="active" data-roles="admin,agencia,operario,camionero">📊 Panel</a>
+        <a href="#paquetes" data-roles="admin,agencia,operario">📦 Paquetes</a>
+        <a href="#etiqueta" data-roles="admin,agencia,operario">🏷️ Etiqueta</a>
+        <a href="#rastrear" data-roles="admin,agencia,operario,camionero">📍 Rastrear</a>
+        <a href="#escanear" data-roles="admin,agencia,operario,camionero">📷 Escanear</a>
+        <a href="#clientes" data-roles="admin,agencia,operario">👥 Clientes</a>
+        <a href="#agencias" data-roles="admin">🏢 Agencias</a>
+        <a href="#contabilidad" data-roles="admin,agencia">💰 Contabilidad</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="user-chip" id="userChip">
+          <span class="avatar" id="userAvatar">A</span>
+          <span><span id="userName">—</span><br><small class="muted" id="userRol"></small></span>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="btnLogout">Salir</button>
+        <button class="menu-btn" id="menuBtn" aria-label="Menú">☰</button>
+      </div>
+    </header>
+
+    <main id="app">
+      <div class="empty-state" id="cargandoInicial" style="padding:60px"><div class="ico">⏳</div>Cargando…</div>
+
+      <!-- ===================== DASHBOARD ===================== -->
+      <section id="dashboard" class="view active">
+        <div class="section-head">
+          <div><h2 id="dashTitulo">Panel principal</h2><p id="dashSub">Resumen general</p></div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>📦 Últimos paquetes</h3>
+            <div class="table-scroll">
+              <table class="data">
+                <thead><tr><th>Código</th><th>Destinatario</th><th>Estado</th><th class="text-right">Monto</th></tr></thead>
+                <tbody id="dashPaquetes"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>💰 Resumen financiero</h3>
+            <div id="dashFin"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PAQUETES ===================== -->
+      <section id="paquetes" class="view">
+        <div class="section-head">
+          <div><h2>Paquetes</h2><p>Lista de envíos. Puedes crear, buscar y cambiar estado.</p></div>
+          <div class="actions"><button class="btn btn-primary btn-sm" id="btnNuevoPaquete">➕ Nuevo paquete</button></div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-head">
+            <input type="text" id="paqBuscar" placeholder="🔍 Buscar código, destinatario, destino…" style="flex:1; padding:9px 12px; border-radius:8px; border:1px solid var(--gris-2);" />
+            <select id="paqFiltroEstado" style="padding:9px 12px; border-radius:8px; border:1px solid var(--gris-2);">
+              <option value="">Todos los estados</option>
+              <option value="en_origen">En origen</option>
+              <option value="en_transito">En tránsito</option>
+              <option value="en_almacen">En almacén</option>
+              <option value="entregado">Entregado</option>
+            </select>
+          </div>
+          <div class="table-scroll">
+            <table class="data">
+              <thead><tr><th>Código</th><th>Remitente</th><th>Destinatario</th><th>Destino</th><th>Peso</th><th>Estado</th><th class="text-right">Monto</th><th></th></tr></thead>
+              <tbody id="tablaPaquetes"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== ETIQUETA ===================== -->
+      <section id="etiqueta" class="view">
+        <div class="section-head">
+          <div><h2>Crear etiqueta de envío</h2><p>Genera etiqueta con QR lista para imprimir.</p></div>
+        </div>
+        <div class="etiqueta-layout">
+          <form id="formEtiqueta" class="panel" style="margin:0">
+            <div class="field-row">
+              <div class="field"><label for="e_agencia">Agencia</label><select id="e_agencia" required></select></div>
+              <div class="field"><label for="e_cliente">Cliente (opcional)</label><select id="e_cliente"><option value="">— Sin cliente —</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="e_remitente">Remitente *</label><input id="e_remitente" type="text" required placeholder="Ana Pérez" /></div>
+              <div class="field"><label for="e_destinatario">Destinatario *</label><input id="e_destinatario" type="text" required placeholder="José Gómez" /></div>
+            </div>
+            <div class="field"><label for="e_destino">Destino *</label><input id="e_destino" type="text" required placeholder="La Habana, Cuba" /></div>
+            <div class="field-row">
+              <div class="field"><label for="e_peso">Peso (lb) *</label><input id="e_peso" type="number" min="0" step="0.1" required placeholder="5" value="1" /></div>
+              <div class="field"><label for="e_tarifa">Tarifa / lb</label><input id="e_tarifa" type="number" min="0" step="0.01" placeholder="4.50" /></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="e_contenido">Tipo de contenido</label><select id="e_contenido">
+                <option>Paquete</option><option>Documentos</option><option>Comida</option><option>Ropa</option><option>Electrodoméstico</option><option>Medicina</option><option>Otro</option>
+              </select></div>
+              <div class="field"><label for="e_pago">Forma de pago</label><select id="e_pago">
+                <option value="efectivo">Efectivo</option><option value="banco">Banco / Transferencia</option><option value="credito">A crédito (cobrar después)</option>
+              </select></div>
+            </div>
+            <div class="field"><label for="e_notas">Notas (opcional)</label><textarea id="e_notas" rows="2" placeholder="Ej: frágil, entregar en puerta"></textarea></div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">🏷️ Generar etiqueta</button>
+              <button type="button" class="btn btn-ghost" id="btnImprimir" disabled>🖨️ Imprimir</button>
+            </div>
+          </form>
+          <div id="etiquetaPreview" class="etiqueta-empty">
+            Completa el formulario y genera la etiqueta.<br>
+            <small>Se creará el paquete y, si pagó, su ingreso contable.</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== RASTREAR ===================== -->
+      <section id="rastrear" class="view">
+        <div class="section-head"><div><h2>Rastrear paquete</h2><p>Busca por código o selecciona uno del listado.</p></div></div>
+        <div class="track-layout">
+          <div class="track-side">
+            <form class="search" id="searchForm">
+              <input type="text" id="searchInput" placeholder="Ej: LE-2026-0001" autocomplete="off" />
+              <button class="btn btn-primary" type="submit">Buscar</button>
+            </form>
+            <div id="paqueteDetalle" class="paquete-detalle" hidden></div>
+            <div class="panel" style="margin:0">
+              <h3>Paquetes</h3>
+              <ul id="paqueteLista" style="list-style:none; margin:0; padding:0; max-height:340px; overflow-y:auto;"></ul>
+            </div>
+          </div>
+          <div class="track-map">
+            <div id="mapa"></div>
+            <div class="map-legend">
+              <span><i class="dot dot-origen"></i> Origen</span>
+              <span><i class="dot dot-transito"></i> Tránsito</span>
+              <span><i class="dot dot-entregado"></i> Entregado</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== ESCANEAR ===================== -->
+      <section id="escanear" class="view">
+        <div class="section-head"><div><h2>Escanear paquete</h2><p>Apunta la cámara al QR. Se registra la ubicación GPS automáticamente.</p></div></div>
+        <div class="scan-layout">
+          <div class="scan-card">
+            <h3>Escanear con cámara</h3>
+            <p class="muted">El paquete pasa a "en tránsito" o "entregado" y deja su huella GPS.</p>
+            <div class="field-row" style="margin-bottom:10px">
+              <div class="field" style="margin:0"><label for="scanEstado">Estado a registrar</label><select id="scanEstado">
+                <option value="en_transito">En tránsito</option><option value="en_almacen">En almacén</option><option value="entregado">Entregado</option>
+              </select></div>
+            </div>
+            <button class="btn btn-primary btn-block" id="btnIniciarScan">📷 Iniciar cámara</button>
+            <div class="scan-stage" id="scanStage" hidden>
+              <video id="scanVideo" playsinline muted></video>
+              <canvas id="scanCanvas" hidden></canvas>
+              <div class="scan-overlay"><div class="scan-frame"></div></div>
+              <div class="scan-hint" id="scanHint">Apunta al código QR de la etiqueta…</div>
+            </div>
+            <button class="btn btn-ghost btn-block" id="btnDetenerScan" hidden>⏹️ Detener cámara</button>
+          </div>
+          <div class="scan-card">
+            <h3>Registrar manualmente</h3>
+            <p class="muted">Si la cámara no lee, escribe el código:</p>
+            <form id="formManual" class="manual-form">
+              <input id="manualCodigo" type="text" placeholder="LE-2026-0001" />
+              <button class="btn btn-ghost-verde" type="submit">Registrar</button>
+            </form>
+            <div id="scanResultado" class="scan-resultado" hidden></div>
+          </div>
+        </div>
+        <div class="panel"><h3>Escaneos recientes</h3><ul id="scanHistorial" style="list-style:none; margin:0; padding:0;"></ul></div>
+      </section>
+
+      <!-- ===================== CLIENTES ===================== -->
+      <section id="clientes" class="view">
+        <div class="section-head">
+          <div><h2>Clientes</h2><p>Remitentes y destinatarios frecuentes.</p></div>
+          <div class="actions"><button class="btn btn-primary btn-sm" id="btnNuevoCliente">➕ Nuevo cliente</button></div>
+        </div>
+        <div class="table-wrap"><div class="table-scroll">
+          <table class="data">
+            <thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Dirección</th><th></th></tr></thead>
+            <tbody id="tablaClientes"></tbody>
+          </table>
+        </div></div>
+      </section>
+
+      <!-- ===================== AGENCIAS ===================== -->
+      <section id="agencias" class="view">
+        <div class="section-head">
+          <div><h2>Agencias y subagencias</h2><p>Estructura jerárquica: matriz → agencias → subagencias.</p></div>
+          <div class="actions"><button class="btn btn-primary btn-sm" id="btnNuevaAgencia">➕ Nueva agencia</button></div>
+        </div>
+        <div id="agenciasTree"></div>
+      </section>
+
+      <!-- ===================== CONTABILIDAD ===================== -->
+      <section id="contabilidad" class="view">
+        <div class="section-head">
+          <div><h2>Contabilidad</h2><p>Doble entrada · ingresos, gastos y caja.</p></div>
+          <div class="actions"><button class="btn btn-ghost btn-sm" id="btnNuevoAsiento">➕ Nuevo asiento</button></div>
+        </div>
+        <div class="kpis" id="kpiFinanciero"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Libro mayor (saldos por cuenta)</h3>
+            <div class="table-scroll">
+              <table class="data mayor-table">
+                <thead><tr><th>Cuenta</th><th class="text-right">Débito</th><th class="text-right">Crédito</th><th class="text-right">Saldo</th></tr></thead>
+                <tbody id="tablaMayor"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel"><h3>Últimos asientos</h3><div id="listaAsientos" style="max-height:480px; overflow-y:auto;"></div></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <strong>Leisure Exporting LLC</strong> · CRM <strong>geocabezas</strong>
+      <small>Servidor central · Rastreo general disponible para el administrador</small>
+    </footer>
+  </div>
+
+  <!-- Modal genérico -->
+  <div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modalBox"></div></div>
+  <!-- Toast -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="vendor/qrcode.min.js"></script>
+  <script src="vendor/jsQR.js"></script>
+  <script src="vendor/leaflet.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

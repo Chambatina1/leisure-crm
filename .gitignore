@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Variables de entorno
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# Misc
+*.log
+.DS_Store
+next-env.d.ts

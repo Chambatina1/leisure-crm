@@ -1,0 +1,83 @@
+# Render Blueprint para Leisure CRM
+# Documentación: https://render.com/docs/blueprint-spec
+#
+# Crea automáticamente:
+#   1. Una base de datos PostgreSQL (plan Free, 90 días)
+#   2. Un Web Service Next.js (plan Free, se duerme tras 15 min inactivo)
+#   3. Un Job de seed (correr una vez tras el primer despliegue)
+#
+# Cómo usarlo:
+#   1. Sube el repo a GitHub.
+#   2. Entra a https://dashboard.render.com
+#   3. New → Blueprint → conecta GitHub → selecciona el repo.
+#   4. Render detecta este archivo y crea los recursos. Confirma y despliega.
+#   5. Tras el primer despliegue, ejecuta el seed desde el dashboard:
+#      leisure-crm (web) → "Shell" → npx prisma db seed
+#      (o espera al job leisure-crm-seed)
+
+services:
+  # ── Base de datos PostgreSQL ────────────────────────────────────────────────
+  - type: postgres
+    name: leisure-db
+    plan: free
+    ipAllowList: [] # accesible solo desde los servicios de Render
+
+  # ── Aplicación web Next.js ──────────────────────────────────────────────────
+  - type: web
+    name: leisure-crm
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: .
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: sh start.sh
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # En producción usamos PostgreSQL. El prebuild.mjs cambia el provider
+      # del schema.prisma según esta variable.
+      - key: DATABASE_PROVIDER
+        value: postgresql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: leisure-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_APP_URL
+        fromService:
+          type: web
+          name: leisure-crm
+          property: hosturl
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    buildFilter:
+      paths:
+        - src/**
+        - prisma/**
+        - public/**
+        - scripts/**
+        - package.json
+        - next.config.ts
+        - tsconfig.json
+
+  # ── Job de seed (corre una vez) ─────────────────────────────────────────────
+  - type: job
+    name: leisure-crm-seed
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    rootDir: .
+    buildCommand: npm install && npx prisma generate
+    startCommand: npx prisma db seed
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: leisure-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
