@@ -33,4 +33,4 @@ db.usuario.count().then(n => {
 " || echo "⚠ verificación de seed falló (no crítico)"
 
 echo "▶ [4/4] Iniciando Next.js…"
-exec node .next/standalone/server.js
+exec npx next start -p ${PORT:-3000} -H 0.0.0.0

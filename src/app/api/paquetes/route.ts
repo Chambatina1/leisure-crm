@@ -46,37 +46,38 @@ export async function GET(request: NextRequest) {
 
 // POST /api/paquetes — crea paquete + asiento de ingreso si no es a crédito.
 export async function POST(request: NextRequest) {
-  const s = await getSession(request);
-  if (!s) return errorResponse("No autenticado", 401);
-  const body = await request.json().catch(() => ({}));
+  try {
+    const s = await getSession(request);
+    if (!s) return errorResponse("No autenticado", 401);
+    const body = await request.json().catch(() => ({}));
 
-  const { agenciaId, clienteId, formaPago } = body;
-  if (!agenciaId || !body.remitente || !body.destinatario) {
-    return errorResponse("agenciaId, remitente y destinatario son requeridos", 400);
-  }
-  if (!(await puedeVerAgencia(s, agenciaId))) {
-    return errorResponse("No puedes crear paquetes fuera de tu agencia", 403);
-  }
+    const { agenciaId, clienteId, formaPago } = body;
+    if (!agenciaId || !body.remitente || !body.destinatario) {
+      return errorResponse("agenciaId, remitente y destinatario son requeridos", 400);
+    }
+    if (!(await puedeVerAgencia(s, agenciaId))) {
+      return errorResponse("No puedes crear paquetes fuera de tu agencia", 403);
+    }
 
-  // Tarifa: la del form, o la default de Config.
-  let tarifaNum = Number(body.tarifa);
-  if (!tarifaNum || isNaN(tarifaNum)) {
-    const cfg = await db.config.findUnique({ where: { key: "tarifaPorLb" } });
-    tarifaNum = cfg ? Number(cfg.value) : 4.5;
-  }
-  const pesoNum = Number(body.peso) || 0;
-  const monto = Math.round(pesoNum * tarifaNum * 100) / 100;
-  const codigo = await generarCodigoPaquete();
+    // Tarifa: la del form, o la default de Config.
+    let tarifaNum = Number(body.tarifa);
+    if (!tarifaNum || isNaN(tarifaNum)) {
+      const cfg = await db.config.findUnique({ where: { key: "tarifaPorLb" } });
+      tarifaNum = cfg ? Number(cfg.value) : 4.5;
+    }
+    const pesoNum = Number(body.peso) || 0;
+    const monto = Math.round(pesoNum * tarifaNum * 100) / 100;
+    const codigo = await generarCodigoPaquete();
 
-  const p = await db.paquete.create({
-    data: {
-      codigo, agenciaId, clienteId: clienteId || null,
-      // Remitente
-      remitente: body.remitente,
-      remitenteCarnet: body.remitenteCarnet || null,
-      remitenteTel: body.remitenteTel || null,
-      remitenteDir: body.remitenteDir || null,
-      // Consignatario
+    const p = await db.paquete.create({
+      data: {
+        codigo, agenciaId, clienteId: clienteId || null,
+        // Remitente
+        remitente: body.remitente,
+        remitenteCarnet: body.remitenteCarnet || null,
+        remitenteTel: body.remitenteTel || null,
+        remitenteDir: body.remitenteDir || null,
+        // Consignatario
       destinatario: body.destinatario,
       consignatarioCarnet: body.consignatarioCarnet || null,
       consignatarioTel: body.consignatarioTel || null,
@@ -126,14 +127,22 @@ export async function POST(request: NextRequest) {
     include: { eventos: true },
   });
 
-  // Asiento contable: SOLO si la agencia tiene contabilidad activa (es opcional).
-  const ag = await db.agencia.findUnique({ where: { id: agenciaId } });
-  if (ag?.contabilidadActiva) {
-    const pago = (formaPago || "efectivo") as "efectivo" | "banco" | "credito";
-    try {
-      await registrarIngresoEnvio({ codigo: p.codigo, agenciaId, monto, destinatario: p.destinatario }, pago);
-    } catch (e) { console.error("Error registrando asiento de ingreso:", e); }
-  }
+    // Asiento contable: SOLO si la agencia tiene contabilidad activa (es opcional).
+    const ag = await db.agencia.findUnique({ where: { id: agenciaId } });
+    if (ag?.contabilidadActiva) {
+      const pago = (formaPago || "efectivo") as "efectivo" | "banco" | "credito";
+      try {
+        await registrarIngresoEnvio({ codigo: p.codigo, agenciaId, monto, destinatario: p.destinatario }, pago);
+      } catch (e) { console.error("Error registrando asiento de ingreso:", e); }
+    }
 
-  return jsonResponse({ paquete: p }, 201);
+    return jsonResponse({ paquete: p }, 201);
+  } catch (e: any) {
+    // Devolver el error exacto para diagnóstico (temporal, quitar en producción estable).
+    console.error("POST /api/paquetes error:", e);
+    return errorResponse(
+      `Error interno: ${e?.message?.slice(0, 250) || String(e)}`,
+      500,
+    );
+  }
 }
