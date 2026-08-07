@@ -21,15 +21,15 @@
     "bcryptjs": "^2.4.3",
     "jose": "^5.9.6",
     "next": "^16.1.1",
-    "qrcode": "^1.5.4"
+    "prisma": "^6.19.3",
+    "qrcode": "^1.5.4",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.0",
     "@types/qrcode": "^1.5.5",
     "@types/react": "19.2.18",
-    "prisma": "^6.19.3",
-    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
