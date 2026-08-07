@@ -48,6 +48,18 @@ body {
   transition: .15s;
 }
 .nav-links a:hover { opacity: .8; }
+
+/* Selector de idioma */
+.lang-switch {
+  display: inline-flex; gap: 2px; background: rgba(255,255,255,.15);
+  border-radius: 999px; padding: 3px;
+}
+.lang-switch button {
+  background: transparent; border: none; color: #fff; cursor: pointer;
+  padding: 4px 12px; border-radius: 999px; font-size: .78rem; font-weight: 700;
+  transition: .15s;
+}
+.lang-switch button.active { background: #fff; color: var(--prim); }
 .btn-agencias {
   background: var(--prim); padding: 9px 18px !important; border-radius: 999px;
   font-weight: 700 !important;
@@ -95,14 +107,13 @@ body {
 .section-head h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); color: var(--prim); margin: 0 0 8px; }
 .section-head p { color: var(--gris); margin: 0; font-size: 1.05rem; }
 
-/* Carrusel */
+/* Carrusel → ahora grilla de servicios (más robusta) */
 .servicios { padding: 80px 24px; background: #fff; }
-.carrusel { max-width: 1200px; margin: 0 auto; }
-.carrusel-track {
-  display: flex; gap: 20px; transition: transform .4s ease;
+.servicios-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;
 }
 .servicio-card {
-  flex: 0 0 calc((100% - 40px) / 3);
   background: #fff; border-radius: 16px; padding: 32px 26px;
   box-shadow: 0 8px 30px rgba(0,0,0,.08); border: 1px solid #eee;
   border-top: 5px solid var(--prim); transition: .2s;
@@ -116,20 +127,6 @@ body {
 .servicio-card h3 { margin: 0 0 10px; font-size: 1.3rem; color: #1f2937; }
 .servicio-card p { color: var(--gris); font-size: .95rem; line-height: 1.6; margin: 0 0 18px; flex: 1; }
 .servicio-link { text-decoration: none; font-weight: 700; font-size: .92rem; }
-.carrusel-controls {
-  display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 32px;
-}
-.carrusel-controls button {
-  width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--prim);
-  background: #fff; color: var(--prim); font-size: 1.6rem; cursor: pointer; transition: .15s;
-  display: grid; place-items: center; line-height: 1;
-}
-.carrusel-controls button:hover { background: var(--prim); color: #fff; }
-.carrusel-dots { display: flex; gap: 8px; }
-.carrusel-dots .dot {
-  width: 10px; height: 10px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; padding: 0;
-}
-.carrusel-dots .dot.active { background: var(--prim); width: 28px; border-radius: 5px; }
 
 /* Nosotros */
 .nosotros { padding: 80px 24px; background: var(--crema); }
@@ -166,6 +163,12 @@ body {
 .cc-ico { font-size: 2rem; }
 .contacto-card strong { font-size: 1.05rem; }
 .contacto-card small { opacity: .8; }
+.contacto-info {
+  display: flex; gap: 28px; justify-content: center; flex-wrap: wrap;
+  margin-top: 32px; font-size: .92rem; opacity: .95;
+}
+.contacto-info div { display: flex; align-items: center; gap: 8px; }
+.contacto-info a { color: #fff; }
 
 /* Footer */
 .footer-landing {

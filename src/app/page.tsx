@@ -1,86 +1,114 @@
-import { db } from "@/lib/db";
-import { hashPassword } from "@/lib/auth";
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+"use client";
+import { useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Leisure Exporting LLC · Envíos, exportación y logística",
-  description: "Paqueterías persona a persona, exportación de autos, combustible y trámites de pasaporte. EE.UU. → Cuba.",
-};
+// ════════════════════════════════════════════════════════════════════════════
+// Landing pública bilingüe (EN/ES) — Leisure Exporting LLC
+// Datos reales extraídos de leisureexportingllc.com
+// ════════════════════════════════════════════════════════════════════════════
+type Lang = "en" | "es";
 
-// Video de fondo: barco de contenedores (Pexels, licencia libre, hotlink OK).
 const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4";
 
+const T = {
+  en: {
+    navServicios: "Services", navNosotros: "About", navContacto: "Contact", navAgencias: "Agency access →",
+    pill: "🚢 Person-to-person exporting · U.S. → Cuba",
+    h1a: "Your cargo, your fleet and your",
+    h1b: "paperwork, always tracked",
+    sub: "Package shipping, car exports, fuel and passport processing. Modern logistics with QR labels and real-time GPS tracking.",
+    ctaServicios: "View services", ctaRastrear: "Track my package →",
+    statAgencias: "Agencies", statPaquetes: "Packages handled", statGps: "GPS tracking",
+    secServiciosH: "Our services", secServiciosP: "All under the Leisure Exporting LLC brand.",
+    s1t: "Package shipping", s1d: "Person-to-person packages from the U.S. to Cuba. QR label, point-to-point tracking and proof of delivery.",
+    s2t: "Passport processing", s2d: "Management and advisory for passport and travel document procedures. We guide you through the whole process.",
+    s3t: "Fuel export", s3d: "Supply and transport of oil and gasoline with control of every shipment and checkpoint.",
+    s4t: "Car export", s4d: "Buy and export vehicles to Cuba with managed paperwork and shipment tracking.",
+    sMas: "More information →",
+    nosH: "Modern logistics, simple to operate", 
+    nosP: "At Leisure Exporting LLC we combine years of export experience with cutting-edge technology. Every package carries a QR-code label; every driver scans the package and its GPS location is recorded instantly.",
+    f1: "QR label", f1b: " ready to print in seconds",
+    f2: "GPS tracking", f2b: " on every scan, even offline",
+    f3: "Agency network", f3b: " and subagencies managed from HQ",
+    f4: "Integrated accounting", f4b: " double-entry bookkeeping",
+    nosCardH: "U.S. → Cuba coverage", nosCardP: "Operations in Tampa, Florida and more, with an expanding network of agencies.",
+    conH: "Ready for your next shipment?", conP: "Get in touch with our team and we'll guide you.",
+    conTel: "Direct call", conEmail: "Corporate email", conWeb: "Official website",
+    footBrand: "Shipping, exports and logistics",
+    footRights: "All rights reserved.",
+  },
+  es: {
+    navServicios: "Servicios", navNosotros: "Nosotros", navContacto: "Contacto", navAgencias: "Acceso agencias →",
+    pill: "🚢 Exportación persona a persona · EE.UU. → Cuba",
+    h1a: "Tu carga, tu flota y tus",
+    h1b: "trámites, siempre rastreados",
+    sub: "Envíos de paquetes, exportación de autos, combustible y trámites de pasaporte. Logística moderna con etiquetas QR y rastreo GPS en tiempo real.",
+    ctaServicios: "Ver servicios", ctaRastrear: "Rastrear mi paquete →",
+    statAgencias: "Agencias", statPaquetes: "Paquetes gestionados", statGps: "Rastreo GPS",
+    secServiciosH: "Nuestros servicios", secServiciosP: "Todo bajo la marca Leisure Exporting LLC.",
+    s1t: "Envíos de paquetes", s1d: "Paquetería persona a persona de EE.UU. a Cuba. Etiqueta con QR, rastreo punto a punto y prueba de entrega.",
+    s2t: "Trámites de pasaporte", s2d: "Gestión y asesoría para trámites de pasaporte y documentos de viaje. Te acompañamos en todo el proceso.",
+    s3t: "Exportación de combustible", s3d: "Suministro y transporte de petróleo y gasolina con control de cada traslado y punto de control.",
+    s4t: "Exportación de autos", s4d: "Compra y exporta vehículos hacia Cuba con documentación gestionada y seguimiento de la carga.",
+    sMas: "Más información →",
+    nosH: "Logística moderna, simple de operar",
+    nosP: "En Leisure Exporting LLC combinamos la experiencia de años en exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR; cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.",
+    f1: "Etiqueta con QR", f1b: " lista para imprimir en segundos",
+    f2: "Rastreo GPS", f2b: " en cada escaneo, sin internet",
+    f3: "Red de agencias", f3b: " y subagencias gestionada desde la matriz",
+    f4: "Contabilidad integrada", f4b: " de doble entrada",
+    nosCardH: "Cobertura EE.UU. → Cuba", nosCardP: "Operaciones en Tampa, Florida y más, con red de agencias en expansión.",
+    conH: "¿Hacemos tu próximo envío?", conP: "Ponete en contacto con nuestro equipo y te asesoramos.",
+    conTel: "Llamada directa", conEmail: "Email corporativo", conWeb: "Web oficial",
+    footBrand: "Envíos, exportación y logística",
+    footRights: "Todos los derechos reservados.",
+  },
+};
+
 const SERVICIOS = [
-  {
-    ico: "📦",
-    titulo: "Envíos de paquetes",
-    desc: "Paquetería persona a persona de EE.UU. a Cuba. Etiqueta con QR, rastreo punto a punto y prueba de entrega.",
-    color: "#C23B22",
-  },
-  {
-    ico: "🛂",
-    titulo: "Trámites de pasaporte",
-    desc: "Gestión y asesoría para trámites de pasaporte y documentos de viaje. Te acompañamos en todo el proceso.",
-    color: "#1f6b3a",
-  },
-  {
-    ico: "⛽",
-    titulo: "Exportación de combustible",
-    desc: "Suministro y transporte de petróleo y gasolina con control de cada traslado y punto de control.",
-    color: "#e0a106",
-  },
-  {
-    ico: "🚗",
-    titulo: "Exportación de autos",
-    desc: "Compra y exporta vehículos hacia Cuba con documentación gestionada y seguimiento de la carga.",
-    color: "#2563eb",
-  },
-];
+  { ico: "📦", color: "#C23B22", tKey: "s1t", dKey: "s1d" },
+  { ico: "🛂", color: "#1f6b3a", tKey: "s2t", dKey: "s2d" },
+  { ico: "⛽", color: "#e0a106", tKey: "s3t", dKey: "s3d" },
+  { ico: "🚗", color: "#2563eb", tKey: "s4t", dKey: "s4d" },
+] as const;
 
-export default async function HomePage() {
-  // Si ya hay sesión (cookie válida), ir al CRM.
-  const sessionCookie = (await cookies()).get("leisure_session");
-  if (sessionCookie) {
-    // No validamos aquí para no importar verifyToken en server component pesado;
-    // el middleware ya protege /app. Solo redirigimos si hay cookie.
-    redirect("/app");
-  }
+// Datos reales de leisureexportingllc.com
+const CONTACTO = {
+  tel: "+1 727-598-6802",
+  telHref: "tel:+17275986802",
+  whatsapp: "https://wa.me/17275986802?text=Hello%2C%20I%20need%20help",
+  whatsappEs: "https://wa.me/17275986802?text=Hola%2C%20necesito%20ayuda",
+  email: "sales@leisureexportingllc.com",
+  web: "leisureexportingllc.com",
+  webHref: "https://www.leisureexportingllc.com",
+  dir1: "6800 N Ave, Florida FL 33604",
+  dir2: "6800 N Ave, Tampa Florida FL 33604",
+  horarioEn: "Mon–Fri: 8:00 AM – 5:00 PM",
+  horarioEs: "Lun–Vie: 8:00 AM – 5:00 PM",
+};
 
-  // KPIs reales desde la BD (solo los públicos, sin exponer datos sensibles).
-  let totalPaquetes = 0;
-  let totalAgencias = 0;
-  try {
-    [totalPaquetes, totalAgencias] = await Promise.all([
-      db.paquete.count(),
-      db.agencia.count(),
-    ]);
-  } catch {}
+export default function HomePage() {
+  const [lang, setLang] = useState<Lang>("es");
+  const t = T[lang];
 
   return (
     <main className="landing">
-      {/* ===== Video de fondo ===== */}
+      {/* Video de fondo */}
       <div className="video-bg">
-        <video autoPlay muted loop playsInline poster="">
+        <video autoPlay muted loop playsInline>
           <source src={VIDEO_BG} type="video/mp4" />
         </video>
         <div className="video-overlay" />
       </div>
 
-      {/* ===== Navbar ===== */}
+      {/* Navbar */}
       <nav className="landing-nav">
-        <div className="nav-logo">
+        <div className="nav-logo">{/* logo SVG blanco */}
           <svg viewBox="0 0 380 120" height="38" role="img" aria-label="Leisure Exporting LLC">
             <g fill="#fff">
               <g>
-                <rect x="40" y="26" width="9" height="20" rx="1.5" />
-                <rect x="60" y="26" width="9" height="20" rx="1.5" />
+                <rect x="40" y="26" width="9" height="20" rx="1.5" /><rect x="60" y="26" width="9" height="20" rx="1.5" />
                 <rect x="34" y="46" width="58" height="20" rx="2" />
-                <rect x="36" y="50" width="13" height="12" />
-                <rect x="51" y="50" width="13" height="12" />
-                <rect x="66" y="50" width="13" height="12" />
-                <rect x="81" y="50" width="9" height="12" />
+                <rect x="36" y="50" width="13" height="12" /><rect x="51" y="50" width="13" height="12" /><rect x="66" y="50" width="13" height="12" /><rect x="81" y="50" width="9" height="12" />
                 <path d="M20 70 H106 L96 94 a6 6 0 0 1 -6 4 H36 a6 6 0 0 1 -6 -4 Z" />
               </g>
               <g fontFamily="Arial, Helvetica, sans-serif" fontWeight="900">
@@ -92,155 +120,104 @@ export default async function HomePage() {
           </svg>
         </div>
         <div className="nav-links">
-          <a href="#servicios">Servicios</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
-          <a className="btn-agencias" href="/login">Acceso agencias →</a>
+          <a href="#servicios">{t.navServicios}</a>
+          <a href="#nosotros">{t.navNosotros}</a>
+          <a href="#contacto">{t.navContacto}</a>
+          {/* Selector de idioma */}
+          <div className="lang-switch">
+            <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>
+            <button className={lang === "es" ? "active" : ""} onClick={() => setLang("es")}>ES</button>
+          </div>
+          <a className="btn-agencias" href="/app">{t.navAgencias}</a>
         </div>
       </nav>
 
-      {/* ===== Hero ===== */}
+      {/* Hero */}
       <section className="hero">
         <div className="hero-content">
-          <span className="hero-pill">🚢 Exportación persona a persona · EE.UU. → Cuba</span>
-          <h1>
-            Tu carga, tu flota y tus<br />
-            trámites, <span className="hl">siempre rastreados</span>
-          </h1>
-          <p className="hero-sub">
-            Paqueterías, exportación de autos, combustible y trámites de pasaporte.
-            Logística moderna con etiquetas QR y rastreo GPS en tiempo real.
-          </p>
+          <span className="hero-pill">{t.pill}</span>
+          <h1>{t.h1a}<br /><span className="hl">{t.h1b}</span></h1>
+          <p className="hero-sub">{t.sub}</p>
           <div className="hero-cta">
-            <a href="#servicios" className="btn-primary">Ver servicios</a>
-            <a href="/login" className="btn-outline">Rastrear mi paquete →</a>
-          </div>
-          <div className="hero-stats">
-            <div><strong>{totalAgencias}</strong><span>Agencias</span></div>
-            <div><strong>{totalPaquetes}</strong><span>Paquetes gestionados</span></div>
-            <div><strong>24/7</strong><span>Rastreo GPS</span></div>
+            <a href="#servicios" className="btn-primary">{t.ctaServicios}</a>
+            <a href="/app" className="btn-outline">{t.ctaRastrear}</a>
           </div>
         </div>
       </section>
 
-      {/* ===== Carrusel de servicios ===== */}
+      {/* Servicios (carrusel) */}
       <section id="servicios" className="servicios">
         <div className="section-head">
-          <h2>Nuestros servicios</h2>
-          <p>Todo bajo la marca <strong>Leisure Exporting LLC</strong>.</p>
+          <h2>{t.secServiciosH}</h2>
+          <p>{t.secServiciosP}</p>
         </div>
-
-        <div className="carrusel">
-          <div className="carrusel-track" id="carruselTrack">
-            {SERVICIOS.map((s) => (
-              <article className="servicio-card" key={s.titulo} style={{ borderTopColor: s.color }}>
-                <div className="servicio-ico" style={{ background: s.color }}>{s.ico}</div>
-                <h3>{s.titulo}</h3>
-                <p>{s.desc}</p>
-                <a href="#contacto" className="servicio-link" style={{ color: s.color }}>Más información →</a>
-              </article>
-            ))}
-          </div>
-          <div className="carrusel-controls">
-            <button id="carrPrev" aria-label="Anterior">‹</button>
-            <div className="carrusel-dots" id="carrDots" />
-            <button id="carrNext" aria-label="Siguiente">›</button>
-          </div>
+        <div className="servicios-grid">
+          {SERVICIOS.map((s) => (
+            <article className="servicio-card" key={s.tKey} style={{ borderTopColor: s.color }}>
+              <div className="servicio-ico" style={{ background: s.color }}>{s.ico}</div>
+              <h3>{t[s.tKey as keyof typeof t]}</h3>
+              <p>{t[s.dKey as keyof typeof t]}</p>
+              <a href="#contacto" className="servicio-link" style={{ color: s.color }}>{t.sMas}</a>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* ===== Nosotros ===== */}
+      {/* Nosotros */}
       <section id="nosotros" className="nosotros">
         <div className="nosotros-grid">
           <div>
-            <h2>Logística moderna, simple de operar</h2>
-            <p>
-              En <strong>Leisure Exporting LLC</strong> combinamos la experiencia de años en
-              exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR;
-              cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.
-            </p>
+            <h2>{t.nosH}</h2>
+            <p>{t.nosP}</p>
             <ul className="features">
-              <li>🏷️ <span><strong>Etiqueta con QR</strong> lista para imprimir en segundos</span></li>
-              <li>📍 <span><strong>Rastreo GPS</strong> en cada escaneo, sin internet</span></li>
-              <li>🏢 <span><strong>Red de agencias</strong> y subagencias gestionada desde la matriz</span></li>
-              <li>💰 <span><strong>Contabilidad integrada</strong> de doble entrada</span></li>
+              <li>🏷️ <span><strong>{t.f1}</strong>{t.f1b}</span></li>
+              <li>📍 <span><strong>{t.f2}</strong>{t.f2b}</span></li>
+              <li>🏢 <span><strong>{t.f3}</strong>{t.f3b}</span></li>
+              <li>💰 <span><strong>{t.f4}</strong>{t.f4b}</span></li>
             </ul>
           </div>
           <div className="nosotros-card">
             <div className="stat-big">🌍</div>
-            <h3>Cobertura EE.UU. → Cuba</h3>
-            <p>Operaciones en Miami, La Habana, Santiago y más ciudades, con red de agencias en expansión.</p>
+            <h3>{t.nosCardH}</h3>
+            <p>{t.nosCardP}</p>
           </div>
         </div>
       </section>
 
-      {/* ===== Contacto ===== */}
+      {/* Contacto */}
       <section id="contacto" className="contacto">
-        <h2>¿Hacemos tu próximo envío?</h2>
-        <p>Ponete en contacto con nuestra matriz y te asesoramos.</p>
+        <h2>{t.conH}</h2>
+        <p>{t.conP}</p>
         <div className="contacto-grid">
-          <a className="contacto-card" href="tel:+1305000000">
+          <a className="contacto-card" href={CONTACTO.telHref}>
             <span className="cc-ico">📞</span>
-            <strong>+1 305 000 0000</strong>
-            <small>Llamada directa</small>
+            <strong>{CONTACTO.tel}</strong>
+            <small>{t.conTel}</small>
           </a>
-          <a className="contacto-card" href="mailto:info@leisureexportingllc.com">
+          <a className="contacto-card" href={lang === "es" ? CONTACTO.whatsappEs : CONTACTO.whatsapp} target="_blank" rel="noopener">
+            <span className="cc-ico">💬</span>
+            <strong>WhatsApp</strong>
+            <small>{CONTACTO.tel}</small>
+          </a>
+          <a className="contacto-card" href={`mailto:${CONTACTO.email}`}>
             <span className="cc-ico">✉️</span>
-            <strong>info@leisureexportingllc.com</strong>
-            <small>Email corporativo</small>
+            <strong>{CONTACTO.email}</strong>
+            <small>{t.conEmail}</small>
           </a>
-          <a className="contacto-card" href="https://www.leisureexportingllc.com" target="_blank" rel="noopener">
-            <span className="cc-ico">🌐</span>
-            <strong>leisureexportingllc.com</strong>
-            <small>Web oficial</small>
-          </a>
+        </div>
+        <div className="contacto-info">
+          <div><span>📍</span> {CONTACTO.dir2}</div>
+          <div><span>🕐</span> {lang === "es" ? CONTACTO.horarioEs : CONTACTO.horarioEn}</div>
+          <div><span>🌐</span> <a href={CONTACTO.webHref} target="_blank" rel="noopener">{CONTACTO.web}</a></div>
         </div>
       </section>
 
-      {/* ===== Footer ===== */}
+      {/* Footer */}
       <footer className="footer-landing">
-        <div className="footer-brand">
-          <strong>Leisure Exporting LLC</strong> · Envíos, exportación y logística
-        </div>
-        <small>© {new Date().getFullYear()} Leisure Exporting LLC. Todos los derechos reservados.</small>
-        <a className="footer-agencias" href="/login">Acceso agencias →</a>
+        <div className="footer-brand"><strong>Leisure Exporting LLC</strong> · {t.footBrand}</div>
+        <small>© {new Date().getFullYear()} Leisure Exporting LLC. {t.footRights}</small>
+        <a className="footer-agencias" href="/app">{t.navAgencias}</a>
       </footer>
-
-      {/* Script del carrusel */}
-      <script dangerouslySetInnerHTML={{ __html: CARRUSEL_SCRIPT }} />
     </main>
   );
 }
-
-// Lógica del carrusel (inline para no agregar dependencias).
-const CARRUSEL_SCRIPT = `
-(function(){
-  var track = document.getElementById('carruselTrack');
-  if(!track) return;
-  var cards = track.children;
-  var idx = 0;
-  var dotsWrap = document.getElementById('carrDots');
-  var visible = 3;
-  function calc(){ visible = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 2 : 3); }
-  function render(){
-    calc();
-    var max = Math.max(0, cards.length - visible);
-    if(idx > max) idx = max;
-    var cardW = cards[0].offsetWidth + 20;
-    track.style.transform = 'translateX(' + (-idx * cardW) + 'px)';
-    dotsWrap.innerHTML = '';
-    for(var i=0;i<=max;i++){
-      (function(i){
-        var d = document.createElement('button');
-        d.className = 'dot' + (i===idx?' active':'');
-        d.onclick = function(){ idx=i; render(); };
-        dotsWrap.appendChild(d);
-      })(i);
-    }
-  }
-  document.getElementById('carrPrev').onclick = function(){ idx=Math.max(0,idx-1); render(); };
-  document.getElementById('carrNext').onclick = function(){ var max=Math.max(0,cards.length-visible); idx=Math.min(max,idx+1); render(); };
-  window.addEventListener('resize', render);
-  render();
-})();
-`;
