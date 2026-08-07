@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // output standalone: imagen Docker pequeña, runtime node server.js
-  output: "standalone",
+  // Sin "standalone" para que "next start" funcione con el comando por defecto
+  // de Render (npm run start) y escuche en el PORT correcto.
   reactStrictMode: false,
 };
 
