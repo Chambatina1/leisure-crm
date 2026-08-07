@@ -51,7 +51,13 @@ export async function POST(request: NextRequest) {
     if (!s) return errorResponse("No autenticado", 401);
     const body = await request.json().catch(() => ({}));
 
-    const { agenciaId, clienteId, formaPago } = body;
+    let { agenciaId, clienteId, formaPago } = body;
+    // Auto-resolver agenciaId si viene vacío: tomar la primera agencia activa.
+    // (El formulario a veces no la carga si /api/agencias falla en el navegador.)
+    if (!agenciaId) {
+      const primera = await db.agencia.findFirst({ where: { activa: true }, orderBy: { creado: "asc" } });
+      if (primera) agenciaId = primera.id;
+    }
     if (!agenciaId || !body.remitente || !body.destinatario) {
       return errorResponse("agenciaId, remitente y destinatario son requeridos", 400);
     }
