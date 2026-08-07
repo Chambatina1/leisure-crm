@@ -5,10 +5,15 @@ import { alcanceAgencias, esAdmin } from "@/lib/permisos";
 
 // GET /api/agencias — lista según alcance.
 export async function GET(request: NextRequest) {
-  const s = await getSession(request);
-  if (!s) return errorResponse("No autenticado", 401);
-  const ags = await alcanceAgencias(s);
-  return jsonResponse({ agencias: ags });
+  try {
+    const s = await getSession(request);
+    if (!s) return errorResponse("No autenticado", 401);
+    const ags = await alcanceAgencias(s);
+    return jsonResponse({ agencias: ags });
+  } catch (e: any) {
+    console.error("GET /api/agencias error:", e);
+    return errorResponse(`Error: ${e?.message?.slice(0, 200) || String(e)}`, 500);
+  }
 }
 
 // POST /api/agencias — solo admin crea agencias de alto nivel.
