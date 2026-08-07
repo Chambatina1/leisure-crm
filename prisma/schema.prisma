@@ -104,8 +104,26 @@ model Paquete {
   peso            Float    @default(0)  // en libras
   pesoKg          Float?   // calculado: peso * 0.453592
   piezas          Int      @default(1)  // número de piezas/bultos
+  bultos          Int      @default(0)  // bultos (igual a piezas en la mayoría)
+  volumenM3       Float?   // volumen en metros cúbicos (m³)
+  volumenFt3      Float?   // volumen en pies cúbicos (ft³)
   contenido       String   @default("Paquete")
   categoria       String?  // ej: Comida, Ropa, Electrdoméstico, Medicina, Otro
+  clasificacion   String?  // clasificación arancelaria
+  mercancias      String?  // descripción de mercancías
+  palet           String?  // identificación de palet
+  hawb            String?  // House Air Waybill (guía aérea)
+  guiaBuque       String?  // guía / nombre del buque
+  manifiesto      Boolean  @default(false) // incluido en manifiesto
+  escaneado       Boolean  @default(false) // fue escaneado
+  factura         String?  // número de factura
+  valorFact       Float?   // valor según factura
+  valorDocum      Float?   // valor documental
+  valor           Float?   // valor declarado
+  valorPelig      Float?   // valor de mercancía peligrosa
+  pagado          Boolean  @default(false) // pagado
+  observaciones   String   @default("")
+  imagen          String?  // URL de imagen/foto
   notas           String   @default("")
   tarifa          Float    @default(0)
   monto           Float    @default(0)
