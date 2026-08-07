@@ -5,6 +5,9 @@ import { whereAlcance, puedeVerAgencia } from "@/lib/permisos";
 import { generarCodigoPaquete } from "@/lib/codigo";
 import { registrarIngresoEnvio } from "@/lib/contabilidad";
 
+// Conversión libras → kilogramos.
+const LB_A_KG = 0.453592;
+
 // GET /api/paquetes — lista según alcance, con filtros opcionales.
 export async function GET(request: NextRequest) {
   const s = await getSession(request);
@@ -35,42 +38,64 @@ export async function POST(request: NextRequest) {
   const s = await getSession(request);
   if (!s) return errorResponse("No autenticado", 401);
   const body = await request.json().catch(() => ({}));
-  const { agenciaId, clienteId, remitente, destinatario, destino, peso, contenido, notas, tarifa, formaPago } = body;
-  if (!agenciaId || !remitente || !destinatario || !destino) {
-    return errorResponse("agenciaId, remitente, destinatario y destino son requeridos", 400);
+
+  const { agenciaId, clienteId, formaPago } = body;
+  if (!agenciaId || !body.remitente || !body.destinatario) {
+    return errorResponse("agenciaId, remitente y destinatario son requeridos", 400);
   }
   if (!(await puedeVerAgencia(s, agenciaId))) {
     return errorResponse("No puedes crear paquetes fuera de tu agencia", 403);
   }
+
   // Tarifa: la del form, o la default de Config.
-  let tarifaNum = Number(tarifa);
+  let tarifaNum = Number(body.tarifa);
   if (!tarifaNum || isNaN(tarifaNum)) {
     const cfg = await db.config.findUnique({ where: { key: "tarifaPorLb" } });
     tarifaNum = cfg ? Number(cfg.value) : 4.5;
   }
-  const pesoNum = Number(peso) || 0;
+  const pesoNum = Number(body.peso) || 0;
   const monto = Math.round(pesoNum * tarifaNum * 100) / 100;
   const codigo = await generarCodigoPaquete();
 
   const p = await db.paquete.create({
     data: {
       codigo, agenciaId, clienteId: clienteId || null,
-      remitente, destinatario, destino,
-      peso: pesoNum, contenido: contenido || "Paquete", notas: notas || "",
-      tarifa: tarifaNum, monto, estado: "en_origen",
+      // Remitente
+      remitente: body.remitente,
+      remitenteCarnet: body.remitenteCarnet || null,
+      remitenteTel: body.remitenteTel || null,
+      remitenteDir: body.remitenteDir || null,
+      // Consignatario
+      destinatario: body.destinatario,
+      consignatarioCarnet: body.consignatarioCarnet || null,
+      consignatarioTel: body.consignatarioTel || null,
+      consignatarioCalle: body.consignatarioCalle || null,
+      consignatarioEntre: body.consignatarioEntre || null,
+      consignatarioMunicipio: body.consignatarioMunicipio || null,
+      consignatarioProvincia: body.consignatarioProvincia || null,
+      consignatarioCp: body.consignatarioCp || null,
+      destino: body.destino || body.consignatarioProvincia || "Cuba",
+      peso: pesoNum,
+      pesoKg: Math.round(pesoNum * LB_A_KG * 100) / 100,
+      piezas: Number(body.piezas) || 1,
+      contenido: body.contenido || "Paquete",
+      categoria: body.categoria || null,
+      notas: body.notas || "",
+      tarifa: tarifaNum, monto,
+      estado: "en_origen",
       creadoPorId: s.userId,
       eventos: { create: { estado: "en_origen", nota: "Etiqueta creada", operarioId: s.userId } },
     },
     include: { eventos: true },
   });
 
-  // Asiento contable automático según forma de pago.
-  const pago = (formaPago || "efectivo") as "efectivo" | "banco" | "credito";
-  try {
-    await registrarIngresoEnvio({ codigo: p.codigo, agenciaId, monto, destinatario }, pago);
-  } catch (e) {
-    // Si falla el asiento, no revertimos el paquete pero avisamos en logs.
-    console.error("Error registrando asiento de ingreso:", e);
+  // Asiento contable: SOLO si la agencia tiene contabilidad activa (es opcional).
+  const ag = await db.agencia.findUnique({ where: { id: agenciaId } });
+  if (ag?.contabilidadActiva) {
+    const pago = (formaPago || "efectivo") as "efectivo" | "banco" | "credito";
+    try {
+      await registrarIngresoEnvio({ codigo: p.codigo, agenciaId, monto, destinatario: p.destinatario }, pago);
+    } catch (e) { console.error("Error registrando asiento de ingreso:", e); }
   }
 
   return jsonResponse({ paquete: p }, 201);

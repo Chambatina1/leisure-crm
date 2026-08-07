@@ -12,6 +12,8 @@ const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_
 const T = {
   en: {
     navServicios: "Services", navNosotros: "About", navContacto: "Contact", navAgencias: "Agency access →",
+    navEtiqueta: "🏷️ Create label",
+    ctaEtiqueta: "🏷️ Create shipping label",
     pill: "🚢 Person-to-person exporting · U.S. → Cuba",
     h1a: "Your cargo, your fleet and your",
     h1b: "paperwork, always tracked",
@@ -38,6 +40,8 @@ const T = {
   },
   es: {
     navServicios: "Servicios", navNosotros: "Nosotros", navContacto: "Contacto", navAgencias: "Acceso agencias →",
+    navEtiqueta: "🏷️ Crear etiqueta",
+    ctaEtiqueta: "🏷️ Crear etiqueta de envío",
     pill: "🚢 Exportación persona a persona · EE.UU. → Cuba",
     h1a: "Tu carga, tu flota y tus",
     h1b: "trámites, siempre rastreados",
@@ -128,7 +132,8 @@ export default function HomePage() {
             <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>
             <button className={lang === "es" ? "active" : ""} onClick={() => setLang("es")}>ES</button>
           </div>
-          <a className="btn-agencias" href="/app">{t.navAgencias}</a>
+          <a className="btn-agencias" href="/nuevo-paquete">{t.navEtiqueta}</a>
+          <a className="btn-agencias2" href="/app">{t.navAgencias}</a>
         </div>
       </nav>
 
@@ -139,8 +144,8 @@ export default function HomePage() {
           <h1>{t.h1a}<br /><span className="hl">{t.h1b}</span></h1>
           <p className="hero-sub">{t.sub}</p>
           <div className="hero-cta">
-            <a href="#servicios" className="btn-primary">{t.ctaServicios}</a>
-            <a href="/app" className="btn-outline">{t.ctaRastrear}</a>
+            <a href="/nuevo-paquete" className="btn-primary">{t.ctaEtiqueta}</a>
+            <a href="/bol" className="btn-outline">📋 Bill of Lading</a>
           </div>
         </div>
       </section>

@@ -28,6 +28,7 @@ model Agencia {
   pais                 String?
   telefono             String?
   puedeCrearSubagencias Boolean @default(false)
+  contabilidadActiva   Boolean  @default(false)
   activa               Boolean  @default(true)
   creado               DateTime @default(now())
 
@@ -77,23 +78,41 @@ model Cliente {
 }
 
 // ─── Paquetes ────────────────────────────────────────────────────────────────
-// codigo = LE-YYYY-NNNN (único). Generado por secuencia segura en codigo.ts.
+// codigo = LXE + dígitos (único). Generado por secuencia segura en codigo.ts.
 model Paquete {
   codigo        String   @id
   agenciaId     String
   clienteId     String?
-  remitente     String   @default("—")
-  destinatario  String   @default("—")
-  destino       String   @default("—")
-  peso          Float    @default(0)
-  contenido     String   @default("Paquete")
-  notas         String   @default("")
-  tarifa        Float    @default(0)
-  monto         Float    @default(0)
-  estado        String   @default("en_origen") // en_origen|en_transito|en_almacen|entregado
-  creado        DateTime @default(now())
-  creadoPorId   String?
-  ultimoEscaneo DateTime?
+
+  // Remitente (origen)
+  remitente       String   @default("—")
+  remitenteCarnet String?  // carnet/pasaporte del remitente
+  remitenteTel    String?  // teléfono del remitente
+  remitenteDir    String?  // dirección del remitente
+
+  // Consignatario (destino) — datos detallados en Cuba
+  destinatario    String   @default("—")
+  consignatarioCarnet String? // carnet de identidad / pasaporte del que recibe
+  consignatarioTel    String? // teléfono del que recibe
+  consignatarioCalle  String? // calle y número
+  consignatarioEntre  String? // entre calles
+  consignatarioMunicipio String? // municipio
+  consignatarioProvincia String? // provincia
+  consignatarioCp     String? // código postal (opcional)
+
+  destino         String   @default("—")
+  peso            Float    @default(0)  // en libras
+  pesoKg          Float?   // calculado: peso * 0.453592
+  piezas          Int      @default(1)  // número de piezas/bultos
+  contenido       String   @default("Paquete")
+  categoria       String?  // ej: Comida, Ropa, Electrdoméstico, Medicina, Otro
+  notas           String   @default("")
+  tarifa          Float    @default(0)
+  monto           Float    @default(0)
+  estado          String   @default("en_origen") // en_origen|en_transito|en_almacen|entregado
+  creado          DateTime @default(now())
+  creadoPorId     String?
+  ultimoEscaneo   DateTime?
 
   agencia       Agencia  @relation(fields: [agenciaId], references: [id])
   cliente       Cliente? @relation(fields: [clienteId], references: [id])

@@ -26,6 +26,9 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/api/paquetes/") && pathname.endsWith("/qr")) return NextResponse.next();
   if (PUBLIC_API.includes(pathname)) return NextResponse.next();
 
+  // Etiquetas y Bill of Lading → públicos (para que el chofer/destinatario los abra).
+  if (pathname.startsWith("/etiqueta/") || pathname === "/bol") return NextResponse.next();
+
   // ¿Hay sesión válida?
   const session = await getSession(request);
   const token = await signToken({

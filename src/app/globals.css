@@ -65,6 +65,11 @@ body {
   font-weight: 700 !important;
 }
 .btn-agencias:hover { background: var(--prim-2) !important; opacity: 1 !important; }
+.btn-agencias2 {
+  background: var(--verde); padding: 9px 18px !important; border-radius: 999px;
+  font-weight: 700 !important; color: #fff !important;
+}
+.btn-agencias2:hover { opacity: .9 !important; }
 
 /* Hero */
 .hero {
