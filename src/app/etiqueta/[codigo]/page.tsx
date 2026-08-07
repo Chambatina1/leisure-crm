@@ -29,10 +29,20 @@ function barcodeBars(code: string): string {
 export default async function EtiquetaPage({ params }: { params: Promise<{ codigo: string }> }) {
   const { codigo } = await params;
   const cod = codigo.toUpperCase().replace(/[^A-Z0-9-]/g, "");
-  const p = await db.paquete.findUnique({
-    where: { codigo: cod },
-    include: { agencia: true },
-  });
+  let p;
+  try {
+    p = await db.paquete.findUnique({
+      where: { codigo: cod },
+      include: { agencia: true },
+    });
+  } catch (e: any) {
+    return <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
+      <h2>Error cargando etiqueta</h2>
+      <p>Error: {String(e?.message || e).slice(0, 300)}</p>
+      <p style={{ color: "#999", fontSize: 12 }}>Código: {cod}</p>
+      <a href="/">← Volver</a>
+    </div>;
+  }
 
   if (!p) {
     return <div style={{ padding: 40, textAlign: "center", fontFamily: "Arial" }}>
