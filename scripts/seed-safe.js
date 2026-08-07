@@ -1,27 +1,14 @@
 // ════════════════════════════════════════════════════════════════════════════
-// seed-safe.js — Corre el seed SOLO si la base de datos está vacía.
-// Idempotente: no duplica datos en cada redeploy.
-// Se ejecuta desde "npm run start" antes de levantar Next.js.
+// seed-safe.js — Asegura que la base tenga los datos demo antes de arrancar.
+// En el plan Free de Render, /tmp se resetea en cada deploy, así que corremos
+// el seed siempre. El seed.ts usa deleteMany primero (no duplica datos).
 // ════════════════════════════════════════════════════════════════════════════
-const { PrismaClient } = require("@prisma/client");
+const { execSync } = require("child_process");
 
-async function main() {
-  const db = new PrismaClient();
-  try {
-    const n = await db.usuario.count();
-    if (n > 0) {
-      console.log(`▶ La BD ya tiene ${n} usuario(s). Seed omitido.`);
-      return;
-    }
-    console.log("▶ BD vacía → corriendo seed…");
-    const { execSync } = require("child_process");
-    execSync("npx tsx prisma/seed.ts", { stdio: "inherit" });
-    console.log("✅ Seed completo.");
-  } catch (e) {
-    console.warn("⚠ No se pudo verificar/correr seed (no crítico):", e.message);
-  } finally {
-    await db.$disconnect();
-  }
+try {
+  console.log("▶ Asegurando datos demo (seed)…");
+  execSync("npx tsx prisma/seed.ts", { stdio: "inherit" });
+  console.log("✅ Seed asegurado.");
+} catch (e) {
+  console.warn("⚠ Seed falló (no crítico, la app igual arranca):", e.message);
 }
-
-main();
