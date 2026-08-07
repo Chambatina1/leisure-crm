@@ -8,12 +8,16 @@
 // archivos distintos (GET lee una DB, POST escribe otra → FK violation).
 // ════════════════════════════════════════════════════════════════════════════
 import { PrismaClient } from "@prisma/client";
+import { existsSync } from "node:fs";
 
 function getDbUrl(): string | undefined {
   // Si hay DATABASE_URL de Postgres, usarla (producción real).
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
-  // En Render sin Postgres: usar /tmp/dev.db (ruta absoluta fija).
-  if (process.env.RENDER) return "file:/tmp/dev.db";
+  // En Render: usar el disco persistente /data/dev.db (cae a /tmp si no hay disco).
+  if (process.env.RENDER) {
+    const dir = existsSync("/data") ? "/data" : "/tmp";
+    return `file:${dir}/dev.db`;
+  }
   // Local: la del .env o default ./dev.db
   return process.env.DATABASE_URL || undefined;
 }

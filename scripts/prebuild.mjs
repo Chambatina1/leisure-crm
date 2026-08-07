@@ -6,10 +6,10 @@
 // ════════════════════════════════════════════════════════════════════════════
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 
-// Render (plan Free) no tiene disco persistente, pero /tmp siempre es escribible.
-// Usamos /tmp/dev.db en producción y ./dev.db en desarrollo local.
-const PROD_DIR = "/tmp";
-const useProd = existsSync(PROD_DIR) && process.env.RENDER;
+// Render: usamos el disco persistente /data (configurado en render.yaml).
+// Si /data no existe (no se configuró el disco), caemos a /tmp como fallback.
+const PROD_DIR = existsSync("/data") ? "/data" : "/tmp";
+const useProd = process.env.RENDER === "true" || existsSync("/tmp");
 const DATA_DIR = useProd ? PROD_DIR : ".";
 try { if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true }); } catch {}
 

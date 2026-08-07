@@ -26,7 +26,7 @@ services:
   - type: web
     name: leisure-crm
     runtime: node
-    plan: free
+    plan: starter          # Starter ($7/mes): no se duerme + disco persistente
     region: oregon
     branch: main
     rootDir: .
@@ -34,15 +34,16 @@ services:
     startCommand: sh start.sh
     healthCheckPath: /api/health
     autoDeploy: true
+    # Disco persistente: la DB SQLite vive aquí y NO se borra entre deploys.
+    disk:
+      - name: leisure-data
+        mountPath: /data
+        sizeGB: 1
     envVars:
-      # En producción usamos PostgreSQL. El prebuild.mjs cambia el provider
-      # del schema.prisma según esta variable.
-      - key: DATABASE_PROVIDER
-        value: postgresql
-      - key: DATABASE_URL
-        fromDatabase:
-          name: leisure-db
-          property: connectionString
+      # Sin Postgres externo: usamos SQLite en el disco persistente /data.
+      # Esto garantiza que los datos (paquetes, agencias) sobrevivan.
+      - key: RENDER
+        value: "true"
       - key: JWT_SECRET
         generateValue: true
       - key: NEXT_PUBLIC_APP_URL
