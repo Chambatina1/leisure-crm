@@ -1,26 +1,28 @@
 import { db } from "@/lib/db";
+import BOLContent from "./bol-content";
 
 // ════════════════════════════════════════════════════════════════════════════
 // /bol — Bill of Lading (documento de carga / manifiesto).
 // Lista todos los paquetes pendientes de embarque (no entregados) con totales
 // de peso y piezas. Imprimible.
 // Acceso público (para el chofer / recepción en destino).
+//
+// Esta página es un Server Component (consulta la BD). La barra de acciones
+// (imprimir, navegar) vive en bol-content.tsx (Client Component) porque usa
+// onClick / window.print().
 // ════════════════════════════════════════════════════════════════════════════
 export const dynamic = "force-dynamic";
 
 export default async function BOLPage() {
   let paquetes: any[] = [];
+  let dbError: string | null = null;
   try {
     paquetes = await db.paquete.findMany({
       where: { estado: { not: "entregado" } },
       orderBy: { codigo: "asc" },
     });
   } catch (e) {
-    return <html><body style={{padding:40,fontFamily:"Arial",textAlign:"center"}}>
-      <h2>Error cargando el BOL</h2>
-      <p>La base de datos podría estar migrándose. Recargá en unos segundos.</p>
-      <p style={{color:"#999",fontSize:12}}>{String(e).slice(0,200)}</p>
-    </body></html>;
+    dbError = String(e).slice(0, 300);
   }
 
   const totalLb = paquetes.reduce((s, p) => s + (Number(p.peso) || 0), 0);
@@ -36,112 +38,7 @@ export default async function BOLPage() {
         <style dangerouslySetInnerHTML={{ __html: BOL_CSS }} />
       </head>
       <body>
-        <div className="no-print toolbar">
-          <button onClick={() => window.print()}>🖨️ Imprimir BOL</button>
-          <a href="/nuevo-paquete" className="btn-link">➕ Nuevo envío</a>
-          <a href="/" className="btn-link">← Inicio</a>
-        </div>
-
-        <div className="bol">
-          {/* Encabezado */}
-          <div className="bol-header">
-            <div className="bol-marca">
-              <div className="bol-barco">🚢</div>
-              <div>
-                <strong>LEISURE EXPORTING LLC</strong>
-                <small>6800 N Ave, Tampa FL 33604 · +1 727-598-6802</small>
-              </div>
-            </div>
-            <div className="bol-titulo">
-              <h1>BILL OF LADING</h1>
-              <div className="bol-fecha">Date: {fecha}</div>
-              <div className="bol-k">TYPE: <span>K</span></div>
-            </div>
-          </div>
-
-          {/* Ruta */}
-          <div className="bol-ruta">
-            <div><small>ORIGIN:</small> Tampa, FL, USA</div>
-            <div className="bol-flecha">✈️ ➡️ 🇨🇺</div>
-            <div><small>DESTINATION:</small> Cuba</div>
-          </div>
-
-          {/* Resumen */}
-          <div className="bol-resumen">
-            <div><b>{paquetes.length}</b><span>Packages</span></div>
-            <div><b>{totalPiezas}</b><span>Pieces</span></div>
-            <div><b>{totalLb.toFixed(1)} lb</b><span>Total weight</span></div>
-            <div><b>{totalKg.toFixed(2)} kg</b><span>Peso total</span></div>
-          </div>
-
-          {/* Tabla */}
-          <table className="bol-tabla">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Tracking</th>
-                <th>Shipper</th>
-                <th>Consignee</th>
-                <th>Destino (Cuba)</th>
-                <th>W (lb)</th>
-                <th>Peso (kg)</th>
-                <th>Pcs</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paquetes.length === 0 ? (
-                <tr><td colSpan={8} style={{ textAlign: "center", padding: 30 }}>No hay paquetes pendientes de embarque.</td></tr>
-              ) : paquetes.map((p, i) => {
-                const dir = [p.consignatarioMunicipio, p.consignatarioProvincia].filter(Boolean).join(", ");
-                const pesoNum = Number(p.peso) || 0;
-                const kg = p.pesoKg ? Number(p.pesoKg) : pesoNum * 0.453592;
-                return (
-                  <tr key={p.codigo}>
-                    <td>{i + 1}</td>
-                    <td className="mono"><b>{p.codigo}</b></td>
-                    <td>{p.remitente || "—"}</td>
-                    <td>{p.destinatario || "—"}<br/><small>{p.consignatarioCarnet || ""}</small></td>
-                    <td>{dir || "Cuba"}<br/><small>{p.consignatarioCalle || ""}</small></td>
-                    <td className="num">{pesoNum}</td>
-                    <td className="num">{kg.toFixed(2)}</td>
-                    <td className="num">{Number(p.piezas) || 1}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={5} style={{ textAlign: "right" }}><b>TOTALES</b></td>
-                <td className="num"><b>{totalLb.toFixed(1)}</b></td>
-                <td className="num"><b>{totalKg.toFixed(2)}</b></td>
-                <td className="num"><b>{totalPiezas}</b></td>
-              </tr>
-            </tfoot>
-          </table>
-
-          {/* Firmas */}
-          <div className="bol-firmas">
-            <div className="bol-firma"><div className="bol-linea"></div><small>Shipper / Remitente</small></div>
-            <div className="bol-firma"><div className="bol-linea"></div><small>Carrier / Transportista</small></div>
-            <div className="bol-firma"><div className="bol-linea"></div><small>Received by / Recibido por</small></div>
-          </div>
-
-          <div className="bol-footer">
-            Leisure Exporting LLC · sales@leisureexportingllc.com · leisureexportingllc.com
-          </div>
-
-          {/* Aviso de desarrollo — no se imprime */}
-          <div className="bol-dev no-print">
-            <div className="bol-dev-head">EN DESARROLLO</div>
-            <p className="bol-dev-sub">Este documento es una vista previa. La versión final incluirá:</p>
-            <ul className="bol-dev-list">
-              <li><strong>Sistema contable central</strong> — registro automático de cada envío (ingresos, costos, utilidad) en el libro mayor de la agencia que lo genera.</li>
-              <li><strong>Reportes por compañía</strong> — estados financieros y reportes de embarque de cada agencia principal y subagencia, con su logo y totales propios.</li>
-              <li><strong>Consolidación matriz</strong> — el administrador verá el BOL consolidado de todas las agencias y el desglose por cada una.</li>
-            </ul>
-            <p className="bol-dev-foot">Mientras tanto, este manifiesto es funcional y se puede imprimir.</p>
-          </div>
-        </div>
+        <BOLContent fecha={fecha} dbError={dbError} paquetes={paquetes} totalLb={totalLb} totalKg={totalKg} totalPiezas={totalPiezas} />
       </body>
     </html>
   );
