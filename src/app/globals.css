@@ -119,16 +119,17 @@ body {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;
 }
 .servicio-card {
-  background: #fff; border-radius: 16px; padding: 32px 26px;
+  background: #fff; border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0,0,0,.08); border: 1px solid #eee;
-  border-top: 5px solid var(--prim); transition: .2s;
+  overflow: hidden; transition: .2s;
   display: flex; flex-direction: column;
 }
 .servicio-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,.14); }
-.servicio-ico {
-  width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center;
-  font-size: 2rem; margin-bottom: 18px; color: #fff;
+.servicio-foto {
+  height: 200px; overflow: hidden; border-top: 5px solid var(--prim); background: #f3f4f6;
 }
+.servicio-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.servicio-body { padding: 26px 24px 28px; display: flex; flex-direction: column; flex: 1; }
 .servicio-card h3 { margin: 0 0 10px; font-size: 1.3rem; color: #1f2937; }
 .servicio-card p { color: var(--gris); font-size: .95rem; line-height: 1.6; margin: 0 0 18px; flex: 1; }
 .servicio-link { text-decoration: none; font-weight: 700; font-size: .92rem; }
@@ -147,7 +148,6 @@ body {
   background: #fff; border-radius: 20px; padding: 40px 30px; text-align: center;
   box-shadow: 0 10px 36px rgba(31,107,58,.12); border: 1px solid #eee;
 }
-.stat-big { font-size: 4rem; margin-bottom: 10px; }
 .nosotros-card h3 { color: var(--prim); margin: 0 0 10px; }
 .nosotros-card p { color: var(--gris); font-size: .95rem; }
 
@@ -165,7 +165,6 @@ body {
   display: flex; flex-direction: column; gap: 6px;
 }
 .contacto-card:hover { background: rgba(255,255,255,.22); transform: translateY(-4px); }
-.cc-ico { font-size: 2rem; }
 .contacto-card strong { font-size: 1.05rem; }
 .contacto-card small { opacity: .8; }
 .contacto-info {

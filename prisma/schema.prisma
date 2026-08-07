@@ -105,8 +105,11 @@ model Paquete {
   pesoKg          Float?   // calculado: peso * 0.453592
   piezas          Int      @default(1)  // número de piezas/bultos
   bultos          Int      @default(0)  // bultos (igual a piezas en la mayoría)
-  volumenM3       Float?   // volumen en metros cúbicos (m³)
-  volumenFt3      Float?   // volumen en pies cúbicos (ft³)
+  alto            Float?   // alto (pulgadas) — opcional
+  largo           Float?   // largo (pulgadas) — opcional
+  ancho           Float?   // ancho (pulgadas) — opcional
+  volumenM3       Float?   // volumen en metros cúbicos (m³) — se calcula de alto×largo×ancho
+  volumenFt3      Float?   // volumen en pies cúbicos (ft³) — se calcula de alto×largo×ancho
   contenido       String   @default("Paquete")
   categoria       String?  // ej: Comida, Ropa, Electrdoméstico, Medicina, Otro
   clasificacion   String?  // clasificación arancelaria

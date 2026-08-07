@@ -8,6 +8,17 @@ import { registrarIngresoEnvio } from "@/lib/contabilidad";
 // Conversión libras → kilogramos.
 const LB_A_KG = 0.453592;
 
+// Calcula volumen (ft³ y m³) a partir de alto×largo×ancho en pulgadas.
+// Devuelve null si falta alguno (las dimensiones son opcionales).
+function calcVolumen(alto?: number | string, largo?: number | string, ancho?: number | string): { ft3: number; m3: number } | null {
+  const a = Number(alto), l = Number(largo), n = Number(ancho);
+  if (!a || !l || !n || isNaN(a) || isNaN(l) || isNaN(n) || a <= 0 || l <= 0 || n <= 0) return null;
+  const pulg3 = a * l * n;                 // pulgadas cúbicas
+  const ft3 = pulg3 / 1728;                // 1 ft³ = 1728 in³
+  const m3 = ft3 * 0.0283168;              // 1 ft³ = 0.0283168 m³
+  return { ft3: Math.round(ft3 * 100) / 100, m3: Math.round(m3 * 10000) / 10000 };
+}
+
 // GET /api/paquetes — lista según alcance, con filtros opcionales.
 export async function GET(request: NextRequest) {
   const s = await getSession(request);
@@ -79,8 +90,17 @@ export async function POST(request: NextRequest) {
       pesoKg: Math.round(pesoNum * LB_A_KG * 100) / 100,
       piezas: Number(body.piezas) || 1,
       bultos: Number(body.bultos) || 0,
-      volumenM3: body.volumenM3 ? Number(body.volumenM3) : null,
-      volumenFt3: body.volumenFt3 ? Number(body.volumenFt3) : null,
+      alto: body.alto ? Number(body.alto) : null,
+      largo: body.largo ? Number(body.largo) : null,
+      ancho: body.ancho ? Number(body.ancho) : null,
+      // El volumen se calcula automáticamente de las dimensiones (pulgadas → ft³ → m³).
+      // Si se manda explícito (caso edge), se respeta.
+      volumenM3: body.volumenM3
+        ? Number(body.volumenM3)
+        : calcVolumen(body.alto, body.largo, body.ancho)?.m3 ?? null,
+      volumenFt3: body.volumenFt3
+        ? Number(body.volumenFt3)
+        : calcVolumen(body.alto, body.largo, body.ancho)?.ft3 ?? null,
       contenido: body.contenido || "Paquete",
       categoria: body.categoria || null,
       clasificacion: body.clasificacion || null,

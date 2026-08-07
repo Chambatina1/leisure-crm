@@ -4,6 +4,7 @@ import { useState } from "react";
 // ════════════════════════════════════════════════════════════════════════════
 // Landing pública bilingüe (EN/ES) — Leisure Exporting LLC
 // Datos reales extraídos de leisureexportingllc.com
+// Fotos reales por servicio (sin emojis).
 // ════════════════════════════════════════════════════════════════════════════
 type Lang = "en" | "es";
 
@@ -11,21 +12,21 @@ const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_
 
 const T = {
   en: {
-    navServicios: "Services", navNosotros: "About", navContacto: "Contact", navAgencias: "Agency access →",
-    navEtiqueta: "🏷️ Create label",
-    ctaEtiqueta: "🏷️ Create shipping label",
-    pill: "🚢 Person-to-person exporting · U.S. → Cuba",
+    navServicios: "Services", navNosotros: "About", navContacto: "Contact", navAgencias: "Agency access",
+    navEtiqueta: "Create label",
+    ctaEtiqueta: "Create shipping label",
+    pill: "Person-to-person exporting · U.S. → Cuba",
     h1a: "Your cargo, your fleet and your",
     h1b: "paperwork, always tracked",
     sub: "Package shipping, car exports, fuel and passport processing. Modern logistics with QR labels and real-time GPS tracking.",
-    ctaServicios: "View services", ctaRastrear: "Track my package →",
+    ctaServicios: "View services", ctaRastrear: "Track my package",
     statAgencias: "Agencies", statPaquetes: "Packages handled", statGps: "GPS tracking",
     secServiciosH: "Our services", secServiciosP: "All under the Leisure Exporting LLC brand.",
     s1t: "Package shipping", s1d: "Person-to-person packages from the U.S. to Cuba. QR label, point-to-point tracking and proof of delivery.",
     s2t: "Passport processing", s2d: "Management and advisory for passport and travel document procedures. We guide you through the whole process.",
     s3t: "Fuel export", s3d: "Supply and transport of oil and gasoline with control of every shipment and checkpoint.",
     s4t: "Car export", s4d: "Buy and export vehicles to Cuba with managed paperwork and shipment tracking.",
-    sMas: "More information →",
+    sMas: "More information",
     nosH: "Modern logistics, simple to operate", 
     nosP: "At Leisure Exporting LLC we combine years of export experience with cutting-edge technology. Every package carries a QR-code label; every driver scans the package and its GPS location is recorded instantly.",
     f1: "QR label", f1b: " ready to print in seconds",
@@ -39,21 +40,21 @@ const T = {
     footRights: "All rights reserved.",
   },
   es: {
-    navServicios: "Servicios", navNosotros: "Nosotros", navContacto: "Contacto", navAgencias: "Acceso agencias →",
-    navEtiqueta: "🏷️ Crear etiqueta",
-    ctaEtiqueta: "🏷️ Crear etiqueta de envío",
-    pill: "🚢 Exportación persona a persona · EE.UU. → Cuba",
+    navServicios: "Servicios", navNosotros: "Nosotros", navContacto: "Contacto", navAgencias: "Acceso agencias",
+    navEtiqueta: "Crear etiqueta",
+    ctaEtiqueta: "Crear etiqueta de envío",
+    pill: "Exportación persona a persona · EE.UU. → Cuba",
     h1a: "Tu carga, tu flota y tus",
     h1b: "trámites, siempre rastreados",
     sub: "Envíos de paquetes, exportación de autos, combustible y trámites de pasaporte. Logística moderna con etiquetas QR y rastreo GPS en tiempo real.",
-    ctaServicios: "Ver servicios", ctaRastrear: "Rastrear mi paquete →",
+    ctaServicios: "Ver servicios", ctaRastrear: "Rastrear mi paquete",
     statAgencias: "Agencias", statPaquetes: "Paquetes gestionados", statGps: "Rastreo GPS",
     secServiciosH: "Nuestros servicios", secServiciosP: "Todo bajo la marca Leisure Exporting LLC.",
     s1t: "Envíos de paquetes", s1d: "Paquetería persona a persona de EE.UU. a Cuba. Etiqueta con QR, rastreo punto a punto y prueba de entrega.",
     s2t: "Trámites de pasaporte", s2d: "Gestión y asesoría para trámites de pasaporte y documentos de viaje. Te acompañamos en todo el proceso.",
     s3t: "Exportación de combustible", s3d: "Suministro y transporte de petróleo y gasolina con control de cada traslado y punto de control.",
     s4t: "Exportación de autos", s4d: "Compra y exporta vehículos hacia Cuba con documentación gestionada y seguimiento de la carga.",
-    sMas: "Más información →",
+    sMas: "Más información",
     nosH: "Logística moderna, simple de operar",
     nosP: "En Leisure Exporting LLC combinamos la experiencia de años en exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR; cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.",
     f1: "Etiqueta con QR", f1b: " lista para imprimir en segundos",
@@ -68,11 +69,12 @@ const T = {
   },
 };
 
+// Fotos reales por servicio (sin emojis — visual profesional)
 const SERVICIOS = [
-  { ico: "📦", color: "#C23B22", tKey: "s1t", dKey: "s1d" },
-  { ico: "🛂", color: "#1f6b3a", tKey: "s2t", dKey: "s2d" },
-  { ico: "⛽", color: "#e0a106", tKey: "s3t", dKey: "s3d" },
-  { ico: "🚗", color: "#2563eb", tKey: "s4t", dKey: "s4d" },
+  { img: "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#C23B22", tKey: "s1t", dKey: "s1d" }, // paquetes/cajas
+  { img: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG", color: "#1f6b3a", tKey: "s2t", dKey: "s2d" }, // pasaporte cubano
+  { img: "https://images.pexels.com/photos/3823582/pexels-photo-3823582.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d" }, // tanquero/combustible
+  { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d" }, // carguero de autos
 ] as const;
 
 // Datos reales de leisureexportingllc.com
@@ -145,12 +147,12 @@ export default function HomePage() {
           <p className="hero-sub">{t.sub}</p>
           <div className="hero-cta">
             <a href="/nuevo-paquete" className="btn-primary">{t.ctaEtiqueta}</a>
-            <a href="/bol" className="btn-outline">📋 Bill of Lading</a>
+            <a href="/bol" className="btn-outline">Bill of Lading</a>
           </div>
         </div>
       </section>
 
-      {/* Servicios (carrusel) */}
+      {/* Servicios (con foto real por servicio) */}
       <section id="servicios" className="servicios">
         <div className="section-head">
           <h2>{t.secServiciosH}</h2>
@@ -158,11 +160,16 @@ export default function HomePage() {
         </div>
         <div className="servicios-grid">
           {SERVICIOS.map((s) => (
-            <article className="servicio-card" key={s.tKey} style={{ borderTopColor: s.color }}>
-              <div className="servicio-ico" style={{ background: s.color }}>{s.ico}</div>
-              <h3>{t[s.tKey as keyof typeof t]}</h3>
-              <p>{t[s.dKey as keyof typeof t]}</p>
-              <a href="#contacto" className="servicio-link" style={{ color: s.color }}>{t.sMas}</a>
+            <article className="servicio-card" key={s.tKey}>
+              <div className="servicio-foto" style={{ borderTopColor: s.color }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.img} alt={t[s.tKey as keyof typeof t] as string} loading="lazy" />
+              </div>
+              <div className="servicio-body">
+                <h3 style={{ color: s.color }}>{t[s.tKey as keyof typeof t]}</h3>
+                <p>{t[s.dKey as keyof typeof t]}</p>
+                <a href="#contacto" className="servicio-link" style={{ color: s.color }}>{t.sMas} →</a>
+              </div>
             </article>
           ))}
         </div>
@@ -175,14 +182,13 @@ export default function HomePage() {
             <h2>{t.nosH}</h2>
             <p>{t.nosP}</p>
             <ul className="features">
-              <li>🏷️ <span><strong>{t.f1}</strong>{t.f1b}</span></li>
-              <li>📍 <span><strong>{t.f2}</strong>{t.f2b}</span></li>
-              <li>🏢 <span><strong>{t.f3}</strong>{t.f3b}</span></li>
-              <li>💰 <span><strong>{t.f4}</strong>{t.f4b}</span></li>
+              <li><span><strong>{t.f1}</strong>{t.f1b}</span></li>
+              <li><span><strong>{t.f2}</strong>{t.f2b}</span></li>
+              <li><span><strong>{t.f3}</strong>{t.f3b}</span></li>
+              <li><span><strong>{t.f4}</strong>{t.f4b}</span></li>
             </ul>
           </div>
           <div className="nosotros-card">
-            <div className="stat-big">🌍</div>
             <h3>{t.nosCardH}</h3>
             <p>{t.nosCardP}</p>
           </div>
@@ -195,25 +201,22 @@ export default function HomePage() {
         <p>{t.conP}</p>
         <div className="contacto-grid">
           <a className="contacto-card" href={CONTACTO.telHref}>
-            <span className="cc-ico">📞</span>
             <strong>{CONTACTO.tel}</strong>
             <small>{t.conTel}</small>
           </a>
           <a className="contacto-card" href={lang === "es" ? CONTACTO.whatsappEs : CONTACTO.whatsapp} target="_blank" rel="noopener">
-            <span className="cc-ico">💬</span>
             <strong>WhatsApp</strong>
             <small>{CONTACTO.tel}</small>
           </a>
           <a className="contacto-card" href={`mailto:${CONTACTO.email}`}>
-            <span className="cc-ico">✉️</span>
             <strong>{CONTACTO.email}</strong>
             <small>{t.conEmail}</small>
           </a>
         </div>
         <div className="contacto-info">
-          <div><span>📍</span> {CONTACTO.dir2}</div>
-          <div><span>🕐</span> {lang === "es" ? CONTACTO.horarioEs : CONTACTO.horarioEn}</div>
-          <div><span>🌐</span> <a href={CONTACTO.webHref} target="_blank" rel="noopener">{CONTACTO.web}</a></div>
+          <div>{CONTACTO.dir2}</div>
+          <div>{lang === "es" ? CONTACTO.horarioEs : CONTACTO.horarioEn}</div>
+          <div><a href={CONTACTO.webHref} target="_blank" rel="noopener">{CONTACTO.web}</a></div>
         </div>
       </section>
 

@@ -1,33 +1,52 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 // ════════════════════════════════════════════════════════════════════════════
-// /nuevo-paquete — Registro de etiqueta SIMPLE y rápido.
-// 3 campos grandes obligatorios: PESO, REMITENTE, RECEPTOR.
-// El resto (carnet, dirección Cuba, teléfono) es opcional en "Más detalles".
-// La contabilidad solo aparece si la agencia la tiene activada.
-// Al guardar → genera la etiqueta térmica 4×6 lista para imprimir.
+// /nuevo-paquete — Wizard de 3 pasos (sin emojis, diseño limpio).
+//
+//   PASO 1 · Paquete   → peso (lb↔kg en vivo) + piezas + dimensiones OPCIONALES
+//   PASO 2 · Personas  → remitente + receptor (carnet, dirección Cuba, teléfono)
+//   PASO 3 · Revisar   → preview de la etiqueta + contabilidad opcional
+//
+// Foto de cabecera: barco de contenedores (relacionado con el servicio).
 // ════════════════════════════════════════════════════════════════════════════
+
+const HEADER_IMG = "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200";
+
 const PROVINCIAS = ["La Habana","Artemisa","Mayabeque","Matanzas","Villa Clara","Cienfuegos","Sancti Spíritus","Ciego de Ávila","Camagüey","Las Tunas","Holguín","Granma","Santiago de Cuba","Guantánamo","Isla de la Juventud","Pinar del Río"];
-const CATEGORIAS = ["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Otro"];
+const CATEGORIAS = ["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Otro"];
 
 export default function NuevoPaquetePage() {
+  const [paso, setPaso] = useState(1);
+  const [agenciaId, setAgenciaId] = useState("");
+  const [agenciaNombre, setAgenciaNombre] = useState("");
+  const [contabilidad, setContabilidad] = useState(false);
+
+  // ── Campos del wizard ──
   const [peso, setPeso] = useState("1");
+  const [piezas, setPiezas] = useState("1");
+  const [categoria, setCategoria] = useState("Comida");
+  const [alto, setAlto] = useState("");
+  const [largo, setLargo] = useState("");
+  const [ancho, setAncho] = useState("");
+  const [contenido, setContenido] = useState("Paquete");
+  const [notas, setNotas] = useState("");
+
   const [remitente, setRemitente] = useState("");
+  const [remitenteTel, setRemitenteTel] = useState("");
+  const [remitenteCarnet, setRemitenteCarnet] = useState("");
   const [destinatario, setDestinatario] = useState("");
-  const [extra, setExtra] = useState(false); // plegable "Más detalles"
-  const [contabilidad, setContabilidad] = useState(false); // ¿agencia tiene contabilidad?
+  const [consignatarioCarnet, setConsignatarioCarnet] = useState("");
+  const [consignatarioTel, setConsignatarioTel] = useState("");
+  const [consignatarioCalle, setConsignatarioCalle] = useState("");
+  const [consignatarioEntre, setConsignatarioEntre] = useState("");
+  const [consignatarioMunicipio, setConsignatarioMunicipio] = useState("");
+  const [consignatarioProvincia, setConsignatarioProvincia] = useState("La Habana");
+
   const [usarConta, setUsarConta] = useState(false);
   const [formaPago, setFormaPago] = useState("efectivo");
   const [tarifa, setTarifa] = useState("");
-  const [agenciaId, setAgenciaId] = useState("");
-  const [det, setDet] = useState({
-    piezas: "1", categoria: "Comida", contenido: "Paquete",
-    remitenteTel: "", remitenteCarnet: "", remitenteDir: "",
-    consignatarioCarnet: "", consignatarioTel: "",
-    consignatarioCalle: "", consignatarioEntre: "", consignatarioMunicipio: "", consignatarioProvincia: "La Habana",
-    notas: "",
-  });
+
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [creado, setCreado] = useState<string | null>(null);
@@ -35,141 +54,280 @@ export default function NuevoPaquetePage() {
   useEffect(() => {
     fetch("/api/agencias").then(r => r.json()).then(d => {
       const a = d.agencias?.[0];
-      if (a) { setAgenciaId(a.id); setContabilidad(!!a.contabilidadActiva); }
+      if (a) { setAgenciaId(a.id); setAgenciaNombre(a.nombre); setContabilidad(!!a.contabilidadActiva); }
     }).catch(() => {});
   }, []);
 
+  // ── Cálculos en vivo ──
   const pesoNum = parseFloat(peso) || 0;
   const pesoKg = (pesoNum * 0.453592).toFixed(2);
+  const vol = useMemo(() => calcVol(alto, largo, ancho), [alto, largo, ancho]);
 
-  async function guardar(e: React.FormEvent) {
-    e.preventDefault();
+  // ── Validación por paso ──
+  const paso1Ok = pesoNum > 0 && piezas !== "";
+  const paso2Ok = remitente.trim() !== "" && destinatario.trim() !== "";
+
+  async function guardar() {
     setError(""); setGuardando(true);
     try {
       const body: Record<string, unknown> = {
-        agenciaId, peso, remitente, destinatario,
-        piezas: det.piezas, categoria: det.categoria, contenido: det.contenido,
-        notas: det.notas,
+        agenciaId, peso, piezas, categoria, contenido, notas,
+        remitente, remitenteTel, remitenteCarnet,
+        destinatario, consignatarioCarnet, consignatarioTel,
+        consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
+        destino: consignatarioProvincia,
       };
-      if (extra) Object.assign(body, {
-        remitenteTel: det.remitenteTel, remitenteCarnet: det.remitenteCarnet, remitenteDir: det.remitenteDir,
-        consignatarioCarnet: det.consignatarioCarnet, consignatarioTel: det.consignatarioTel,
-        consignatarioCalle: det.consignatarioCalle, consignatarioEntre: det.consignatarioEntre,
-        consignatarioMunicipio: det.consignatarioMunicipio, consignatarioProvincia: det.consignatarioProvincia,
-        destino: det.consignatarioProvincia,
-      });
+      if (alto && largo && ancho) Object.assign(body, { alto, largo, ancho });
       if (contabilidad && usarConta) { body.formaPago = formaPago; body.tarifa = tarifa; }
       const res = await fetch("/api/paquetes", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
       });
       const d = await res.json();
-      if (!res.ok) { setError(d.error || "Error"); setGuardando(false); return; }
+      if (!res.ok) { setError(d.error || "Error al crear el envío"); setGuardando(false); return; }
       setCreado(d.paquete.codigo);
-    } catch { setError("No se pudo conectar"); setGuardando(false); }
+    } catch { setError("No se pudo conectar con el servidor. Si la app estaba dormida, espera unos segundos e inténtalo de nuevo."); setGuardando(false); }
   }
 
-  // Pantalla de éxito
-  if (creado) {
-    return (
-      <div style={wrap}>
-        <div style={cardOk}>
-          <div style={{ fontSize: 56 }}>✅</div>
-          <h2 style={{ color: "#1f6b3a", marginTop: 8 }}>¡Listo!</h2>
-          <p style={{ color: "#6b7280", marginTop: 4 }}>Etiqueta generada</p>
-          <div style={codeBox}>{creado}</div>
-          <p style={{ fontSize: 13, color: "#6b7280" }}>Peso: {peso} lb · {pesoKg} kg</p>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
-            <a href={`/etiqueta/${creado}`} target="_blank" style={btnPrim}>🖨️ Imprimir etiqueta</a>
-            <a href="/bol" target="_blank" style={btnOut}>📋 Bill of Lading</a>
-            <button onClick={() => { setCreado(null); setRemitente(""); setDestinatario(""); }} style={btnOut}>➕ Otra</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (creado) return <Exito codigo={creado} peso={peso} pesoKg={pesoKg} />;
 
-  // Formulario
   return (
     <div style={wrap}>
-      <h1 style={h1}>🏷️ Nueva etiqueta</h1>
-      <p style={sub}>3 datos y listo. El resto es opcional.</p>
+      {/* Foto de cabecera */}
+      <div style={header}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={HEADER_IMG} alt="Servicio de exportación marítima" style={headerImg} />
+        <div style={headerOverlay} />
+        <div style={headerText}>
+          <h1 style={{ margin: 0, color: "#fff", fontSize: 24, fontWeight: 800 }}>Nueva etiqueta de envío</h1>
+          <p style={{ margin: "4px 0 0", color: "rgba(255,255,255,.9)", fontSize: 14 }}>3 pasos · Menos de un minuto</p>
+        </div>
+      </div>
 
-      <form onSubmit={guardar} style={formCard}>
-        {/* PESO — grande, con conversión kg en vivo */}
-        <div style={pesoBox}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: "#6b7280", textTransform: "uppercase" }}>Peso (libras) *</label>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-            <input type="number" min="0" step="0.1" value={peso} onChange={e => setPeso(e.target.value)} required
-              style={pesoInput} autoFocus />
-            <span style={{ fontSize: 16, color: "#1f6b3a", fontWeight: 700 }}>= {pesoKg} kg</span>
+      {/* Barra de progreso */}
+      <div style={progreso}>
+        {[1,2,3].map(n => (
+          <div key={n} style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
+            <div style={{
+              ...progDot,
+              background: n < paso ? "#1f6b3a" : n === paso ? "#C23B22" : "#e5e7eb",
+              color: n <= paso ? "#fff" : "#9ca3af",
+            }}>{n < paso ? "✓" : n}</div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: n <= paso ? "#1f2937" : "#9ca3af" }}>
+              {n === 1 ? "Paquete" : n === 2 ? "Personas" : "Revisar"}
+            </span>
+            {n < 3 && <div style={{ flex: 1, height: 2, background: n < paso ? "#1f6b3a" : "#e5e7eb" }} />}
+          </div>
+        ))}
+      </div>
+
+      {/* ════ PASO 1 · PAQUETE ════ */}
+      {paso === 1 && (
+        <div style={card}>
+          <div style={pesoBox}>
+            <label style={lblUppercase}>Peso</label>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginTop: 6 }}>
+              <input type="number" min="0" step="0.1" value={peso} onChange={e => setPeso(e.target.value)} required
+                style={pesoInput} autoFocus />
+              <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 600 }}>lb</span>
+              <span style={{ fontSize: 18, color: "#1f6b3a", fontWeight: 800 }}>= {pesoKg} kg</span>
+            </div>
+          </div>
+
+          <div style={grid2}>
+            <Field label="Piezas" value={piezas} onChange={setPiezas} type="number" />
+            <SelectField label="Categoría" value={categoria} onChange={setCategoria} options={CATEGORIAS} />
+          </div>
+
+          <div style={dimBox}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <label style={lblUppercase}>Dimensiones <span style={{ color: "#9ca3af", fontWeight: 600 }}>(opcional)</span></label>
+              {vol && <span style={volBadge}>{vol.ft3} ft³ · {vol.m3} m³</span>}
+            </div>
+            <div style={{ ...grid3, marginTop: 8 }}>
+              <Field label="Alto (in)" value={alto} onChange={setAlto} type="number" placeholder="—" />
+              <Field label="Largo (in)" value={largo} onChange={setLargo} type="number" placeholder="—" />
+              <Field label="Ancho (in)" value={ancho} onChange={setAncho} type="number" placeholder="—" />
+            </div>
+          </div>
+
+          <Field label="Contenido" value={contenido} onChange={setContenido} />
+
+          <button onClick={() => setPaso(2)} disabled={!paso1Ok} style={{ ...btnPrim, width: "100%", opacity: paso1Ok ? 1 : 0.5 }}>
+            Siguiente
+          </button>
+        </div>
+      )}
+
+      {/* ════ PASO 2 · PERSONAS ════ */}
+      {paso === 2 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={card}>
+            <div style={sectionHeader}>Remitente <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién envía)</span></div>
+            <BigField label="Nombre *" value={remitente} onChange={setRemitente} placeholder="Ana Pérez" required />
+            <div style={grid2}>
+              <Field label="Carnet / Pasaporte" value={remitenteCarnet} onChange={setRemitenteCarnet} />
+              <Field label="Teléfono" value={remitenteTel} onChange={setRemitenteTel} />
+            </div>
+          </div>
+
+          <div style={card}>
+            <div style={sectionHeader}>Receptor <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién recibe en Cuba)</span></div>
+            <BigField label="Nombre *" value={destinatario} onChange={setDestinatario} placeholder="José Gómez" required />
+            <div style={grid2}>
+              <Field label="Carnet de identidad" value={consignatarioCarnet} onChange={setConsignatarioCarnet} />
+              <Field label="Teléfono" value={consignatarioTel} onChange={setConsignatarioTel} />
+            </div>
+            <Field label="Calle y número" value={consignatarioCalle} onChange={setConsignatarioCalle} />
+            <Field label="Entre calles" value={consignatarioEntre} onChange={setConsignatarioEntre} />
+            <div style={grid2}>
+              <Field label="Municipio" value={consignatarioMunicipio} onChange={setConsignatarioMunicipio} />
+              <SelectField label="Provincia" value={consignatarioProvincia} onChange={setConsignatarioProvincia} options={PROVINCIAS} />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => setPaso(1)} style={{ ...btnOut, flex: 1 }}>Atrás</button>
+            <button onClick={() => setPaso(3)} disabled={!paso2Ok} style={{ ...btnPrim, flex: 1, opacity: paso2Ok ? 1 : 0.5 }}>
+              Revisar
+            </button>
           </div>
         </div>
+      )}
 
-        {/* REMITENTE */}
-        <BigField label="Remitente (quién envía) *" value={remitente} onChange={setRemitente} placeholder="Ej: Ana Pérez" required />
-
-        {/* RECEPTOR */}
-        <BigField label="Receptor (quién recibe) *" value={destinatario} onChange={setDestinatario} placeholder="Ej: José Gómez" required />
-
-        {/* Plegable: Más detalles */}
-        <button type="button" onClick={() => setExtra(x => !x)} style={toggleBtn}>
-          {extra ? "▾ Ocultar detalles" : "▸ Más detalles (carnet, dirección Cuba, teléfono)"}
-        </button>
-
-        {extra && (
-          <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={grid2}>
-              <Small label="Piezas" value={det.piezas} onChange={v => setDet({ ...det, piezas: v })} type="number" />
-              <Select label="Categoría" value={det.categoria} onChange={v => setDet({ ...det, categoria: v })} options={CATEGORIAS} />
-            </div>
-            <div style={{ ...grid2, borderTop: "1px solid #eee", paddingTop: 12 }}>
-              <Small label="🆔 Carnet receptor" value={det.consignatarioCarnet} onChange={v => setDet({ ...det, consignatarioCarnet: v })} />
-              <Small label="📞 Teléfono receptor" value={det.consignatarioTel} onChange={v => setDet({ ...det, consignatarioTel: v })} />
-              <Small label="🏠 Calle y número" value={det.consignatarioCalle} onChange={v => setDet({ ...det, consignatarioCalle: v })} />
-              <Small label="↔ Entre calles" value={det.consignatarioEntre} onChange={v => setDet({ ...det, consignatarioEntre: v })} />
-              <Small label="🏘️ Municipio" value={det.consignatarioMunicipio} onChange={v => setDet({ ...det, consignatarioMunicipio: v })} />
-              <Select label="🗺️ Provincia" value={det.consignatarioProvincia} onChange={v => setDet({ ...det, consignatarioProvincia: v })} options={PROVINCIAS} />
-            </div>
-            <div style={{ ...grid2, borderTop: "1px solid #eee", paddingTop: 12 }}>
-              <Small label="🆔 Carnet remitente" value={det.remitenteCarnet} onChange={v => setDet({ ...det, remitenteCarnet: v })} />
-              <Small label="📞 Teléfono remitente" value={det.remitenteTel} onChange={v => setDet({ ...det, remitenteTel: v })} />
-            </div>
-            <Small label="📝 Notas" value={det.notas} onChange={v => setDet({ ...det, notas: v })} />
+      {/* ════ PASO 3 · REVISAR ════ */}
+      {paso === 3 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={card}>
+            <div style={sectionHeader}>Vista previa de la etiqueta</div>
+            <PreviewEtiqueta
+              peso={peso} pesoKg={pesoKg} piezas={piezas} vol={vol}
+              remitente={remitente} destinatario={destinatario}
+              consignatarioCalle={consignatarioCalle} consignatarioMunicipio={consignatarioMunicipio}
+              consignatarioProvincia={consignatarioProvincia} contenido={contenido}
+            />
           </div>
-        )}
 
-        {/* Contabilidad opcional */}
-        {contabilidad && (
-          <>
-            <button type="button" onClick={() => setUsarConta(x => !x)} style={{ ...toggleBtn, color: "#e0a106" }}>
-              {usarConta ? "▾ Contabilidad (activada)" : "▸ Registrar en contabilidad (opcional)"}
+          {contabilidad && (
+            <div style={card}>
+              <button onClick={() => setUsarConta(x => !x)} style={toggleBtn}>
+                {usarConta ? "▾ Contabilidad (activada)" : "▸ Registrar en contabilidad (opcional)"}
+              </button>
+              {usarConta && (
+                <div style={{ ...grid2, marginTop: 12 }}>
+                  <Field label="Tarifa / lb ($)" value={tarifa} onChange={setTarifa} type="number" placeholder="4.50" />
+                  <SelectField label="Forma de pago" value={formaPago} onChange={setFormaPago} options={[
+                    { v: "efectivo", l: "Efectivo" }, { v: "banco", l: "Banco / Transferencia" }, { v: "credito", l: "A crédito" },
+                  ]} />
+                </div>
+              )}
+            </div>
+          )}
+
+          <Field label="Notas" value={notas} onChange={setNotas} placeholder="Cualquier observación…" />
+
+          {error && <div style={errBox}>{error}</div>}
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => setPaso(2)} style={{ ...btnOut, flex: 1 }}>Atrás</button>
+            <button onClick={guardar} disabled={guardando} style={{ ...btnPrim, flex: 1, fontSize: 17 }}>
+              {guardando ? "Generando…" : "Generar etiqueta"}
             </button>
-            {usarConta && (
-              <div style={{ ...grid2, marginTop: 12 }}>
-                <Small label="Tarifa / lb" value={tarifa} onChange={setTarifa} type="number" placeholder="4.50" />
-                <Select label="Forma de pago" value={formaPago} onChange={setFormaPago} options={[
-                  { v: "efectivo", l: "Efectivo" }, { v: "banco", l: "Banco/Transferencia" }, { v: "credito", l: "A crédito" },
-                ]} />
-              </div>
-            )}
-          </>
-        )}
+          </div>
+        </div>
+      )}
 
-        {error && <div style={errBox}>{error}</div>}
-
-        <button type="submit" disabled={guardando} style={{ ...btnPrim, width: "100%", fontSize: 17, padding: "16px" }}>
-          {guardando ? "Generando…" : "🏷️ Generar etiqueta"}
-        </button>
-      </form>
-
-      <style>{`
-        @media (min-width: 640px) { .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } }
-      `}</style>
+      {agenciaNombre && (
+        <div style={{ textAlign: "center", color: "#9ca3af", fontSize: 12, marginTop: 8 }}>
+          Agencia: {agenciaNombre}
+        </div>
+      )}
     </div>
   );
 }
 
-// ── Componentes ──
+// ════════════════════════════════════════════════════════════════════════════
+// Vista previa de la etiqueta térmica (miniatura)
+// ════════════════════════════════════════════════════════════════════════════
+function PreviewEtiqueta({ peso, pesoKg, piezas, vol, remitente, destinatario, consignatarioCalle, consignatarioMunicipio, consignatarioProvincia, contenido }: {
+  peso: string; pesoKg: string; piezas: string; vol: { ft3: number; m3: number } | null;
+  remitente: string; destinatario: string; consignatarioCalle: string; consignatarioMunicipio: string; consignatarioProvincia: string; contenido: string;
+}) {
+  const dir = [consignatarioCalle, consignatarioMunicipio, consignatarioProvincia].filter(Boolean).join(", ");
+  return (
+    <div style={{ border: "2px dashed #d1d5db", borderRadius: 10, padding: 14, background: "#fafafa", fontFamily: "Arial", fontSize: 13 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #000", paddingBottom: 8 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#C23B22" }}>LEISURE EXPORTING LLC</div>
+          <div style={{ fontSize: 9, color: "#6b7280" }}>Tampa FL · Cuba</div>
+        </div>
+        <div style={{ fontSize: 28, fontWeight: 900, color: "#C23B22", border: "3px solid #C23B22", borderRadius: 8, padding: "2px 12px" }}>K</div>
+      </div>
+      <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+        <div style={{ flex: 1 }}>
+          <div style={prevLabel}>DE / FROM</div>
+          <div style={prevVal}>{remitente || "—"}</div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={prevLabel}>PARA / TO</div>
+          <div style={prevVal}>{destinatario || "—"}</div>
+          {dir && <div style={{ fontSize: 11, color: "#6b7280" }}>{dir}</div>}
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10, paddingTop: 8, borderTop: "1px solid #e5e7eb" }}>
+        <span><b>Peso:</b> {peso} lb / {pesoKg} kg</span>
+        <span><b>Pzs:</b> {piezas}</span>
+        {vol && <span><b>Vol:</b> {vol.ft3} ft³</span>}
+      </div>
+      {contenido && contenido !== "Paquete" && (
+        <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>Contenido: {contenido}</div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Pantalla de éxito
+// ════════════════════════════════════════════════════════════════════════════
+function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg: string }) {
+  return (
+    <div style={wrap}>
+      <div style={cardOk}>
+        <h2 style={{ color: "#1f6b3a", marginTop: 0 }}>Etiqueta generada</h2>
+        <div style={codeBox}>{codigo}</div>
+        <p style={{ fontSize: 13, color: "#6b7280" }}>Peso: {peso} lb · {pesoKg} kg</p>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
+          <a href={`/etiqueta/${codigo}`} target="_blank" style={btnPrim}>Imprimir etiqueta</a>
+          <a href="/bol" target="_blank" style={btnOut}>Bill of Lading</a>
+          <button onClick={() => window.location.href = "/nuevo-paquete"} style={btnOut}>Crear otra</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Cálculo de volumen en vivo (client-side, espejo del servidor)
+// ════════════════════════════════════════════════════════════════════════════
+function calcVol(alto?: string, largo?: string, ancho?: string): { ft3: number; m3: number } | null {
+  const a = Number(alto), l = Number(largo), n = Number(ancho);
+  if (!a || !l || !n || a <= 0 || l <= 0 || n <= 0) return null;
+  const ft3 = a * l * n / 1728;
+  const m3 = ft3 * 0.0283168;
+  return { ft3: Math.round(ft3 * 100) / 100, m3: Math.round(m3 * 10000) / 10000 };
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Componentes
+// ════════════════════════════════════════════════════════════════════════════
+function Field({ label, value, onChange, type="text", placeholder="" }:
+  { label: string; value: string; onChange:(v:string)=>void; type?: string; placeholder?: string }) {
+  return (
+    <div>
+      <label style={lbl}>{label}</label>
+      <input type={type} value={value} placeholder={placeholder} onChange={e => onChange(e.target.value)} style={inp} />
+    </div>
+  );
+}
 function BigField({ label, value, onChange, placeholder, required }:
   { label: string; value: string; onChange:(v:string)=>void; placeholder?: string; required?: boolean }) {
   return (
@@ -180,16 +338,7 @@ function BigField({ label, value, onChange, placeholder, required }:
     </div>
   );
 }
-function Small({ label, value, onChange, type="text", placeholder="" }:
-  { label: string; value: string; onChange:(v:string)=>void; type?: string; placeholder?: string }) {
-  return (
-    <div>
-      <label style={lbl}>{label}</label>
-      <input type={type} value={value} placeholder={placeholder} onChange={e => onChange(e.target.value)} style={inp} />
-    </div>
-  );
-}
-function Select({ label, value, onChange, options }: { label: string; value: string; onChange:(v:string)=>void; options: (string|{v:string;l:string})[] }) {
+function SelectField({ label, value, onChange, options }: { label: string; value: string; onChange:(v:string)=>void; options: (string|{v:string;l:string})[] }) {
   return (
     <div>
       <label style={lbl}>{label}</label>
@@ -201,18 +350,29 @@ function Select({ label, value, onChange, options }: { label: string; value: str
 }
 
 // ── Estilos ──
-const wrap: React.CSSProperties = { maxWidth: 560, margin: "20px auto", padding: "0 16px 80px", fontFamily: "Arial" };
-const h1: React.CSSProperties = { color: "#C23B22", fontSize: 26, margin: "16px 0 4px" };
-const sub: React.CSSProperties = { color: "#6b7280", marginBottom: 20 };
-const formCard: React.CSSProperties = { background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 4px 20px rgba(0,0,0,.06)", display: "flex", flexDirection: "column", gap: 16 };
-const pesoBox: React.CSSProperties = { background: "#fef3c7", borderRadius: 12, padding: 14 };
-const pesoInput: React.CSSProperties = { width: "100%", fontSize: 32, fontWeight: 800, padding: "8px 12px", border: "2px solid #e0a106", borderRadius: 10, marginTop: 6 };
+const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: "0 16px 80px", fontFamily: "Arial" };
+const header: React.CSSProperties = { position: "relative", height: 140, margin: "0 -16px 20px", overflow: "hidden" };
+const headerImg: React.CSSProperties = { width: "100%", height: "100%", objectFit: "cover", display: "block" };
+const headerOverlay: React.CSSProperties = { position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(0,0,0,.6), rgba(0,0,0,.25))" };
+const headerText: React.CSSProperties = { position: "absolute", left: 20, bottom: 16 };
+const progreso: React.CSSProperties = { display: "flex", alignItems: "center", gap: 4, marginBottom: 20 };
+const progDot: React.CSSProperties = { width: 30, height: 30, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, flexShrink: 0 };
+const card: React.CSSProperties = { background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 4px 20px rgba(0,0,0,.06)", display: "flex", flexDirection: "column", gap: 14 };
+const pesoBox: React.CSSProperties = { background: "#fef3c7", borderRadius: 12, padding: 16 };
+const dimBox: React.CSSProperties = { background: "#eff6ff", borderRadius: 12, padding: 16 };
+const volBadge: React.CSSProperties = { fontSize: 13, fontWeight: 800, color: "#1e40af", background: "#dbeafe", padding: "4px 10px", borderRadius: 8 };
+const lblUppercase: React.CSSProperties = { fontSize: 12, fontWeight: 800, color: "#374151", textTransform: "uppercase" };
+const sectionHeader: React.CSSProperties = { fontSize: 16, fontWeight: 800, color: "#1f2937", display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 };
 const lbl: React.CSSProperties = { display: "block", fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 4 };
 const inp: React.CSSProperties = { width: "100%", padding: "11px 13px", border: "1px solid #d1d5db", borderRadius: 9, fontSize: 15, boxSizing: "border-box" };
+const pesoInput: React.CSSProperties = { width: 120, fontSize: 32, fontWeight: 800, padding: "8px 12px", border: "2px solid #e0a106", borderRadius: 10 };
 const grid2: React.CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 };
-const toggleBtn: React.CSSProperties = { background: "none", border: "none", color: "#C23B22", cursor: "pointer", fontSize: 13, fontWeight: 700, textAlign: "left", padding: "6px 0" };
-const btnPrim: React.CSSProperties = { display: "inline-block", padding: "14px 28px", borderRadius: 12, background: "#C23B22", color: "#fff", textDecoration: "none", fontWeight: 800, border: "none", cursor: "pointer", textAlign: "center" };
+const grid3: React.CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 };
+const toggleBtn: React.CSSProperties = { background: "none", border: "none", color: "#C23B22", cursor: "pointer", fontSize: 13, fontWeight: 700, textAlign: "left", padding: 0 };
+const btnPrim: React.CSSProperties = { display: "inline-block", padding: "14px 28px", borderRadius: 12, background: "#C23B22", color: "#fff", textDecoration: "none", fontWeight: 800, border: "none", cursor: "pointer", textAlign: "center", fontSize: 15 };
 const btnOut: React.CSSProperties = { ...btnPrim, background: "transparent", color: "#C23B22", border: "2px solid #C23B22" };
 const errBox: React.CSSProperties = { color: "#dc2626", padding: 12, background: "#fef2f2", borderRadius: 10, fontSize: 14 };
 const cardOk: React.CSSProperties = { background: "#fff", borderRadius: 20, padding: 40, textAlign: "center", boxShadow: "0 4px 20px rgba(0,0,0,.06)" };
 const codeBox: React.CSSProperties = { display: "inline-block", fontSize: 28, fontWeight: 900, color: "#C23B22", letterSpacing: 2, background: "#faf5f5", padding: "12px 24px", borderRadius: 12, margin: "16px 0" };
+const prevLabel: React.CSSProperties = { fontSize: 9, fontWeight: 800, color: "#9ca3af", textTransform: "uppercase" };
+const prevVal: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: "#1f2937" };
