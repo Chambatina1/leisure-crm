@@ -1,12 +1,7 @@
 // ════════════════════════════════════════════════════════════════════════════
 // Singleton de PrismaClient.
-//
-// IMPORTANTE: NO usamos el override `datasources` aquí. La URL de la DB viene
-// del schema.prisma (que prebuild.mjs fijó en file:/tmp/dev.db o file:/data/dev.db)
-// y se "hornea" en el cliente al hacer `prisma generate` durante el build.
-// Pasar `datasources` por separado causaba que el singleton apuntara a una
-// DB distinta de la que usa `prisma db push` (que lee el schema.prisma),
-// produciendo "table does not exist" / FK violations.
+// La URL de la DB la define el schema.prisma (que prebuild.mjs ajusta según
+// el entorno: PostgreSQL en producción, SQLite en desarrollo).
 // ════════════════════════════════════════════════════════════════════════════
 import { PrismaClient } from "@prisma/client";
 
