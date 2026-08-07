@@ -48,6 +48,7 @@ export default function NuevoPaquetePage() {
   const [tarifa, setTarifa] = useState("");
 
   const [guardando, setGuardando] = useState(false);
+  const [guardandoMsg, setGuardandoMsg] = useState("");
   const [error, setError] = useState("");
   const [creado, setCreado] = useState<string | null>(null);
 
@@ -69,23 +70,50 @@ export default function NuevoPaquetePage() {
 
   async function guardar() {
     setError(""); setGuardando(true);
-    try {
-      const body: Record<string, unknown> = {
-        agenciaId, peso, piezas, categoria, contenido, notas,
-        remitente, remitenteTel, remitenteCarnet,
-        destinatario, consignatarioCarnet, consignatarioTel,
-        consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
-        destino: consignatarioProvincia,
-      };
-      if (alto && largo && ancho) Object.assign(body, { alto, largo, ancho });
-      if (contabilidad && usarConta) { body.formaPago = formaPago; body.tarifa = tarifa; }
-      const res = await fetch("/api/paquetes", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
-      });
-      const d = await res.json();
-      if (!res.ok) { setError(d.error || "Error al crear el envío"); setGuardando(false); return; }
-      setCreado(d.paquete.codigo);
-    } catch { setError("No se pudo conectar con el servidor. Si la app estaba dormida, espera unos segundos e inténtalo de nuevo."); setGuardando(false); }
+    const payload: Record<string, unknown> = {
+      agenciaId, peso, piezas, categoria, contenido, notas,
+      remitente, remitenteTel, remitenteCarnet,
+      destinatario, consignatarioCarnet, consignatarioTel,
+      consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
+      destino: consignatarioProvincia,
+    };
+    if (alto && largo && ancho) Object.assign(payload, { alto, largo, ancho });
+    if (contabilidad && usarConta) { payload.formaPago = formaPago; payload.tarifa = tarifa; }
+
+    // Reintentos: Render Free Plan se duerme y el 1er request puede fallar.
+    // Probamos hasta 4 veces con pausa creciente (2s, 4s, 8s) para darle tiempo a despertar.
+    const MAX_INTENTOS = 4;
+    for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
+      setGuardandoMsg(intento === 1 ? "Generando…" : `El servidor está despertando… reintento ${intento}/${MAX_INTENTOS}`);
+      try {
+        const res = await fetch("/api/paquetes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(25000), // timeout largo: el cold-start tarda
+        });
+        if (res.status === 0 || res.status >= 500) throw new Error(`servidor ${res.status}`);
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok) { setError(d.error || "Error al crear el envío"); setGuardando(false); setGuardandoMsg(""); return; }
+        setCreado(d.paquete.codigo);
+        setGuardandoMsg("");
+        return; // éxito
+      } catch (err) {
+        if (intento < MAX_INTENTOS) {
+          const espera = intento * 2000; // 2s, 4s, 6s
+          await new Promise(r => setTimeout(r, espera));
+        } else {
+          // último intento falló
+          setError(
+            "No se pudo conectar con el servidor tras varios intentos. " +
+            "El plan gratuito de Render duerme el servidor tras 15 min inactivo y tarda ~30s en despertar. " +
+            "Esperá 1 minuto y volvé a intentar."
+          );
+          setGuardando(false);
+          setGuardandoMsg("");
+        }
+      }
+    }
   }
 
   if (creado) return <Exito codigo={creado} peso={peso} pesoKg={pesoKg} />;
@@ -229,8 +257,8 @@ export default function NuevoPaquetePage() {
 
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={() => setPaso(2)} style={{ ...btnOut, flex: 1 }}>Atrás</button>
-            <button onClick={guardar} disabled={guardando} style={{ ...btnPrim, flex: 1, fontSize: 17 }}>
-              {guardando ? "Generando…" : "Generar etiqueta"}
+            <button onClick={guardar} disabled={guardando} style={{ ...btnPrim, flex: 1, fontSize: 17, opacity: guardando ? 0.75 : 1 }}>
+              {guardando ? (guardandoMsg || "Generando…") : "Generar etiqueta"}
             </button>
           </div>
         </div>
@@ -289,6 +317,20 @@ function PreviewEtiqueta({ peso, pesoKg, piezas, vol, remitente, destinatario, c
 // Pantalla de éxito
 // ════════════════════════════════════════════════════════════════════════════
 function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg: string }) {
+  // Abrir BOL: si el servidor está dormido, el fetch despierta antes de abrir la pestaña.
+  const [bolMsg, setBolMsg] = useState("");
+  async function abrirBol() {
+    setBolMsg("Abriendo… si tarda, el servidor está despertando.");
+    try {
+      // Ping para despertar el servidor antes de abrir (evita pestaña en blanco).
+      await fetch("/api/health", { signal: AbortSignal.timeout(30000) }).catch(() => {});
+      window.open("/bol", "_blank");
+      setBolMsg("");
+    } catch {
+      window.open("/bol", "_blank");
+      setBolMsg("");
+    }
+  }
   return (
     <div style={wrap}>
       <div style={cardOk}>
@@ -296,10 +338,11 @@ function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg:
         <div style={codeBox}>{codigo}</div>
         <p style={{ fontSize: 13, color: "#6b7280" }}>Peso: {peso} lb · {pesoKg} kg</p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
-          <a href={`/etiqueta/${codigo}`} target="_blank" style={btnPrim}>Imprimir etiqueta</a>
-          <a href="/bol" target="_blank" style={btnOut}>Bill of Lading</a>
+          <a href={`/etiqueta/${codigo}`} target="_blank" rel="noopener" style={btnPrim}>Imprimir etiqueta</a>
+          <button onClick={abrirBol} style={btnOut}>Bill of Lading</button>
           <button onClick={() => window.location.href = "/nuevo-paquete"} style={btnOut}>Crear otra</button>
         </div>
+        {bolMsg && <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 12 }}>{bolMsg}</p>}
       </div>
     </div>
   );
