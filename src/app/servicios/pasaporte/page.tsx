@@ -4,6 +4,7 @@
 // Servicio de foto digital que el usuario sube online.
 // ════════════════════════════════════════════════════════════════════════════
 import { FotoHeader } from "../_components/foto-header";
+import FotoPasaporte from "../_components/foto-pasaporte";
 
 const IMG = "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG";
 
@@ -79,11 +80,9 @@ export default function ServicioPasaportePage() {
               <div className="srv-foto-spec-lbl">Cara descubierta</div>
             </div>
           </div>
-          {/* Widget de subida de foto (link a futuro servicio dedicado) */}
-          <a href="#contacto" className="srv-btn" style={{ marginTop: 16 }}>
-            Cargar mi foto online ($10)
-          </a>
-          <p className="srv-muted" style={{ marginTop: 8 }}>
+          {/* Widget de captura de foto (cámara o subida) */}
+          <FotoPasaporte />
+          <p className="srv-muted" style={{ marginTop: 12 }}>
             Te llega por email en 24 h, lista para imprimir en cualquier farmacia o estudio.
           </p>
         </section>
