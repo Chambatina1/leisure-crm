@@ -1,13 +1,9 @@
 // ════════════════════════════════════════════════════════════════════════════
-// prebuild.mjs — Fuerza SQLite embebida para que la app ande SIN Postgres.
-// La BD vive en /data/dev.db (volumen persistente de Render) o ./dev.db.
-// Esto permite que la app arranque sola, sin vincular una base externa.
-// (Para producción real con múltiples instancias, migrar a PostgreSQL después.)
+// prebuild.mjs — Fuerza SQLite embebida con ruta ABSOLUTA para Render.
+// La BD vive en /data/dev.db (disco persistente) o /tmp/dev.db (fallback).
 // ════════════════════════════════════════════════════════════════════════════
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 
-// Render: usamos el disco persistente /data (configurado en render.yaml).
-// Si /data no existe (no se configuró el disco), caemos a /tmp como fallback.
 const PROD_DIR = existsSync("/data") ? "/data" : "/tmp";
 const useProd = process.env.RENDER === "true" || existsSync("/tmp");
 const DATA_DIR = useProd ? PROD_DIR : ".";
@@ -19,9 +15,12 @@ const dbUrl = `file:${DATA_DIR}/dev.db`;
 
 let schema = readFileSync(SCHEMA_PATH, "utf8");
 schema = schema.replace(
-  /datasource db \{\s*provider = "[a-z]+"\s*url\s*=\s*env\("DATABASE_URL"\)/,
+  /datasource db \{\s*provider = "[a-z]+"\s*url\s*=\s*(env\("DATABASE_URL"\)|"[^"]*")/,
   `datasource db {\n  provider = "${provider}"\n  url      = "${dbUrl}"`
 );
 writeFileSync(SCHEMA_PATH, schema);
 console.log(`✓ Prisma provider forzado a: ${provider}`);
 console.log(`  url: ${dbUrl}`);
+// Escribir un archivo marca para que el runtime sepa qué URL se usó en build.
+writeFileSync(".db-url", dbUrl);
+console.log(`  marca escrita en .db-url`);

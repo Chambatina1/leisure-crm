@@ -59,7 +59,10 @@ export async function POST(request: NextRequest) {
       if (primera) agenciaId = primera.id;
     }
     if (!agenciaId || !body.remitente || !body.destinatario) {
-      return errorResponse("agenciaId, remitente y destinatario son requeridos", 400);
+      // Diagnóstico: contar agencias para ver si la DB tiene datos.
+      let diag = "";
+      try { const c = await db.agencia.count(); diag = ` (agencias en DB: ${c})`; } catch (e:any) { diag = ` (count error: ${e.message?.slice(0,100)})`; }
+      return errorResponse(`agenciaId, remitente y destinatario son requeridos${diag}`, 400);
     }
     if (!(await puedeVerAgencia(s, agenciaId))) {
       return errorResponse("No puedes crear paquetes fuera de tu agencia", 403);
