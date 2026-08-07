@@ -7,25 +7,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { randomBytes } from "node:crypto";
 
 const COOKIE_NAME = "leisure_session";
 const ALG = "HS256";
 const ISSUER = "leisure-crm";
 const AUDIENCE = "leisure-crm-app";
 const EXPIRY = "7d";
-const SEC_FILE = (process.env.RENDER ? "/tmp" : ".") + "/.jwt_secret";
+let SEC_FILE_CACHE: string | null = null;
+
+function secFile(): string {
+  if (SEC_FILE_CACHE) return SEC_FILE_CACHE;
+  SEC_FILE_CACHE = (process.env.RENDER ? "/tmp" : ".") + "/.jwt_secret";
+  return SEC_FILE_CACHE;
+}
 
 function getSecret(): Uint8Array {
   let secret = process.env.JWT_SECRET;
   if (!secret || secret.length < 32) {
-    // Fallback: generar/persistir un secreto aleatorio.
-    if (existsSync(SEC_FILE)) {
-      secret = readFileSync(SEC_FILE, "utf8");
+    // Fallback: generar/persistir un secreto aleatorio (lazy imports).
+    const fs = require("node:fs");
+    const crypto = require("node:crypto");
+    const f = secFile();
+    if (fs.existsSync(f)) {
+      secret = fs.readFileSync(f, "utf8");
     } else {
-      secret = randomBytes(48).toString("hex");
-      try { writeFileSync(SEC_FILE, secret); } catch {}
+      secret = crypto.randomBytes(48).toString("hex");
+      try { fs.writeFileSync(f, secret); } catch {}
     }
   }
   return new TextEncoder().encode(secret);
