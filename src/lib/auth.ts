@@ -1,33 +1,31 @@
 // ════════════════════════════════════════════════════════════════════════════
 // Leisure CRM — Auth helpers
-// JWT (jose, edge-compatible) + bcryptjs. Token en cookie httpOnly (no en
-// localStorage) para mitigar robo por XSS. getSession funciona en route
-// handlers y en middleware (jose es edge-friendly).
+// JWT (jose) + bcryptjs. Token en cookie httpOnly.
+// JWT_SECRET: si no está definido, genera uno aleatorio y lo persiste en /tmp
+// (Render) o .jwt_secret (local) para que sobreviva entre requests del mismo deploy.
 // ════════════════════════════════════════════════════════════════════════════
 import { NextRequest, NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 
 const COOKIE_NAME = "leisure_session";
 const ALG = "HS256";
 const ISSUER = "leisure-crm";
 const AUDIENCE = "leisure-crm-app";
 const EXPIRY = "7d";
+const SEC_FILE = (process.env.RENDER ? "/tmp" : ".") + "/.jwt_secret";
 
 function getSecret(): Uint8Array {
-  const secret = process.env.JWT_SECRET;
+  let secret = process.env.JWT_SECRET;
   if (!secret || secret.length < 32) {
-    // Fallback automático: genera un secreto aleatorio estable por instancia.
-    // (Idealmente debería definirse JWT_SECRET en las variables de entorno,
-    // pero esto permite que la app arranque sin configuración manual).
-    const fs = require("node:fs");
-    const crypto = require("node:crypto");
-    const SEC_FILE = (process.env.RENDER ? "/tmp" : ".") + "/.jwt_secret";
-    if (fs.existsSync(SEC_FILE)) {
-      secret = fs.readFileSync(SEC_FILE, "utf8");
+    // Fallback: generar/persistir un secreto aleatorio.
+    if (existsSync(SEC_FILE)) {
+      secret = readFileSync(SEC_FILE, "utf8");
     } else {
-      secret = crypto.randomBytes(48).toString("hex");
-      try { fs.writeFileSync(SEC_FILE, secret); } catch {}
+      secret = randomBytes(48).toString("hex");
+      try { writeFileSync(SEC_FILE, secret); } catch {}
     }
   }
   return new TextEncoder().encode(secret);
@@ -40,21 +38,14 @@ export interface SessionPayload {
   nombre: string;
   agenciaId: string | null;
 }
-
 export interface SessionUser extends SessionPayload {
   iat?: number;
   exp?: number;
 }
 
-// ── Hashing ──────────────────────────────────────────────────────────────────
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 12);
-}
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
-}
+export async function hashPassword(password: string): Promise<string> { return bcrypt.hash(password, 12); }
+export async function verifyPassword(password: string, hash: string): Promise<boolean> { return bcrypt.compare(password, hash); }
 
-// ── JWT ──────────────────────────────────────────────────────────────────────
 export async function signToken(payload: SessionPayload): Promise<string> {
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: ALG })
@@ -64,50 +55,34 @@ export async function signToken(payload: SessionPayload): Promise<string> {
     .setExpirationTime(EXPIRY)
     .sign(getSecret());
 }
-
 export async function verifyToken(token: string): Promise<SessionUser | null> {
   try {
     const { payload } = await jwtVerify(token, getSecret(), { issuer: ISSUER, audience: AUDIENCE });
     return payload as unknown as SessionUser;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
-// ── Cookie ───────────────────────────────────────────────────────────────────
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   path: "/",
-  maxAge: 60 * 60 * 24 * 7, // 7 días
+  maxAge: 60 * 60 * 24 * 7,
 };
+export function setSessionCookie(response: NextResponse, token: string) { response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS); }
+export function clearSessionCookie(response: NextResponse) { response.cookies.delete(COOKIE_NAME); }
+export function getTokenFromRequest(request: NextRequest): string | undefined { return request.cookies.get(COOKIE_NAME)?.value; }
 
-export function setSessionCookie(response: NextResponse, token: string) {
-  response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS);
-}
-export function clearSessionCookie(response: NextResponse) {
-  response.cookies.delete(COOKIE_NAME);
-}
-export function getTokenFromRequest(request: NextRequest): string | undefined {
-  return request.cookies.get(COOKIE_NAME)?.value;
-}
-
-// ── Sesión ───────────────────────────────────────────────────────────────────
 export async function getSession(request: NextRequest): Promise<SessionUser | null> {
   const token = getTokenFromRequest(request);
   if (!token) return null;
   return verifyToken(token);
 }
-
-/** Exige sesión; devuelve 401 si no la hay. */
 export async function requireUser(request: NextRequest): Promise<SessionUser | NextResponse> {
   const session = await getSession(request);
   if (!session) return errorResponse("No autenticado", 401);
   return session;
 }
-
-/** Exige rol admin. */
 export async function requireAdmin(request: NextRequest): Promise<SessionUser | NextResponse> {
   const result = await requireUser(request);
   if (result instanceof NextResponse) return result;
@@ -115,7 +90,6 @@ export async function requireAdmin(request: NextRequest): Promise<SessionUser | 
   return result;
 }
 
-// ── Respuestas ───────────────────────────────────────────────────────────────
 export function jsonResponse(data: unknown, status = 200): NextResponse {
   return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }

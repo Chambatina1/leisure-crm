@@ -1,28 +1,27 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Middleware — protege /api/* (salvo auth/login, health y el QR público)
-// y la página raíz de la app. Redirige a /login si no hay sesión.
+// Middleware — protege /app (CRM) y /api/* (salvo rutas públicas).
+// La landing "/" es pública.
 // ════════════════════════════════════════════════════════════════════════════
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
-// Rutas públicas: no requieren sesión.
+// Rutas de API públicas.
 const PUBLIC_API = ["/api/auth/login", "/api/health", "/api/db-check"];
-const PUBLIC_PREFIXES = ["/api/paquetes/", "/login", "/_next", "/app"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Páginas de login y assets estáticos → acceso libre.
-  if (PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+  // Assets estáticos y login → acceso libre.
+  if (pathname.startsWith("/_next") || pathname === "/login") {
     return NextResponse.next();
   }
 
-  // El QR de rastreo público: /api/paquetes/[codigo]/qr → permitir sin sesión.
+  // El QR público de rastreo: /api/paquetes/[codigo]/qr → sin sesión.
   if (pathname.startsWith("/api/paquetes/") && pathname.endsWith("/qr")) {
     return NextResponse.next();
   }
 
-  // Rutas de API públicas explícitas.
+  // Otras rutas de API públicas explícitas.
   if (PUBLIC_API.includes(pathname)) {
     return NextResponse.next();
   }
@@ -34,17 +33,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Página raíz "/" → si no hay sesión, ir a login; si la hay, a la app.
-  if (pathname === "/") {
+  // /app (CRM estático) → requiere sesión; sin sesión va a /login.
+  if (pathname === "/app" || pathname.startsWith("/app/")) {
     const session = await getSession(request);
-    if (!session) return NextResponse.redirect(new URL("/login", request.url));
-    // Sesión válida → servir la app desde /app/index.html
-    return NextResponse.rewrite(new URL("/app/index.html", request.url));
+    if (!session) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
   }
 
+  // Todo lo demás (incluida la landing "/") → público.
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/api/:path*"],
+  matcher: ["/app/:path*", "/api/:path*"],
 };
