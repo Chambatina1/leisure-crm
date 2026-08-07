@@ -1,20 +1,21 @@
 #!/bin/sh
-# start.sh — arranque tolerante para producción (Render).
-# 1. Aplica el esquema de Prisma a la base PostgreSQL.
+# start.sh — arranque para producción (Render).
+# 1. Aplica el esquema de Prisma a la base (db push).
 # 2. Genera el cliente Prisma.
-# 3. Corre el seed SOLO si la BD está vacía (no duplica datos en redeploy).
-# 4. Arranca Next.js (standalone).
+# 3. Corre el seed si la BD está vacía.
+# 4. Arranca Next.js.
+#
+# IMPORTANTE: db push es OBLIGATORIO. Si falla, la app no arranca bien
+# porque las columnas nuevas del schema no existen en la DB.
 set -e
 
-echo "▶ Aplicando esquema de base de datos (prisma db push)…"
-npx prisma db push --accept-data-loss || echo "⚠ prisma db push falló, continuando…"
+echo "▶ [1/4] Aplicando esquema de base de datos (prisma db push)…"
+npx prisma db push --accept-data-loss
 
-echo "▶ Generando cliente Prisma…"
-npx prisma generate || echo "⚠ prisma generate falló, continuando…"
+echo "▶ [2/4] Generando cliente Prisma…"
+npx prisma generate
 
-echo "▶ Verificando si hay datos (seed solo si BD vacía)…"
-# El seed es seguro (usa deleteMany primero) así que podemos correrlo siempre
-# sin duplicar datos.
+echo "▶ [3/4] Verificando si hay datos (seed solo si BD vacía)…"
 node -e "
 const { PrismaClient } = require('@prisma/client');
 const db = new PrismaClient();
@@ -31,5 +32,5 @@ db.usuario.count().then(n => {
 }).catch(e => { console.log('⚠ no se pudo verificar seed:', e.message); });
 " || echo "⚠ verificación de seed falló (no crítico)"
 
-echo "▶ Iniciando Next.js (standalone)…"
+echo "▶ [4/4] Iniciando Next.js…"
 exec node .next/standalone/server.js
