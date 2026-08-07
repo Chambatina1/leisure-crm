@@ -73,7 +73,7 @@ const T = {
 const SERVICIOS = [
   { img: "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#C23B22", tKey: "s1t", dKey: "s1d" }, // paquetes/cajas
   { img: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG", color: "#1f6b3a", tKey: "s2t", dKey: "s2d" }, // pasaporte cubano
-  { img: "https://images.pexels.com/photos/3823582/pexels-photo-3823582.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d" }, // tanquero/combustible
+  { img: "https://images.pexels.com/photos/5804986/pexels-photo-5804986.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d" }, // isotanque/combustible
   { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d" }, // carguero de autos
 ] as const;
 
