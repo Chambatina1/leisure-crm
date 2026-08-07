@@ -13,28 +13,16 @@ const ALG = "HS256";
 const ISSUER = "leisure-crm";
 const AUDIENCE = "leisure-crm-app";
 const EXPIRY = "7d";
-let SEC_FILE_CACHE: string | null = null;
 
-function secFile(): string {
-  if (SEC_FILE_CACHE) return SEC_FILE_CACHE;
-  SEC_FILE_CACHE = (process.env.RENDER ? "/tmp" : ".") + "/.jwt_secret";
-  return SEC_FILE_CACHE;
-}
+// Fallback fijo (compatible con Edge runtime, que NO tiene node:fs).
+// Esto permite que la app arranque sin configurar JWT_SECRET. Para producción
+// real con seguridad, define JWT_SECRET (>=32 chars) en las variables de entorno.
+const FALLBACK_SECRET = "leisure-exporting-llc-crm-fallback-secret-2026-change-me";
 
 function getSecret(): Uint8Array {
-  let secret = process.env.JWT_SECRET;
-  if (!secret || secret.length < 32) {
-    // Fallback: generar/persistir un secreto aleatorio (lazy imports).
-    const fs = require("node:fs");
-    const crypto = require("node:crypto");
-    const f = secFile();
-    if (fs.existsSync(f)) {
-      secret = fs.readFileSync(f, "utf8");
-    } else {
-      secret = crypto.randomBytes(48).toString("hex");
-      try { fs.writeFileSync(f, secret); } catch {}
-    }
-  }
+  const secret = process.env.JWT_SECRET && process.env.JWT_SECRET.length >= 32
+    ? process.env.JWT_SECRET
+    : FALLBACK_SECRET;
   return new TextEncoder().encode(secret);
 }
 
