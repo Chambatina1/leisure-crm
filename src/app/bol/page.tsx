@@ -129,6 +129,18 @@ export default async function BOLPage() {
           <div className="bol-footer">
             Leisure Exporting LLC · sales@leisureexportingllc.com · leisureexportingllc.com
           </div>
+
+          {/* Aviso de desarrollo — no se imprime */}
+          <div className="bol-dev no-print">
+            <div className="bol-dev-head">EN DESARROLLO</div>
+            <p className="bol-dev-sub">Este documento es una vista previa. La versión final incluirá:</p>
+            <ul className="bol-dev-list">
+              <li><strong>Sistema contable central</strong> — registro automático de cada envío (ingresos, costos, utilidad) en el libro mayor de la agencia que lo genera.</li>
+              <li><strong>Reportes por compañía</strong> — estados financieros y reportes de embarque de cada agencia principal y subagencia, con su logo y totales propios.</li>
+              <li><strong>Consolidación matriz</strong> — el administrador verá el BOL consolidado de todas las agencias y el desglose por cada una.</li>
+            </ul>
+            <p className="bol-dev-foot">Mientras tanto, este manifiesto es funcional y se puede imprimir.</p>
+          </div>
         </div>
       </body>
     </html>
@@ -178,9 +190,17 @@ const BOL_CSS = `
 
   .bol-footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 10px; color: #6b7280; }
 
+  .bol-dev { margin-top: 28px; padding: 20px; background: #fffbeb; border: 2px dashed #e0a106; border-radius: 12px; }
+  .bol-dev-head { display: inline-block; background: #e0a106; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: 1.5px; padding: 3px 12px; border-radius: 5px; }
+  .bol-dev-sub { font-size: 13px; font-weight: 700; color: #92400e; margin: 10px 0 8px; }
+  .bol-dev-list { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 6px; }
+  .bol-dev-list li { font-size: 12px; color: #78350f; padding-left: 16px; position: relative; line-height: 1.5; }
+  .bol-dev-list li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: #e0a106; }
+  .bol-dev-foot { font-size: 11px; color: #92400e; font-style: italic; margin: 0; }
+
   @media print {
     body { background: #fff; }
-    .toolbar { display: none !important; }
+    .toolbar, .no-print { display: none !important; }
     .bol { margin: 0; max-width: 100%; padding: 10px; }
     @page { size: A4; margin: 12mm; }
   }
