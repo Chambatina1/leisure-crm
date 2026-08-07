@@ -70,8 +70,22 @@ export default function NuevoPaquetePage() {
 
   async function guardar() {
     setError(""); setGuardando(true);
+
+    // Refrescar el agenciaId ANTES de enviar: si el servidor se reinició desde
+    // que se cargó la página, los IDs cambiaron (la DB en /tmp no es persistente).
+    let agIdActual = agenciaId;
+    try {
+      const resAg = await fetch("/api/agencias");
+      const dAg = await resAg.json();
+      const a = dAg.agencias?.[0];
+      if (a) {
+        agIdActual = a.id;
+        setAgenciaId(a.id);
+      }
+    } catch {}
+
     const payload: Record<string, unknown> = {
-      agenciaId, peso, piezas, categoria, contenido, notas,
+      agenciaId: agIdActual, peso, piezas, categoria, contenido, notas,
       remitente, remitenteTel, remitenteCarnet,
       destinatario, consignatarioCarnet, consignatarioTel,
       consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,

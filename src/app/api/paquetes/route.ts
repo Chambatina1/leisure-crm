@@ -69,6 +69,13 @@ export async function POST(request: NextRequest) {
     const monto = Math.round(pesoNum * tarifaNum * 100) / 100;
     const codigo = await generarCodigoPaquete();
 
+    // Verificar que la agencia existe antes de crear (diagnóstico FK).
+    const agCheck = await db.agencia.findUnique({ where: { id: agenciaId }, select: { id: true, nombre: true } });
+    if (!agCheck) {
+      const total = await db.agencia.count();
+      return errorResponse(`La agencia ${agenciaId} no existe en la BD (hay ${total} agencias). Recargá la página /nuevo-paquete para refrescar.`, 400);
+    }
+
     const p = await db.paquete.create({
       data: {
         codigo, agenciaId, clienteId: clienteId || null,
