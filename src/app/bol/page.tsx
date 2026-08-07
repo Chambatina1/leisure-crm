@@ -9,15 +9,23 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export default async function BOLPage() {
-  const paquetes = await db.paquete.findMany({
-    where: { estado: { not: "entregado" } },
-    orderBy: { codigo: "asc" },
-    include: { agencia: true },
-  });
+  let paquetes: any[] = [];
+  try {
+    paquetes = await db.paquete.findMany({
+      where: { estado: { not: "entregado" } },
+      orderBy: { codigo: "asc" },
+    });
+  } catch (e) {
+    return <html><body style={{padding:40,fontFamily:"Arial",textAlign:"center"}}>
+      <h2>Error cargando el BOL</h2>
+      <p>La base de datos podría estar migrándose. Recargá en unos segundos.</p>
+      <p style={{color:"#999",fontSize:12}}>{String(e).slice(0,200)}</p>
+    </body></html>;
+  }
 
   const totalLb = paquetes.reduce((s, p) => s + (Number(p.peso) || 0), 0);
-  const totalKg = paquetes.reduce((s, p) => s + (Number(p.pesoKg ?? p.peso * 0.453592) || 0), 0);
-  const totalPiezas = paquetes.reduce((s, p) => s + (Number(p.piezas) || 0), 0);
+  const totalKg = paquetes.reduce((s, p) => s + (Number(p.pesoKg ?? Number(p.peso) * 0.453592) || 0), 0);
+  const totalPiezas = paquetes.reduce((s, p) => s + (Number(p.piezas) || 1), 0);
   const fecha = new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
@@ -85,16 +93,18 @@ export default async function BOLPage() {
                 <tr><td colSpan={8} style={{ textAlign: "center", padding: 30 }}>No hay paquetes pendientes de embarque.</td></tr>
               ) : paquetes.map((p, i) => {
                 const dir = [p.consignatarioMunicipio, p.consignatarioProvincia].filter(Boolean).join(", ");
+                const pesoNum = Number(p.peso) || 0;
+                const kg = p.pesoKg ? Number(p.pesoKg) : pesoNum * 0.453592;
                 return (
                   <tr key={p.codigo}>
                     <td>{i + 1}</td>
                     <td className="mono"><b>{p.codigo}</b></td>
-                    <td>{p.remitente}</td>
-                    <td>{p.destinatario}<br/><small>{p.consignatarioCarnet}</small></td>
-                    <td>{dir}<br/><small>{p.consignatarioCalle}</small></td>
-                    <td className="num">{p.peso}</td>
-                    <td className="num">{(p.pesoKg ?? p.peso * 0.453592).toFixed(2)}</td>
-                    <td className="num">{p.piezas}</td>
+                    <td>{p.remitente || "—"}</td>
+                    <td>{p.destinatario || "—"}<br/><small>{p.consignatarioCarnet || ""}</small></td>
+                    <td>{dir || "Cuba"}<br/><small>{p.consignatarioCalle || ""}</small></td>
+                    <td className="num">{pesoNum}</td>
+                    <td className="num">{kg.toFixed(2)}</td>
+                    <td className="num">{Number(p.piezas) || 1}</td>
                   </tr>
                 );
               })}
