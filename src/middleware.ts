@@ -25,6 +25,8 @@ export async function middleware(request: NextRequest) {
   // QR público sin sesión.
   if (pathname.startsWith("/api/paquetes/") && pathname.endsWith("/qr")) return NextResponse.next();
   if (PUBLIC_API.includes(pathname)) return NextResponse.next();
+  // Catálogo de aduana → público.
+  if (pathname.startsWith("/api/aduana/")) return NextResponse.next();
 
   // Etiquetas, Bill of Lading y páginas admin → públicos (auto-login en middleware).
   if (pathname.startsWith("/etiqueta/") || pathname === "/bol" || pathname.startsWith("/admin") || pathname.startsWith("/envios") || pathname.startsWith("/nuevo-paquete")) return NextResponse.next();

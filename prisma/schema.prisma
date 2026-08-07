@@ -137,10 +137,31 @@ model Paquete {
   creadoPor     Usuario? @relation("PaqueteCreadoPor", fields: [creadoPorId], references: [id])
   eventos       Evento[]
   asientos      Asiento[]
+  equipos       EquipoDuradero[]
 
   @@index([agenciaId])
   @@index([estado])
   @@index([clienteId])
+}
+
+// ─── Equipos duraderos (electrodomésticos dentro de un paquete) ──────────────
+// Cada equipo tiene tipo, marca, modelo, serial, valor y peso.
+// La consulta de aduana verifica cuántos de cada tipo lleva el consignatario.
+model EquipoDuradero {
+  id            String   @id @default(cuid())
+  paqueteCodigo String
+  tipo          String   // ej: nevera, cocineta, lavadora, tv, microondas, etc.
+  marca         String?
+  modelo        String?
+  serial        String?
+  valor         Float    @default(0)  // valor declarado en USD
+  peso          Float    @default(0)  // peso en kg
+  creado        DateTime @default(now())
+
+  paquete       Paquete  @relation(fields: [paqueteCodigo], references: [codigo], onDelete: Cascade)
+
+  @@index([paqueteCodigo])
+  @@index([tipo])
 }
 
 // ─── Eventos (historial GPS de cada paquete) ─────────────────────────────────

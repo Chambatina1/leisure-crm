@@ -15,9 +15,9 @@ export default async function BOLPage() {
     include: { agencia: true },
   });
 
-  const totalLb = paquetes.reduce((s, p) => s + p.peso, 0);
-  const totalKg = paquetes.reduce((s, p) => s + (p.pesoKg ?? p.peso * 0.453592), 0);
-  const totalPiezas = paquetes.reduce((s, p) => s + p.piezas, 0);
+  const totalLb = paquetes.reduce((s, p) => s + (Number(p.peso) || 0), 0);
+  const totalKg = paquetes.reduce((s, p) => s + (Number(p.pesoKg ?? p.peso * 0.453592) || 0), 0);
+  const totalPiezas = paquetes.reduce((s, p) => s + (Number(p.piezas) || 0), 0);
   const fecha = new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
