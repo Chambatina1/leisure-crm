@@ -66,7 +66,14 @@ const COOKIE_OPTIONS = {
 };
 export function setSessionCookie(response: NextResponse, token: string) { response.cookies.set(COOKIE_NAME, token, COOKIE_OPTIONS); }
 export function clearSessionCookie(response: NextResponse) { response.cookies.delete(COOKIE_NAME); }
-export function getTokenFromRequest(request: NextRequest): string | undefined { return request.cookies.get(COOKIE_NAME)?.value; }
+export function getTokenFromRequest(request: NextRequest): string | undefined {
+  // Prioridad: cookie. Fallback: header interno inyectado por el middleware
+  // cuando hace auto-login (necesario para que los POST funcionen en el mismo
+  // request, ya que la cookie seteada en la respuesta no está disponible
+  // hasta el siguiente request).
+  return request.cookies.get(COOKIE_NAME)?.value
+    ?? request.headers.get("x-auto-session") ?? undefined;
+}
 
 export async function getSession(request: NextRequest): Promise<SessionUser | null> {
   const token = getTokenFromRequest(request);

@@ -52,15 +52,17 @@ export async function middleware(request: NextRequest) {
     return res;
   }
 
-  // Resto de /api/*: si no hay sesión, setear cookie admin.
+  // Resto de /api/*: si no hay sesión, inyectar el token por header interno
+  // Y dejar pasar el request al handler en la MISMA petición. Esto es crítico
+  // para los POST (crear paquete, etc.) que antes devolvían "session-created"
+  // y rompían el flujo del cliente.
   if (pathname.startsWith("/api/")) {
     if (session) return NextResponse.next();
-    // Setear cookie y dejar pasar (el handler la leerá en el SIGUIENTE request,
-    // pero también aceptamos auto-admin: el handler usa getSession que ahora leerá
-    // el token del header de cookie actual — que no incluye el recién seteado).
-    // Para que el mismo request funcione, devolvemos 200 con un mensaje de "recarga".
-    const res = NextResponse.json({ ok: true, message: "session-created" }, { status: 200 });
-    return withSessionCookie(res, token);
+    // Auto-login: setear cookie en la respuesta + pasar token al handler vía header.
+    const headers = new Headers(request.headers);
+    headers.set("x-auto-session", token);
+    const nextRes = NextResponse.next({ request: { headers } });
+    return withSessionCookie(nextRes, token);
   }
 
   return NextResponse.next();
