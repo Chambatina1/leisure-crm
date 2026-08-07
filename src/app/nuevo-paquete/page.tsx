@@ -94,8 +94,8 @@ export default function NuevoPaquetePage() {
     if (alto && largo && ancho) Object.assign(payload, { alto, largo, ancho });
     if (contabilidad && usarConta) { payload.formaPago = formaPago; payload.tarifa = tarifa; }
 
-    // Reintentos: Render Free Plan se duerme y el 1er request puede fallar.
-    // Probamos hasta 4 veces con pausa creciente (2s, 4s, 8s) para darle tiempo a despertar.
+    // Reintentos solo para errores de RED (servidor dormido/sin respuesta).
+    // Si el servidor responde con un error (400/500), NO reintentar: mostrar el error.
     const MAX_INTENTOS = 4;
     for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
       setGuardandoMsg(intento === 1 ? "Generando…" : `El servidor está despertando… reintento ${intento}/${MAX_INTENTOS}`);
@@ -104,24 +104,44 @@ export default function NuevoPaquetePage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-          signal: AbortSignal.timeout(25000), // timeout largo: el cold-start tarda
+          signal: AbortSignal.timeout(25000),
         });
-        if (res.status === 0 || res.status >= 500) throw new Error(`servidor ${res.status}`);
         const d = await res.json().catch(() => ({}));
-        if (!res.ok) { setError(d.error || "Error al crear el envío"); setGuardando(false); setGuardandoMsg(""); return; }
-        setCreado(d.paquete.codigo);
-        setGuardandoMsg("");
-        return; // éxito
+        // Éxito
+        if (res.ok && d.paquete) {
+          setCreado(d.paquete.codigo);
+          setGuardandoMsg("");
+          return;
+        }
+        // Error 400 (datos inválidos) — no reintentar, mostrar mensaje claro
+        if (res.status >= 400 && res.status < 500) {
+          setError(d.error || "Revisá los datos e intentá de nuevo.");
+          setGuardando(false);
+          setGuardandoMsg("");
+          return;
+        }
+        // Error 500 (problema del servidor) — si incluye "Foreign key" o "table",
+        // es un problema de base de datos que no se arregla reintentando.
+        const msg = d.error || "";
+        if (res.status >= 500 && /foreign key|does not exist|table/i.test(msg)) {
+          setError(
+            "Hay un problema con la base de datos del servidor. " +
+            "Estamos migrando a una base más robusta. Mientras tanto, podés probar en unos minutos."
+          );
+          setGuardando(false);
+          setGuardandoMsg("");
+          return;
+        }
+        // Otro 500 — reintentar (puede ser cold-start)
+        if (res.status >= 500) throw new Error("servidor 500");
       } catch (err) {
+        // Error de RED (no hubo respuesta) — reintentar tras pausa
         if (intento < MAX_INTENTOS) {
-          const espera = intento * 2000; // 2s, 4s, 6s
-          await new Promise(r => setTimeout(r, espera));
+          await new Promise(r => setTimeout(r, intento * 2000));
         } else {
-          // último intento falló
           setError(
             "No se pudo conectar con el servidor tras varios intentos. " +
-            "El plan gratuito de Render duerme el servidor tras 15 min inactivo y tarda ~30s en despertar. " +
-            "Esperá 1 minuto y volvé a intentar."
+            "Si la app estaba dormida, esperá 1 minuto y volvé a intentar."
           );
           setGuardando(false);
           setGuardandoMsg("");
