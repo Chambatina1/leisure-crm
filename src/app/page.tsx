@@ -71,10 +71,10 @@ const T = {
 
 // Fotos reales por servicio (sin emojis — visual profesional)
 const SERVICIOS = [
-  { img: "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#C23B22", tKey: "s1t", dKey: "s1d" }, // paquetes/cajas
-  { img: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG", color: "#1f6b3a", tKey: "s2t", dKey: "s2d" }, // pasaporte cubano
-  { img: "https://images.pexels.com/photos/5804986/pexels-photo-5804986.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d" }, // isotanque/combustible
-  { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d" }, // carguero de autos
+  { img: "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#C23B22", tKey: "s1t", dKey: "s1d", href: "/servicios/paquetes" },
+  { img: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG", color: "#1f6b3a", tKey: "s2t", dKey: "s2d", href: "/servicios/pasaporte" },
+  { img: "https://images.pexels.com/photos/5804986/pexels-photo-5804986.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d", href: "/servicios/combustible" },
+  { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d", href: "/servicios/autos" },
 ] as const;
 
 // Datos reales de leisureexportingllc.com
@@ -160,7 +160,7 @@ export default function HomePage() {
         </div>
         <div className="servicios-grid">
           {SERVICIOS.map((s) => (
-            <article className="servicio-card" key={s.tKey}>
+            <a className="servicio-card" key={s.tKey} href={s.href}>
               <div className="servicio-foto" style={{ borderTopColor: s.color }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.img} alt={t[s.tKey as keyof typeof t] as string} loading="lazy" />
@@ -168,9 +168,9 @@ export default function HomePage() {
               <div className="servicio-body">
                 <h3 style={{ color: s.color }}>{t[s.tKey as keyof typeof t]}</h3>
                 <p>{t[s.dKey as keyof typeof t]}</p>
-                <a href="#contacto" className="servicio-link" style={{ color: s.color }}>{t.sMas} →</a>
+                <span className="servicio-link" style={{ color: s.color }}>{t.sMas} →</span>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </section>

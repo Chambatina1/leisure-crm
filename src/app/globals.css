@@ -123,6 +123,7 @@ body {
   box-shadow: 0 8px 30px rgba(0,0,0,.08); border: 1px solid #eee;
   overflow: hidden; transition: .2s;
   display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
 }
 .servicio-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,.14); }
 .servicio-foto {
@@ -227,3 +228,98 @@ body {
 }
 .login-card .demo-creds b { color: var(--prim); }
 .err { color: #dc2626; font-size: .84rem; text-align: center; margin: 10px 0 0; }
+
+/* ═══ Páginas de servicios (/servicios/*) ═══ */
+.srv-header { position: relative; height: 240px; overflow: hidden; }
+.srv-header-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.srv-header-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.7)); }
+.srv-header-text { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 28px 24px; color: #fff; }
+.srv-header-back { color: #fff; text-decoration: none; font-size: .85rem; font-weight: 700; margin-bottom: auto; opacity: .9; }
+.srv-header-back:hover { opacity: 1; }
+.srv-header-text h1 { margin: 0; font-size: 2rem; font-weight: 800; }
+.srv-header-text p { margin: 4px 0 0; font-size: 1rem; opacity: .9; }
+
+.srv-wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 80px; font-family: Arial, sans-serif; }
+.srv-section { padding: 28px 0; border-bottom: 1px solid #eee; }
+.srv-section:last-child { border-bottom: none; }
+.srv-section h2 { color: #1f2937; font-size: 1.4rem; margin: 0 0 14px; }
+.srv-section h3 { color: #374151; font-size: 1.1rem; margin: 0 0 10px; }
+.srv-muted { color: #6b7280; font-size: .9rem; line-height: 1.6; margin: 8px 0 0; }
+
+/* Tarifa hero (paquetes) */
+.srv-tarifa-hero { text-align: center; padding: 24px; background: #fef3c7; border-radius: 16px; }
+.srv-tarifa-num { font-size: 3.5rem; font-weight: 900; color: #C23B22; line-height: 1; }
+.srv-tarifa-unit { font-size: 1rem; color: #92400e; font-weight: 700; margin-top: 4px; }
+.srv-tarifa-eq { font-size: .9rem; color: #b45309; margin-top: 8px; }
+
+/* Cajas prepagadas */
+.srv-cajas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.srv-caja-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 22px 18px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+.srv-caja-tam { font-size: 1.1rem; font-weight: 800; color: #1f2937; }
+.srv-caja-precio { font-size: 2rem; font-weight: 900; color: #C23B22; margin: 8px 0; }
+.srv-caja-uso { font-size: .85rem; color: #6b7280; line-height: 1.5; }
+
+/* Badge grande */
+.srv-badge-big { display: inline-block; background: #1f6b3a; color: #fff; padding: 14px 28px; border-radius: 12px; font-size: 1.2rem; font-weight: 800; }
+
+/* Tip list */
+.srv-tip { background: #eff6ff; border-radius: 16px; padding: 24px; margin: 16px -16px 0; }
+.srv-tip-list, .srv-doc-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.srv-tip-list li, .srv-doc-list li { font-size: .92rem; color: #374151; line-height: 1.6; padding-left: 22px; position: relative; }
+.srv-tip-list li::before { content: "✓"; position: absolute; left: 0; color: #1f6b3a; font-weight: 800; }
+.srv-doc-list li::before { content: "▸"; position: absolute; left: 0; color: #C23B22; font-weight: 800; }
+
+/* Alerta (amarillo) */
+.srv-alerta { background: #fffbeb; border: 1px solid #e0a106; border-radius: 16px; padding: 24px; margin: 0; }
+.srv-alerta h2 { color: #92400e; }
+.srv-alerta-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.srv-alerta-tags span { background: #e0a106; color: #fff; font-size: .78rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; }
+
+/* Highlight (azul) */
+.srv-highlight { background: #eff6ff; border: 1px solid #3b82f6; border-radius: 16px; padding: 24px; }
+.srv-highlight h2 { color: #1e40af; }
+.srv-foto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 16px; }
+.srv-foto-spec { background: #fff; border-radius: 10px; padding: 14px; text-align: center; }
+.srv-foto-spec-num { font-weight: 800; color: #1e40af; font-size: .95rem; }
+.srv-foto-spec-lbl { font-size: .78rem; color: #6b7280; margin-top: 2px; }
+
+/* Precios (tabla) */
+.srv-precios-table { display: flex; flex-direction: column; gap: 2px; }
+.srv-precio-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #f9fafb; border-radius: 8px; font-size: .95rem; }
+.srv-precio-row strong { color: #C23B22; font-size: 1.05rem; }
+.srv-precio-total { background: #fef3c7 !important; font-weight: 700; margin-top: 8px; }
+.srv-precio-total strong { color: #92400e; }
+
+/* Tiempos (grid) */
+.srv-tiempos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.srv-tiempo-card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: center; }
+.srv-tiempo-num { font-size: 1.3rem; font-weight: 800; color: #C23B22; }
+.srv-tiempo-lbl { font-size: .82rem; color: #6b7280; margin-top: 4px; line-height: 1.4; }
+
+/* Combustible */
+.srv-comb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.srv-comb-card { background: #fff; border: 1px solid #eee; border-top: 4px solid #e0a106; border-radius: 12px; padding: 20px; }
+.srv-comb-tipo { font-size: 1.1rem; font-weight: 800; margin-bottom: 10px; }
+.srv-comb-precios { display: flex; gap: 18px; margin-bottom: 8px; }
+.srv-comb-precios > div { display: flex; flex-direction: column; }
+.srv-comb-num { font-size: 1.3rem; font-weight: 800; color: #1f2937; }
+.srv-comb-unit { font-size: .75rem; color: #6b7280; }
+.srv-comb-uso { font-size: .82rem; color: #6b7280; line-height: 1.4; }
+
+/* Pasos ordenados */
+.srv-pasos { list-style: none; padding: 0; margin: 0; counter-reset: paso; display: flex; flex-direction: column; gap: 14px; }
+.srv-pasos li { padding-left: 40px; position: relative; font-size: .92rem; color: #374151; line-height: 1.6; counter-increment: paso; }
+.srv-pasos li::before { content: counter(paso); position: absolute; left: 0; top: 0; width: 28px; height: 28px; background: #1f6b3a; color: #fff; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+
+/* CTA */
+.srv-cta { text-align: center; padding-top: 36px; }
+.srv-cta p { color: #6b7280; margin: 4px 0 18px; }
+.srv-btn { display: inline-block; padding: 14px 32px; background: #C23B22; color: #fff; text-decoration: none; border-radius: 12px; font-weight: 800; font-size: 1rem; margin: 4px; }
+.srv-btn-out { display: inline-block; padding: 14px 32px; background: transparent; color: #C23B22; text-decoration: none; border: 2px solid #C23B22; border-radius: 12px; font-weight: 700; font-size: 1rem; margin: 4px; }
+
+@media (max-width: 600px) {
+  .srv-header { height: 180px; }
+  .srv-header-text h1 { font-size: 1.5rem; }
+  .srv-tarifa-num { font-size: 2.5rem; }
+  .srv-comb-precios { flex-direction: column; gap: 8px; }
+}
