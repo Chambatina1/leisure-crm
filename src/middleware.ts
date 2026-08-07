@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
 // Rutas públicas: no requieren sesión.
-const PUBLIC_API = ["/api/auth/login", "/api/health"];
+const PUBLIC_API = ["/api/auth/login", "/api/health", "/api/db-check"];
 const PUBLIC_PREFIXES = ["/api/paquetes/", "/login", "/_next", "/app"];
 
 export async function middleware(request: NextRequest) {
