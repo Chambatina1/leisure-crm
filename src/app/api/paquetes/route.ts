@@ -76,6 +76,19 @@ export async function POST(request: NextRequest) {
     }
     const pesoNum = Number(body.peso) || 0;
     const monto = Math.round(pesoNum * tarifaNum * 100) / 100;
+    // Verificar que el usuario de la sesión existe (PostgreSQL es estricto con FK).
+    // El auto-login del middleware usa userId="auto-admin" que puede no existir.
+    let creadorId: string | null = s.userId;
+    if (creadorId) {
+      const userExists = await db.usuario.findUnique({ where: { id: creadorId }, select: { id: true } });
+      if (!userExists) creadorId = null;
+    }
+    // Si no hay creador válido, buscar el admin real como fallback.
+    if (!creadorId) {
+      const admin = await db.usuario.findFirst({ where: { rol: "admin" }, select: { id: true } });
+      creadorId = admin?.id ?? null;
+    }
+
     const codigo = await generarCodigoPaquete();
 
     // Verificar que la agencia existe antes de crear (diagnóstico FK).
@@ -137,8 +150,8 @@ export async function POST(request: NextRequest) {
       notas: body.notas || "",
       tarifa: tarifaNum, monto,
       estado: "en_origen",
-      creadoPorId: s.userId,
-      eventos: { create: { estado: "en_origen", nota: "Etiqueta creada", operarioId: s.userId } },
+      creadoPorId: creadorId,
+      eventos: { create: { estado: "en_origen", nota: "Etiqueta creada", operarioId: creadorId } },
     },
     include: { eventos: true },
   });
