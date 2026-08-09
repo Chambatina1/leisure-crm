@@ -49,26 +49,17 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
       </div>
 
       <div className="etq">
-        {/* ── FILA 1: Logo + empresa + K ── */}
+        {/* ── FILA 1: Logos del grupo + K ── */}
         <div className="etq-top">
-          <div className="etq-logo-area">
-            <div className="etq-logo-box">LXE</div>
-            <div className="etq-empresa">
-              <strong>LEISURE EXPORTING LLC</strong>
-              <small>SHIPPING TO CUBA</small>
-            </div>
+          <div className="etq-grupo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logos/chambatina.png" alt="Chambatina" className="etq-logo-chambatina" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logos/servitravel.png" alt="ServiTravels" className="etq-logo-blanco" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logos/mdl-travel.png" alt="MDL Travel" className="etq-logo-blanco" />
           </div>
           <div className="etq-k">K</div>
-        </div>
-
-        {/* ── Logos grupo empresarial ── */}
-        <div className="etq-grupo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/chambatina.png" alt="Chambatina" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/servitravel.png" alt="ServiTravels" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/mdl-travel.png" alt="MDL Travel" />
         </div>
 
         {/* ── FILA 2: Tracking (HAWB) grande ── */}

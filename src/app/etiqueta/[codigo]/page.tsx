@@ -104,17 +104,13 @@ const ETIQUETA_CSS = `
     font-size: 10px; color: #000; font-family: "Arial Narrow", Arial, sans-serif;
   }
 
-  /* ── Fila 1: Logo + empresa + K ── */
+  /* ── Fila 1: Logos del grupo + K ── */
   .etq-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; border-bottom: 2px solid #000; }
-  .etq-logo-area { display: flex; align-items: center; gap: 8px; }
-  .etq-logo-box { background: #C23B22; color: #fff; font-weight: 900; font-size: 14px; padding: 3px 8px; border-radius: 3px; letter-spacing: 1px; }
-  .etq-empresa strong { display: block; font-size: 13px; color: #C23B22; letter-spacing: .3px; }
-  .etq-empresa small { font-size: 8px; color: #555; letter-spacing: .5px; }
-  .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; }
-
-  /* ── Logos grupo empresarial ── */
-  .etq-grupo { display: flex; align-items: center; justify-content: space-around; gap: 4px; padding: 3px 0; border-bottom: 1px solid #000; }
-  .etq-grupo img { max-height: 22px; max-width: 70px; width: auto; height: auto; object-fit: contain; }
+  .etq-grupo { display: flex; align-items: center; gap: 6px; }
+  .etq-grupo img { height: 30px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px 5px; }
+  .etq-logo-chambatina { background: #ff6b00 !important; height: 34px !important; padding: 3px 8px !important; filter: brightness(0) invert(1); }
+  .etq-logo-blanco { background: #fff; }
+  .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; flex-shrink: 0; }
 
   /* ── Fila 2: HBL/HAWB ── */
   .etq-hawb { display: flex; justify-content: center; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid #000; }

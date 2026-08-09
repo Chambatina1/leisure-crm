@@ -226,19 +226,19 @@ export default function HomePage() {
         <div className="footer-grupo">
           <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
           <div className="footer-grupo-logos">
-            <div className="footer-grupo-logo logo-blanco">
+            <div className="footer-grupo-logo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/chambatina.png" alt="Chambatina" />
+              <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#ff6b00", borderRadius: 8, padding: "6px 12px" }} />
             </div>
             <div className="footer-grupo-divider"></div>
             <div className="footer-grupo-logo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px" }} />
+              <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 8, padding: "6px 12px" }} />
             </div>
             <div className="footer-grupo-divider"></div>
             <div className="footer-grupo-logo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px" }} />
+              <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 8, padding: "6px 12px" }} />
             </div>
           </div>
         </div>
