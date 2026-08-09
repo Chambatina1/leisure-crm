@@ -4,6 +4,11 @@ import { db } from "@/lib/db";
 
 // GET /api/paquetes/[codigo]/qr — SVG del QR con la URL pública de rastreo.
 // Pública (sin sesión) para que el cliente final pueda rastrear.
+//
+// Configuración optimizada para escaneo con celular (app del chofer):
+//   - margin: 2 (quiet zone amplia, necesaria para que jsQR lo detecte)
+//   - errorCorrectionLevel: "H" (alto — resiste impresión borrosa/térmica)
+//   - width: módulos más grandes para mejor lectura con cámara
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ codigo: string }> }) {
   const { codigo } = await params;
   const cod = codigo.toUpperCase();
@@ -11,11 +16,17 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (!p) return NextResponse.json({ error: "Paquete no encontrado" }, { status: 404 });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  // El QR contiene la URL de rastreo. El escáner (jsQR) extrae el código de ahí.
   const urlRastreo = appUrl ? `${appUrl}/r/${cod}` : cod;
 
   const svg = await QRCode.toString(urlRastreo, {
-    type: "svg", margin: 1, errorCorrectionLevel: "M",
+    type: "svg",
+    margin: 2,
+    errorCorrectionLevel: "H",
+    width: 200,
     color: { dark: "#000000", light: "#ffffff" },
   });
-  return new NextResponse(svg, { headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" } });
+  return new NextResponse(svg, {
+    headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=3600" },
+  });
 }

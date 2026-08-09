@@ -126,14 +126,14 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
           </div>
           <div className="etq-peso-box etq-qr-box">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="70" height="70" />
+            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="88" height="88" />
           </div>
         </div>
 
         {/* ── FILA 6: Barcode + número ── */}
         <div className="etq-barcode-area">
           <div className="etq-barcode-bars">
-            <BarcodeSvg code={cod} />
+            <Barcode128 code={cod} />
           </div>
           <div className="etq-barcode-num">*{cod}*</div>
         </div>
@@ -147,22 +147,25 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
   );
 }
 
-// Barcode Code128 simplificado (barras negras variables)
-function BarcodeSvg({ code }: { code: string }) {
-  const bars: React.ReactElement[] = [];
-  let x = 0;
-  for (let i = 0; i < code.length; i++) {
-    const c = code.charCodeAt(i);
-    const w = (c % 3) + 1;
-    const gap = ((c >> 2) % 2) + 1;
-    bars.push(<rect key={`b${i}`} x={x} y={0} width={w * 2} height={50} fill="#000" />);
-    x += w * 2;
-    bars.push(<rect key={`g${i}`} x={x} y={0} width={gap * 2} height={50} fill="transparent" />);
-    x += gap * 2;
-  }
-  return (
-    <svg viewBox={`0 0 ${x} 50`} width="100%" height="50" preserveAspectRatio="none" shapeRendering="crispEdges">
-      {bars}
-    </svg>
-  );
+// Barcode Code128 REAL — escaneable por lectores de código de barras físicos.
+// Usa jsbarcode para generar el patrón correcto sobre un <canvas>.
+import { useEffect, useRef } from "react";
+function Barcode128({ code }: { code: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    try {
+      const JsBarcode = require("jsbarcode");
+      JsBarcode(canvasRef.current, code, {
+        format: "CODE128",
+        width: 2,           // ancho de barra fina
+        height: 50,         // altura
+        displayValue: false, // el número se muestra abajo aparte
+        margin: 0,
+        background: "#ffffff",
+        lineColor: "#000000",
+      });
+    } catch (e) { console.error("jsbarcode error", e); }
+  }, [code]);
+  return <canvas ref={canvasRef} style={{ width: "100%", height: 50 }} />;
 }
