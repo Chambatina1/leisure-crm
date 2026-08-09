@@ -60,6 +60,12 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
     agenciaPais: p.agencia?.pais ?? undefined,
   };
 
+  // Cargar brands activos
+  let brands: { nombre: string; logo: string }[] = [];
+  try {
+    brands = await db.brand.findMany({ where: { activo: true }, orderBy: { orden: "asc" }, select: { nombre: true, logo: true } });
+  } catch {}
+
   return (
     <html lang="es">
       <head>
@@ -68,7 +74,7 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
         <style dangerouslySetInnerHTML={{ __html: HBL_CSS }} />
       </head>
       <body>
-        <HblContent p={data} />
+        <HblContent p={data} brands={brands} />
       </body>
     </html>
   );

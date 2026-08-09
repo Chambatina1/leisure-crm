@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, signToken } from "@/lib/auth";
 
-const PUBLIC_API = ["/api/auth/login", "/api/health", "/api/db-check", "/api/migrate"];
+const PUBLIC_API = ["/api/auth/login", "/api/health", "/api/db-check", "/api/migrate", "/api/brands"];
 const WEEK = 60 * 60 * 24 * 7;
 
 function withSessionCookie(res: NextResponse, token: string) {

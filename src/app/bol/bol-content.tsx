@@ -21,7 +21,7 @@ interface PaqueteBOL {
 }
 
 export default function BOLContent({
-  fecha, dbError, paquetes, totalLb, totalKg, totalPiezas,
+  fecha, dbError, paquetes, totalLb, totalKg, totalPiezas, brands = [],
 }: {
   fecha: string;
   dbError: string | null;
@@ -29,6 +29,7 @@ export default function BOLContent({
   totalLb: number;
   totalKg: number;
   totalPiezas: number;
+  brands?: { nombre: string; logo: string }[];
 }) {
   return (
     <>
@@ -55,11 +56,10 @@ export default function BOLContent({
                 <small>6800 N Ave, Tampa FL 33604 · +1 727-598-6802</small>
                 <div className="bol-grupo-logos">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logos/chambatina.png" alt="Chambatina" style={{ maxHeight: 26, maxWidth: 70, background: "#fff", borderRadius: 4, padding: "2px 6px" }} />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logos/servitravel.png" alt="ServiTravels" />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logos/mdl-travel.png" alt="MDL Travel" />
+                                  {brands.map(b => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ maxHeight: 26, maxWidth: 70, background: "#fff", borderRadius: 4, padding: "2px 6px", objectFit: "contain" }} />
+                ))}
                 </div>
               </div>
             </div>

@@ -70,6 +70,16 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
     destino: p.destino,
   };
 
+  // Cargar brands activos para mostrar logos dinámicos
+  let brands: { nombre: string; logo: string }[] = [];
+  try {
+    brands = await db.brand.findMany({
+      where: { activo: true },
+      orderBy: { orden: "asc" },
+      select: { nombre: true, logo: true },
+    });
+  } catch {}
+
   return (
     <html lang="es">
       <head>
@@ -78,7 +88,7 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
         <style dangerouslySetInnerHTML={{ __html: ETIQUETA_CSS }} />
       </head>
       <body>
-        <EtiquetaContent p={data} />
+        <EtiquetaContent p={data} brands={brands} />
       </body>
     </html>
   );

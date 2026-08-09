@@ -33,7 +33,7 @@ interface HblData {
 
 const upper = (s?: string | null) => (s || "").toUpperCase();
 
-export default function HblContent({ p }: { p: HblData }) {
+export default function HblContent({ p, brands = [] }: { p: HblData; brands?: { nombre: string; logo: string }[] }) {
   const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" });
   const dirConsign = [p.consignatarioCalle, p.consignatarioEntre ? `E/ ${p.consignatarioEntre}` : null, p.consignatarioMunicipio, p.consignatarioProvincia, "CUBA"].filter(Boolean).join(", ");
 
@@ -54,11 +54,10 @@ export default function HblContent({ p }: { p: HblData }) {
             <small>+1 727-598-6802 · info@grupo-empresarial.com</small>
             <div className="hbl-grupo-logos">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/chambatina.png" alt="Chambatina" style={{ maxHeight: 32, maxWidth: 90, background: "#fff", borderRadius: 4, padding: "2px 6px" }} />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/servitravel.png" alt="ServiTravels" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/mdl-travel.png" alt="MDL Travel" />
+                            {brands.map(b => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ maxHeight: 32, maxWidth: 90, background: "#fff", borderRadius: 4, padding: "2px 6px", objectFit: "contain" }} />
+              ))}
             </div>
           </div>
           <div className="hbl-header-right">

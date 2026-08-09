@@ -30,6 +30,12 @@ export default async function BOLPage() {
   const totalPiezas = paquetes.reduce((s, p) => s + (Number(p.piezas) || 1), 0);
   const fecha = new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" });
 
+  // Cargar brands activos
+  let brands: { nombre: string; logo: string }[] = [];
+  try {
+    brands = await db.brand.findMany({ where: { activo: true }, orderBy: { orden: "asc" }, select: { nombre: true, logo: true } });
+  } catch {}
+
   return (
     <html lang="es">
       <head>
@@ -38,7 +44,7 @@ export default async function BOLPage() {
         <style dangerouslySetInnerHTML={{ __html: BOL_CSS }} />
       </head>
       <body>
-        <BOLContent fecha={fecha} dbError={dbError} paquetes={paquetes} totalLb={totalLb} totalKg={totalKg} totalPiezas={totalPiezas} />
+        <BOLContent fecha={fecha} dbError={dbError} paquetes={paquetes} totalLb={totalLb} totalKg={totalKg} totalPiezas={totalPiezas} brands={brands} />
       </body>
     </html>
   );

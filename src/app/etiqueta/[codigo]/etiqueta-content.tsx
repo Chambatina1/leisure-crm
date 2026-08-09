@@ -31,7 +31,7 @@ interface EtiquetaData {
   hawb?: string | null;
 }
 
-export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
+export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; brands?: { nombre: string; logo: string }[] }) {
   const cod = p.codigo;
   const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
@@ -52,12 +52,10 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
         {/* ── FILA 1: Logos del grupo + K ── */}
         <div className="etq-top">
           <div className="etq-grupo">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logos/chambatina.png" alt="Chambatina" className="etq-logo-blanco" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logos/servitravel.png" alt="ServiTravels" className="etq-logo-blanco" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logos/mdl-travel.png" alt="MDL Travel" className="etq-logo-blanco" />
+            {brands.map(b => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={b.nombre} src={b.logo} alt={b.nombre} className="etq-logo-blanco" />
+            ))}
           </div>
           <div className="etq-k">K</div>
         </div>

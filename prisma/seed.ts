@@ -1,7 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { readFileSync, existsSync } from "node:fs";
 
 const prisma = new PrismaClient();
+
+// Convierte un archivo PNG a data URL base64.
+function imgToDataUrl(path: string): string {
+  if (!existsSync(path)) return "";
+  const buf = readFileSync(path);
+  const ext = path.endsWith(".png") ? "png" : "jpeg";
+  return `data:image/${ext};base64,${buf.toString("base64")}`;
+}
 
 async function main() {
   console.log("🌱 Seed Leisure CRM…");
@@ -14,6 +23,7 @@ async function main() {
   await prisma.usuario.deleteMany();
   await prisma.agencia.deleteMany();
   await prisma.config.deleteMany();
+  await prisma.brand.deleteMany();
 
   // ── 1. Agencias: matriz → agencias → subagencia ──
   const matriz = await prisma.agencia.create({
@@ -85,6 +95,19 @@ async function main() {
   // ── 4. Config ──
   await prisma.config.create({ data: { key: "tarifaPorLb", value: "4.50" } });
   await prisma.config.create({ data: { key: "moneda", value: "USD" } });
+
+  // ── 5. Brands / logos del grupo empresarial ──
+  const brandsSeed = [
+    { clave: "chambatina", nombre: "Chambatina", orden: 0, archivo: "public/logos/chambatina.png" },
+    { clave: "mdl-travel", nombre: "MDL Travel", orden: 1, archivo: "public/logos/mdl-travel.png" },
+    { clave: "servitravel", nombre: "ServiTravels", orden: 2, archivo: "public/logos/servitravel.png" },
+  ];
+  for (const b of brandsSeed) {
+    const logo = imgToDataUrl(b.archivo);
+    await prisma.brand.create({
+      data: { clave: b.clave, nombre: b.nombre, logo, orden: b.orden, activo: true },
+    });
+  }
 
   console.log("✅ Seed completo.");
   console.log("   Usuarios → admin/admin · habana/habana · camion/camion");

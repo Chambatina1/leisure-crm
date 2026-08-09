@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 // 4 pilares: CONTABILIDAD · ANÁLISIS · ESTADO DE PAQUETES · RASTREADOR
 // Control, soporte y supervisión de todas las agencias.
 // ════════════════════════════════════════════════════════════════════════════
-type Tab = "contabilidad" | "analisis" | "estados" | "rastreador";
+type Tab = "contabilidad" | "analisis" | "estados" | "rastreador" | "brands";
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("estados");
@@ -48,6 +48,7 @@ export default function AdminPage() {
         <TabBtn active={tab === "rastreador"} onClick={() => setTab("rastreador")}>📍 Rastreador</TabBtn>
         <TabBtn active={tab === "contabilidad"} onClick={() => setTab("contabilidad")}>💰 Contabilidad</TabBtn>
         <TabBtn active={tab === "analisis"} onClick={() => setTab("analisis")}>📊 Análisis</TabBtn>
+        <TabBtn active={tab === "brands"} onClick={() => setTab("brands")}>🏷️ Marcas</TabBtn>
       </div>
 
       {/* Contenido */}
@@ -55,6 +56,7 @@ export default function AdminPage() {
       {tab === "rastreador" && <RastreadorTab agencias={agencias} />}
       {tab === "contabilidad" && <ContabilidadTab resumen={resumen} />}
       {tab === "analisis" && <AnalisisTab />}
+      {tab === "brands" && <BrandsTab />}
     </div>
   );
 }
@@ -354,6 +356,174 @@ function AnalisisTab() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// BrandsTab — gestión de logos/marcas del grupo empresarial.
+// Subir logo nuevo, activar/desactivar, reordenar (↑↓), editar, eliminar.
+// ════════════════════════════════════════════════════════════════════════════
+function BrandsTab() {
+  const [brands, setBrands] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState<null | { id?: string; clave: string; nombre: string; logo: string; orden: number; activo: boolean }>(null);
+
+  function cargar() {
+    fetch("/api/admin/brands").then(r => r.json()).then(d => {
+      setBrands(d.brands || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }
+  useEffect(cargar, []);
+
+  async function toggleActivo(b: any) {
+    await fetch("/api/admin/brands", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: b.id, activo: !b.activo }),
+    });
+    cargar();
+  }
+
+  async function cambiarOrden(b: any, delta: number) {
+    const nuevoOrden = (b.orden || 0) + delta;
+    await fetch("/api/admin/brands", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: b.id, orden: nuevoOrden }),
+    });
+    cargar();
+  }
+
+  async function eliminar(b: any) {
+    if (!confirm(`¿Eliminar "${b.nombre}"?`)) return;
+    await fetch(`/api/admin/brands?id=${b.id}`, { method: "DELETE" });
+    cargar();
+  }
+
+  async function guardar(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const data = {
+      clave: (fd.get("clave") as string)?.trim(),
+      nombre: (fd.get("nombre") as string)?.trim(),
+      logo: modal?.logo,
+      orden: Number(fd.get("orden")) || 0,
+    };
+    if (!data.nombre || !data.logo) { alert("Nombre y logo son obligatorios"); return; }
+
+    if (modal?.id) {
+      await fetch("/api/admin/brands", {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: modal.id, nombre: data.nombre, logo: data.logo, orden: data.orden }),
+      });
+    } else {
+      await fetch("/api/admin/brands", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    }
+    setModal(null);
+    cargar();
+  }
+
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => setModal(m => m ? { ...m, logo: reader.result as string } : m);
+    reader.readAsDataURL(f);
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ margin: 0, color: "#1f2937", fontSize: 18 }}>Marcas del grupo empresarial</h2>
+        <button onClick={() => setModal({ clave: "", nombre: "", logo: "", orden: brands.length, activo: true })} style={btnPrim}>
+          + Nueva marca
+        </button>
+      </div>
+      <p style={{ color: "#6b7280", fontSize: 13, marginBottom: 20 }}>
+        Estos logos aparecen en el navbar, footer, etiquetas, HBL y manifiesto. Activá o desactivá los que quieras mostrar.
+      </p>
+
+      {loading ? (
+        <p style={{ color: "#6b7280" }}>Cargando...</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {brands.map((b, i) => (
+            <div key={b.id} style={{
+              display: "flex", alignItems: "center", gap: 16, background: "#fff",
+              border: "1px solid #e5e7eb", borderRadius: 12, padding: 14,
+              opacity: b.activo ? 1 : 0.5,
+            }}>
+              {/* Preview del logo */}
+              <div style={{ width: 64, height: 64, background: "#f9fafb", borderRadius: 8, display: "grid", placeItems: "center", overflow: "hidden", flexShrink: 0, border: "1px solid #e5e7eb" }}>
+                {b.logo ? <img src={b.logo} alt={b.nombre} style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain" }} /> : <span style={{ color: "#9ca3af", fontSize: 10 }}>Sin logo</span>}
+              </div>
+              {/* Info */}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, fontSize: 15, color: "#1f2937" }}>{b.nombre}</div>
+                <div style={{ fontSize: 11, color: "#9ca3af" }}>clave: {b.clave} · orden: {b.orden}</div>
+                <div style={{ marginTop: 4 }}>
+                  <EstadoPill estado={b.activo ? "entregado" : "en_origen"} />
+                  {!b.activo && <span style={{ fontSize: 10, color: "#9ca3af", marginLeft: 6 }}>oculta</span>}
+                </div>
+              </div>
+              {/* Acciones */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end" }}>
+                <div style={{ display: "flex", gap: 4 }}>
+                  <button onClick={() => cambiarOrden(b, -1)} disabled={i === 0} style={{ ...miniBtn, opacity: i === 0 ? 0.3 : 1 }}>↑</button>
+                  <button onClick={() => cambiarOrden(b, 1)} disabled={i === brands.length - 1} style={{ ...miniBtn, opacity: i === brands.length - 1 ? 0.3 : 1 }}>↓</button>
+                </div>
+                <div style={{ display: "flex", gap: 4 }}>
+                  <button onClick={() => toggleActivo(b)} style={miniBtn}>{b.activo ? "Ocultar" : "Mostrar"}</button>
+                  <button onClick={() => setModal(b)} style={miniBtn}>Editar</button>
+                  <button onClick={() => eliminar(b)} style={{ ...miniBtn, color: "#dc2626" }}>Eliminar</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal nueva/editar */}
+      {modal && (
+        <div style={modalBg} onClick={() => setModal(null)}>
+          <div style={modalCard} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, color: "#C23B22" }}>{modal.id ? "Editar marca" : "Nueva marca"}</h3>
+            <form onSubmit={guardar} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {!modal.id && (
+                <div>
+                  <label style={lbl}>Clave (identificador único)</label>
+                  <input name="clave" defaultValue={modal.clave} placeholder="ej: nueva-marca" style={inp} required={!modal.id} />
+                </div>
+              )}
+              <div>
+                <label style={lbl}>Nombre</label>
+                <input name="nombre" defaultValue={modal.nombre} placeholder="Nombre de la marca" style={inp} required />
+              </div>
+              <div>
+                <label style={lbl}>Orden (posición: 0=izquierda)</label>
+                <input name="orden" type="number" defaultValue={modal.orden} style={inp} />
+              </div>
+              <div>
+                <label style={lbl}>Logo</label>
+                {modal.logo && (
+                  <div style={{ marginBottom: 8, padding: 10, background: "#f9fafb", borderRadius: 8, display: "inline-block" }}>
+                    <img src={modal.logo} alt="preview" style={{ maxHeight: 60, maxWidth: 120, objectFit: "contain" }} />
+                  </div>
+                )}
+                <input type="file" accept="image/*" onChange={onFileChange} style={{ fontSize: 13 }} />
+              </div>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
+                <button type="submit" style={btnPrim}>{modal.id ? "Guardar" : "Crear"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

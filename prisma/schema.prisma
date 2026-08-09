@@ -210,3 +210,16 @@ model Config {
   key   String @id
   value String
 }
+
+// ─── Brands / logos del grupo empresarial ───────────────────────────────────
+// Gestionables desde el panel de admin. El logo se guarda como data URL base64
+// para sobrevivir a reinicios (Render usa discos efímeros).
+model Brand {
+  id     String   @id @default(cuid())
+  clave  String   @unique        // "chambatina", "mdl-travel", "servitravel"
+  nombre String                  // "Chambatina"
+  logo   String                  // data URL base64 de la imagen
+  orden  Int      @default(0)   // posición (0=izquierda, 1=centro, 2=derecha)
+  activo Boolean  @default(true)
+  creado DateTime @default(now())
+}

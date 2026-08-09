@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ════════════════════════════════════════════════════════════════════════════
 // Landing pública bilingue (EN/ES) — Grupo Empresarial
@@ -94,7 +94,12 @@ const CONTACTO = {
 
 export default function HomePage() {
   const [lang, setLang] = useState<Lang>("es");
+  const [brands, setBrands] = useState<{ nombre: string; logo: string }[]>([]);
   const t = T[lang];
+
+  useEffect(() => {
+    fetch("/api/brands").then(r => r.json()).then(d => setBrands(d.brands || [])).catch(() => {});
+  }, []);
 
   return (
     <main className="landing">
@@ -109,12 +114,9 @@ export default function HomePage() {
       {/* Navbar */}
       <nav className="landing-nav">
         <div className="nav-logo nav-grupo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
+          {brands.map(b => (
+            <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto", maxWidth: 90, objectFit: "contain" }} />
+          ))}
         </div>
         <div className="nav-links">
           <a href="#servicios">{t.navServicios}</a>
@@ -217,20 +219,14 @@ export default function HomePage() {
         <div className="footer-grupo">
           <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
           <div className="footer-grupo-logos">
-            <div className="footer-grupo-logo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px", maxHeight: 56 }} />
-            </div>
-            <div className="footer-grupo-divider"></div>
-            <div className="footer-grupo-logo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 8, padding: "6px 12px" }} />
-            </div>
-            <div className="footer-grupo-divider"></div>
-            <div className="footer-grupo-logo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 8, padding: "6px 12px" }} />
-            </div>
+            {brands.map((b, i) => (
+              <div key={b.nombre} style={{ display: "contents" }}>
+                {i > 0 && <div className="footer-grupo-divider"></div>}
+                <div className="footer-grupo-logo">
+                  <img src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 8, padding: "4px 10px", maxHeight: 56, maxWidth: 140, objectFit: "contain" }} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <div className="footer-brand"><strong>Grupo Empresarial</strong> · {t.footBrand}</div>
