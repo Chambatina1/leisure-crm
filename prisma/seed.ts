@@ -99,8 +99,7 @@ async function main() {
   // ── 5. Brands / logos del grupo empresarial ──
   const brandsSeed = [
     { clave: "chambatina", nombre: "Chambatina", orden: 0, archivo: "public/logos/chambatina.png" },
-    { clave: "mdl-travel", nombre: "MDL Travel", orden: 1, archivo: "public/logos/mdl-travel.png" },
-    { clave: "servitravel", nombre: "ServiTravels", orden: 2, archivo: "public/logos/servitravel.png" },
+    { clave: "servitravel", nombre: "ServiTravels", orden: 1, archivo: "public/logos/servitravel.png" },
   ];
   for (const b of brandsSeed) {
     const logo = imgToDataUrl(b.archivo);
