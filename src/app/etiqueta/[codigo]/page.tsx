@@ -86,68 +86,65 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
 
 const ETIQUETA_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: "Arial Narrow", Arial, sans-serif; background: #f0f0f0; }
-  .toolbar { display: flex; gap: 12px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; }
-  .toolbar button, .toolbar .btn-link {
-    padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none;
-    background: #C23B22; color: #fff; border: none; font-size: 1rem; letter-spacing: .5px;
+  body { font-family: "Arial Narrow", Arial, sans-serif; background: #e8e8e8; }
+
+  /* Toolbar */
+  .etq-toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
+  .etq-toolbar button, .etq-toolbar .etq-link {
+    padding: 10px 18px; border-radius: 6px; font-weight: 800; cursor: pointer; text-decoration: none;
+    background: #C23B22; color: #fff; border: none; font-size: .85rem; letter-spacing: .5px;
   }
-  .toolbar .btn-link { background: #6b7280; }
+  .etq-toolbar .etq-link { background: #374151; }
 
-  /* Hoja 4×6 (101×152 mm) */
-  .etiqueta {
-    width: 384px; height: 576px; margin: 20px auto; padding: 12px;
-    background: #fff; border: 2px solid #000;
-    display: flex; flex-direction: column; gap: 6px;
-    font-size: 11px; color: #000;
+  /* Hoja 4×6 (384×576px ≈ 4×6 pulg) */
+  .etq {
+    width: 384px; margin: 16px auto; padding: 10px;
+    background: #fffbef; border: 2px solid #000;
+    display: flex; flex-direction: column; gap: 5px;
+    font-size: 10px; color: #000; font-family: "Arial Narrow", Arial, sans-serif;
   }
 
-  /* Header */
-  .etq-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #C23B22; padding-bottom: 4px; }
-  .etq-logo strong { font-size: 13px; color: #C23B22; display: block; letter-spacing: .5px; }
-  .etq-logo small { font-size: 8px; color: #666; letter-spacing: .5px; }
-  .etq-k { background: #C23B22; color: #fff; font-size: 28px; font-weight: 900; padding: 2px 14px; border-radius: 4px; }
+  /* ── Fila 1: Logo + empresa + K ── */
+  .etq-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; border-bottom: 2px solid #000; }
+  .etq-logo-area { display: flex; align-items: center; gap: 8px; }
+  .etq-logo-box { background: #C23B22; color: #fff; font-weight: 900; font-size: 14px; padding: 3px 8px; border-radius: 3px; letter-spacing: 1px; }
+  .etq-empresa strong { display: block; font-size: 13px; color: #C23B22; letter-spacing: .3px; }
+  .etq-empresa small { font-size: 8px; color: #555; letter-spacing: .5px; }
+  .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; }
 
-  /* Tracking + QR */
-  .etq-tracking { display: flex; align-items: center; gap: 10px; }
-  .etq-qr img { border: 1px solid #000; }
-  .etq-tracking-num { flex: 1; }
-  .etq-tracking-num small { font-size: 9px; color: #666; display: block; letter-spacing: 1px; }
-  .etq-code { font-size: 22px; font-weight: 900; letter-spacing: 1.5px; }
+  /* ── Fila 2: HBL/HAWB ── */
+  .etq-hawb { display: flex; justify-content: center; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid #000; }
+  .etq-hawb-label { font-size: 9px; color: #555; font-weight: 700; letter-spacing: 1px; }
+  .etq-hawb-num { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
 
-  /* Barcode */
-  .etq-barcode { margin: 2px 0; }
-  .etq-barcode-text { text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 4px; font-family: "Courier New", monospace; }
+  /* ── Grid de campos ── */
+  .etq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+  .etq-field { border: 1px solid #000; padding: 3px 5px; background: #fff; }
+  .etq-field-wide { grid-column: 1 / -1; }
+  .etq-field label { display: block; font-size: 7px; font-weight: 800; color: #C23B22; letter-spacing: .5px; margin-bottom: 1px; text-transform: uppercase; }
+  .etq-field-val { font-size: 11px; font-weight: 700; line-height: 1.25; }
 
-  /* Personas */
-  .etq-personas { display: flex; gap: 4px; margin-top: 2px; }
-  .etq-persona { flex: 1; border: 1.5px solid #000; padding: 5px 6px; }
-  .etq-persona-to { background: #fff5f5; }
-  .etq-persona-title { font-size: 8px; font-weight: 900; color: #C23B22; border-bottom: 1px solid #C23B22; margin-bottom: 3px; padding-bottom: 1px; letter-spacing: 1px; }
-  .etq-persona-nombre { font-size: 13px; font-weight: 800; line-height: 1.2; margin-bottom: 2px; }
-  .etq-persona-line { font-size: 10px; line-height: 1.4; }
-  .etq-persona-line.muted { color: #666; font-size: 9px; }
+  /* ── Fila 5: Peso / Bultos / QR ── */
+  .etq-peso-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 3px; }
+  .etq-peso-box { border: 1px solid #000; padding: 4px; text-align: center; background: #fff; display: flex; flex-direction: column; justify-content: center; }
+  .etq-peso-box label { font-size: 7px; font-weight: 800; color: #C23B22; letter-spacing: .5px; }
+  .etq-peso-val { font-size: 17px; font-weight: 900; }
+  .etq-qr-box { padding: 2px; align-items: center; }
+  .etq-qr-box img { display: block; }
 
-  /* Datos (peso/piezas/fecha) */
-  .etq-datos { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
-  .etq-dato { border: 1.5px solid #000; padding: 4px; text-align: center; }
-  .etq-dato small { font-size: 7px; color: #666; display: block; letter-spacing: .5px; }
-  .etq-dato b { font-size: 16px; font-weight: 900; }
-  .etq-dato-fecha { font-size: 11px !important; }
+  /* ── Fila 6: Barcode ── */
+  .etq-barcode-area { text-align: center; padding: 4px 0 2px; }
+  .etq-barcode-bars { height: 48px; overflow: hidden; }
+  .etq-barcode-bars svg { height: 48px; width: 100%; }
+  .etq-barcode-num { font-size: 13px; font-weight: 800; letter-spacing: 3px; font-family: "Courier New", monospace; margin-top: 2px; }
 
-  /* Contenido */
-  .etq-contenido { border: 1.5px solid #000; padding: 5px 6px; }
-  .etq-contenido small { font-size: 8px; color: #666; letter-spacing: 1px; display: block; margin-bottom: 2px; }
-  .etq-contenido > div { font-size: 11px; font-weight: 700; }
-  .etq-notas { font-size: 9px; color: #444; font-weight: 400; margin-top: 2px; }
-
-  /* Footer */
-  .etq-footer { border-top: 2px solid #C23B22; padding-top: 3px; text-align: center; font-size: 8px; color: #666; letter-spacing: .3px; }
+  /* ── Footer ── */
+  .etq-footer { border-top: 2px solid #C23B22; padding-top: 3px; text-align: center; font-size: 7px; color: #555; letter-spacing: .3px; }
 
   @media print {
     body { background: #fff; }
     .no-print { display: none !important; }
-    .etiqueta { border: none; margin: 0; width: 4in; height: 6in; padding: 8px; }
+    .etq { border: none; margin: 0; width: 4in; padding: 6px; }
     @page { size: 4in 6in; margin: 0; }
   }
 `;

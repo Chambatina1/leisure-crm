@@ -222,6 +222,21 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="footer-landing">
+        {/* Logos del grupo empresarial */}
+        <div className="footer-grupo">
+          <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
+          <div className="footer-grupo-logos">
+            <div className="footer-grupo-logo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/chambatina.png" alt="Chambatina" />
+            </div>
+            <div className="footer-grupo-divider"></div>
+            <div className="footer-grupo-logo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/servitravel.svg" alt="ServiTravel" />
+            </div>
+          </div>
+        </div>
         <div className="footer-brand"><strong>Leisure Exporting LLC</strong> · {t.footBrand}</div>
         <small>© {new Date().getFullYear()} Leisure Exporting LLC. {t.footRights}</small>
         <a className="footer-agencias" href="/app">{t.navAgencias}</a>

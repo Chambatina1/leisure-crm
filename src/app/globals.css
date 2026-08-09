@@ -183,6 +183,19 @@ body {
 .footer-landing small { display: block; opacity: .6; margin: 8px 0; }
 .footer-agencias { color: var(--dorado); text-decoration: none; font-weight: 700; }
 
+/* Grupo empresarial (logos asociados) */
+.footer-grupo { margin-bottom: 28px; }
+.footer-grupo-label { font-size: .72rem; font-weight: 800; color: rgba(255,255,255,.4); letter-spacing: 2px; margin-bottom: 16px; }
+.footer-grupo-logos { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.footer-grupo-logo { display: flex; align-items: center; justify-content: center; }
+.footer-grupo-logo img { max-height: 56px; max-width: 180px; width: auto; height: auto; opacity: .85; filter: brightness(0) invert(1); transition: opacity .2s; }
+.footer-grupo-logo:hover img { opacity: 1; }
+.footer-grupo-divider { width: 1px; height: 40px; background: rgba(255,255,255,.2); }
+@media (max-width: 600px) {
+  .footer-grupo-logos { flex-direction: column; gap: 20px; }
+  .footer-grupo-divider { width: 80px; height: 1px; }
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
   .servicio-card { flex: 0 0 calc((100% - 20px) / 2); }
