@@ -66,15 +66,11 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
           <span className="etq-hawb-num">{hawb}</span>
         </div>
 
-        {/* ── FILA 3: Grid de campos — EMBARCADOR / CONSIGNATARIO ── */}
+        {/* ── FILA 3: EMBARCADOR (chico) + datos secundarios ── */}
         <div className="etq-grid">
           <div className="etq-field etq-field-wide">
             <label>EMBARCADOR</label>
             <div className="etq-field-val">{upper(p.remitente)}</div>
-          </div>
-          <div className="etq-field etq-field-wide">
-            <label>CONSIGNATARIO</label>
-            <div className="etq-field-val">{upper(p.destinatario)}</div>
           </div>
           <div className="etq-field">
             <label>CARNET / ID</label>
@@ -88,13 +84,16 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
             <label>DIRECCION</label>
             <div className="etq-field-val">{upper(p.consignatarioCalle)}</div>
           </div>
-          <div className="etq-field">
-            <label>MUNICIPIO</label>
-            <div className="etq-field-val">{upper(p.consignatarioMunicipio)}</div>
-          </div>
-          <div className="etq-field">
-            <label>PROVINCIA</label>
-            <div className="etq-field-val">{upper(p.consignatarioProvincia) || "LA HABANA"}</div>
+        </div>
+
+        {/* ── CONSIGNATARIO DESTACADO — lo más grande de la etiqueta ── */}
+        <div className="etq-dest">
+          <label className="etq-dest-label">CONSIGNATARIO</label>
+          <div className="etq-dest-nombre">{upper(p.destinatario)}</div>
+          <div className="etq-dest-loc">
+            <span className="etq-dest-mun">{upper(p.consignatarioMunicipio) || "—"}</span>
+            <span className="etq-dest-sep">·</span>
+            <span className="etq-dest-prov">{upper(p.consignatarioProvincia) || "LA HABANA"}</span>
           </div>
         </div>
 

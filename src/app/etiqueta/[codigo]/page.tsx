@@ -135,6 +135,15 @@ const ETIQUETA_CSS = `
   .etq-field label { display: block; font-size: 7px; font-weight: 800; color: #C23B22; letter-spacing: .5px; margin-bottom: 1px; text-transform: uppercase; }
   .etq-field-val { font-size: 11px; font-weight: 700; line-height: 1.25; }
 
+  /* ── CONSIGNATARIO destacado (lo más grande de la etiqueta) ── */
+  .etq-dest { background: #fff5f5; border: 2.5px solid #C23B22; border-radius: 6px; padding: 8px 10px; text-align: center; }
+  .etq-dest-label { font-size: 8px; font-weight: 900; color: #C23B22; letter-spacing: 1.5px; display: block; margin-bottom: 3px; }
+  .etq-dest-nombre { font-size: 22px; font-weight: 900; color: #000; line-height: 1.1; letter-spacing: .5px; }
+  .etq-dest-loc { margin-top: 4px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  .etq-dest-mun { font-size: 15px; font-weight: 800; color: #C23B22; }
+  .etq-dest-sep { font-size: 14px; color: #999; }
+  .etq-dest-prov { font-size: 15px; font-weight: 800; color: #C23B22; }
+
   /* ── Fila 5: Peso / Bultos / QR ── */
   .etq-peso-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 3px; }
   .etq-peso-box { border: 1px solid #000; padding: 4px; text-align: center; background: #fff; display: flex; flex-direction: column; justify-content: center; }
