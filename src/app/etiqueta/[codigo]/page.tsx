@@ -165,6 +165,9 @@ const ETIQUETA_CSS = `
     body { background: #fff; }
     .no-print { display: none !important; }
     .etq { border: none; margin: 0; width: 4in; padding: 6px; }
+    /* En B/N: logos en blanco puro sobre fondo negro para maximo contraste */
+    .etq-grupo { background: #000; padding: 3px 6px; border-radius: 3px; }
+    .etq-grupo img, .etq-logo-blanco { background: #000 !important; filter: brightness(0) invert(1) !important; }
     @page { size: 4in 6in; margin: 0; }
   }
 `;

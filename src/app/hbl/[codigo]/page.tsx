@@ -145,6 +145,9 @@ const HBL_CSS = `
     body { background: #fff; }
     .no-print { display: none !important; }
     .hbl-pagina { box-shadow: none; margin: 0; width: 100%; padding: 5mm; }
+    /* En B/N: logos en blanco sobre negro */
+    .hbl-grupo-logos { background: #000; padding: 2px 4px; border-radius: 3px; }
+    .hbl-grupo-logos img { background: #000 !important; filter: brightness(0) invert(1) !important; }
     @page { size: A4; margin: 5mm; }
   }
 `;

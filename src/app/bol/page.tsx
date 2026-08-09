@@ -116,6 +116,9 @@ const BOL_CSS = `
     body { background: #fff; }
     .no-print { display: none !important; }
     .bol { box-shadow: none; margin: 0; width: 100%; min-height: auto; padding: 8mm; }
+    /* En B/N: logos en blanco sobre negro */
+    .bol-grupo-logos { background: #000; padding: 2px 4px; border-radius: 3px; }
+    .bol-grupo-logos img { background: #000 !important; filter: brightness(0) invert(1) !important; }
     @page { size: A4 landscape; margin: 8mm; }
   }
 `;
