@@ -39,12 +39,9 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
 
   const upper = (s?: string | null) => (s || "").toUpperCase();
   // Direccion completa: calle + entre calles + municipio + provincia (todo en una linea)
-  const direccionCompleta = [
-    upper(p.consignatarioCalle),
-    p.consignatarioEntre ? `E/ ${upper(p.consignatarioEntre)}` : null,
-    upper(p.consignatarioMunicipio),
-    upper(p.consignatarioProvincia),
-  ].filter(Boolean).join(", ");
+  // La direccion (calle) va en DIRECCION. Municipio y provincia van aparte,
+  // grandes, en la seccion destacada de CONSIGNATARIO.
+  const direccionCompleta = upper(p.consignatarioCalle) || "—";
 
   return (
     <>
