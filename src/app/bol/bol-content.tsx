@@ -53,6 +53,14 @@ export default function BOLContent({
               <div>
                 <strong>LEISURE EXPORTING LLC</strong>
                 <small>6800 N Ave, Tampa FL 33604 · +1 727-598-6802</small>
+                <div className="bol-grupo-logos">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logos/chambatina.png" alt="Chambatina" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logos/servitravel.png" alt="ServiTravels" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logos/mdl-travel.png" alt="MDL Travel" />
+                </div>
               </div>
             </div>
             <div className="bol-titulo">

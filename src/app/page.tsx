@@ -235,6 +235,11 @@ export default function HomePage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px" }} />
             </div>
+            <div className="footer-grupo-divider"></div>
+            <div className="footer-grupo-logo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px" }} />
+            </div>
           </div>
         </div>
         <div className="footer-brand"><strong>Leisure Exporting LLC</strong> · {t.footBrand}</div>

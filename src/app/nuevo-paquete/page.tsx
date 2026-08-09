@@ -351,32 +351,53 @@ function PreviewEtiqueta({ peso, pesoKg, piezas, vol, remitente, destinatario, c
 // Pantalla de éxito
 // ════════════════════════════════════════════════════════════════════════════
 function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg: string }) {
-  // Abrir BOL: si el servidor está dormido, el fetch despierta antes de abrir la pestaña.
-  const [bolMsg, setBolMsg] = useState("");
-  async function abrirBol() {
-    setBolMsg("Abriendo… si tarda, el servidor está despertando.");
-    try {
-      // Ping para despertar el servidor antes de abrir (evita pestaña en blanco).
-      await fetch("/api/health", { signal: AbortSignal.timeout(30000) }).catch(() => {});
-      window.open("/bol", "_blank");
-      setBolMsg("");
-    } catch {
-      window.open("/bol", "_blank");
-      setBolMsg("");
-    }
-  }
   return (
     <div style={wrap}>
       <div style={cardOk}>
-        <h2 style={{ color: "#1f6b3a", marginTop: 0 }}>Etiqueta generada</h2>
+        <h2 style={{ color: "#1f6b3a", marginTop: 0 }}>Envío registrado</h2>
         <div style={codeBox}>{codigo}</div>
         <p style={{ fontSize: 13, color: "#6b7280" }}>Peso: {peso} lb · {pesoKg} kg</p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
-          <a href={`/etiqueta/${codigo}`} target="_blank" rel="noopener" style={btnPrim}>Imprimir etiqueta</a>
-          <button onClick={abrirBol} style={btnOut}>Bill of Lading</button>
-          <button onClick={() => window.location.href = "/nuevo-paquete"} style={btnOut}>Crear otra</button>
+
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#374151", marginTop: 24, marginBottom: 12 }}>
+          Documentos del envío
+        </p>
+
+        {/* 3 documentos como tarjetas grandes */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Etiqueta térmica */}
+          <a href={`/etiqueta/${codigo}`} target="_blank" rel="noopener" style={docCard}>
+            <div style={docIcon}>4×6</div>
+            <div style={docInfo}>
+              <strong>Etiqueta térmica</strong>
+              <small>Para pegar en el bulto · imprime en impresora térmica</small>
+            </div>
+            <div style={docArrow}>→</div>
+          </a>
+
+          {/* HBL */}
+          <a href={`/hbl/${codigo}`} target="_blank" rel="noopener" style={docCard}>
+            <div style={docIcon}>HBL</div>
+            <div style={docInfo}>
+              <strong>House Bill of Lading</strong>
+              <small>Documento de transporte del envío · A4</small>
+            </div>
+            <div style={docArrow}>→</div>
+          </a>
+
+          {/* Manifiesto */}
+          <a href="/bol" target="_blank" rel="noopener" style={docCard}>
+            <div style={docIcon}>M</div>
+            <div style={docInfo}>
+              <strong>Manifiesto de carga</strong>
+              <small>Lista de todos los envíos del embarque · A4</small>
+            </div>
+            <div style={docArrow}>→</div>
+          </a>
         </div>
-        {bolMsg && <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 12 }}>{bolMsg}</p>}
+
+        <button onClick={() => window.location.href = "/nuevo-paquete"} style={{ ...btnOut, width: "100%", marginTop: 20 }}>
+          + Crear otro envío
+        </button>
       </div>
     </div>
   );
@@ -453,3 +474,7 @@ const cardOk: React.CSSProperties = { background: "#fff", borderRadius: 20, padd
 const codeBox: React.CSSProperties = { display: "inline-block", fontSize: 28, fontWeight: 900, color: "#C23B22", letterSpacing: 2, background: "#faf5f5", padding: "12px 24px", borderRadius: 12, margin: "16px 0" };
 const prevLabel: React.CSSProperties = { fontSize: 9, fontWeight: 800, color: "#9ca3af", textTransform: "uppercase" };
 const prevVal: React.CSSProperties = { fontSize: 14, fontWeight: 700, color: "#1f2937" };
+const docCard: React.CSSProperties = { display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", background: "#fff", border: "2px solid #e5e7eb", borderRadius: 12, textDecoration: "none", color: "inherit", transition: ".15s" };
+const docIcon: React.CSSProperties = { width: 48, height: 48, flexShrink: 0, background: "#C23B22", color: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14 };
+const docInfo: React.CSSProperties = { flex: 1, display: "flex", flexDirection: "column" };
+const docArrow: React.CSSProperties = { fontSize: 20, color: "#9ca3af", fontWeight: 700 };

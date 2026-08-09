@@ -87,6 +87,8 @@ const HBL_CSS = `
   .hbl-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C23B22; padding-bottom: 8px; margin-bottom: 10px; }
   .hbl-header-left strong { font-size: 16px; color: #C23B22; display: block; letter-spacing: .5px; }
   .hbl-header-left small { font-size: 9px; color: #555; }
+  .hbl-grupo-logos { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .hbl-grupo-logos img { max-height: 32px; max-width: 90px; width: auto; height: auto; object-fit: contain; }
   .hbl-header-right { text-align: right; }
   .hbl-doc-title { font-size: 14px; font-weight: 900; letter-spacing: 1px; }
   .hbl-doc-num { font-size: 12px; font-weight: 700; margin-top: 2px; }

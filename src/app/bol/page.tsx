@@ -57,6 +57,8 @@ const BOL_CSS = `
   .bol-barco { font-size: 30px; }
   .bol-marca strong { display: block; font-size: 16px; color: #C23B22; }
   .bol-marca small { font-size: 10px; color: #666; }
+  .bol-grupo-logos { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .bol-grupo-logos img { max-height: 26px; max-width: 70px; width: auto; height: auto; object-fit: contain; }
   .bol-titulo { text-align: right; }
   .bol-titulo h1 { font-size: 22px; color: #1f2937; letter-spacing: 1px; }
   .bol-fecha { font-size: 11px; color: #666; }

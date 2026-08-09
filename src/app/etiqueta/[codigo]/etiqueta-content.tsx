@@ -61,6 +61,16 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
           <div className="etq-k">K</div>
         </div>
 
+        {/* ── Logos grupo empresarial ── */}
+        <div className="etq-grupo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/chambatina.png" alt="Chambatina" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/servitravel.png" alt="ServiTravels" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/mdl-travel.png" alt="MDL Travel" />
+        </div>
+
         {/* ── FILA 2: Tracking (HAWB) grande ── */}
         <div className="etq-hawb">
           <span className="etq-hawb-label">HBL / HAWB</span>

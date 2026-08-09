@@ -52,6 +52,14 @@ export default function HblContent({ p }: { p: HblData }) {
           <div className="hbl-header-left">
             <strong>LEISURE EXPORTING LLC</strong>
             <small>6800 N Ave, Tampa FL 33604, USA<br/>+1 727-598-6802 · sales@leisureexportingllc.com</small>
+            <div className="hbl-grupo-logos">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/chambatina.png" alt="Chambatina" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/servitravel.png" alt="ServiTravels" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logos/mdl-travel.png" alt="MDL Travel" />
+            </div>
           </div>
           <div className="hbl-header-right">
             <div className="hbl-doc-title">HOUSE BILL OF LADING</div>

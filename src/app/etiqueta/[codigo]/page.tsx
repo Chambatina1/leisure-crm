@@ -112,6 +112,10 @@ const ETIQUETA_CSS = `
   .etq-empresa small { font-size: 8px; color: #555; letter-spacing: .5px; }
   .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; }
 
+  /* ── Logos grupo empresarial ── */
+  .etq-grupo { display: flex; align-items: center; justify-content: space-around; gap: 4px; padding: 3px 0; border-bottom: 1px solid #000; }
+  .etq-grupo img { max-height: 22px; max-width: 70px; width: auto; height: auto; object-fit: contain; }
+
   /* ── Fila 2: HBL/HAWB ── */
   .etq-hawb { display: flex; justify-content: center; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid #000; }
   .etq-hawb-label { font-size: 9px; color: #555; font-weight: 700; letter-spacing: 1px; }
