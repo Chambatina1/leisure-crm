@@ -50,8 +50,8 @@ export default function HblContent({ p }: { p: HblData }) {
         {/* Header */}
         <div className="hbl-header">
           <div className="hbl-header-left">
-            <strong>LEISURE EXPORTING LLC</strong>
-            <small>6800 N Ave, Tampa FL 33604, USA<br/>+1 727-598-6802 · sales@leisureexportingllc.com</small>
+            <strong>GRUPO EMPRESARIAL</strong>
+            <small>+1 727-598-6802 · info@grupo-empresarial.com</small>
             <div className="hbl-grupo-logos">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logos/chambatina.png" alt="Chambatina" />
@@ -145,7 +145,7 @@ export default function HblContent({ p }: { p: HblData }) {
           <strong>Terms and Conditions:</strong> Shipped in apparent good order and condition, unless otherwise indicated herein,
           from Tampa, FL, USA to Cuba. The Shipper, Consignee and Owner of the goods, and their respective agents, accept and
           agree to all terms and conditions on this Bill of Lading. Goods are transported at the risk of the owner of the goods.
-          Leisure Exporting LLC acts as Non-Vessel Operating Common Carrier (NVOCC).
+          Grupo Empresarial acts as Non-Vessel Operating Common Carrier (NVOCC).
         </div>
 
         {/* Firmas */}
@@ -156,7 +156,7 @@ export default function HblContent({ p }: { p: HblData }) {
           </div>
           <div className="hbl-firma">
             <div className="hbl-firma-linea"></div>
-            <small>Leisure Exporting LLC · Carrier</small>
+            <small>Grupo Empresarial · Carrier</small>
           </div>
           <div className="hbl-firma">
             <div className="hbl-firma-linea"></div>
@@ -165,7 +165,7 @@ export default function HblContent({ p }: { p: HblData }) {
         </div>
 
         <div className="hbl-footer">
-          LEISURE EXPORTING LLC · 6800 N Ave, Tampa FL 33604 · +1 727-598-6802 · sales@leisureexportingllc.com
+          GRUPO EMPRESARIAL · +1 727-598-6802 · info@grupo-empresarial.com
         </div>
       </div>
     </>

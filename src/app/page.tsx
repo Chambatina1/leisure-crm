@@ -2,8 +2,8 @@
 import { useState } from "react";
 
 // ════════════════════════════════════════════════════════════════════════════
-// Landing pública bilingüe (EN/ES) — Leisure Exporting LLC
-// Datos reales extraídos de leisureexportingllc.com
+// Landing pública bilingue (EN/ES) — Grupo Empresarial
+// Datos del grupo empresarial
 // Fotos reales por servicio (sin emojis).
 // ════════════════════════════════════════════════════════════════════════════
 type Lang = "en" | "es";
@@ -21,14 +21,14 @@ const T = {
     sub: "Package shipping, car exports, fuel and passport processing. Modern logistics with QR labels and real-time GPS tracking.",
     ctaServicios: "View services", ctaRastrear: "Track my package",
     statAgencias: "Agencies", statPaquetes: "Packages handled", statGps: "GPS tracking",
-    secServiciosH: "Our services", secServiciosP: "All under the Leisure Exporting LLC brand.",
+    secServiciosH: "Our services", secServiciosP: "Shipping, exports, travel and logistics.",
     s1t: "Package shipping", s1d: "Person-to-person packages from the U.S. to Cuba. QR label, point-to-point tracking and proof of delivery.",
     s2t: "Passport processing", s2d: "Management and advisory for passport and travel document procedures. We guide you through the whole process.",
     s3t: "Fuel export", s3d: "Supply and transport of oil and gasoline with control of every shipment and checkpoint.",
     s4t: "Car export", s4d: "Buy and export vehicles to Cuba with managed paperwork and shipment tracking.",
     sMas: "More information",
     nosH: "Modern logistics, simple to operate", 
-    nosP: "At Leisure Exporting LLC we combine years of export experience with cutting-edge technology. Every package carries a QR-code label; every driver scans the package and its GPS location is recorded instantly.",
+    nosP: "We combine years of export experience with cutting-edge technology. Every package carries a QR-code label; every driver scans the package and its GPS location is recorded instantly.",
     f1: "QR label", f1b: " ready to print in seconds",
     f2: "GPS tracking", f2b: " on every scan, even offline",
     f3: "Agency network", f3b: " and subagencies managed from HQ",
@@ -49,14 +49,14 @@ const T = {
     sub: "Envíos de paquetes, exportación de autos, combustible y trámites de pasaporte. Logística moderna con etiquetas QR y rastreo GPS en tiempo real.",
     ctaServicios: "Ver servicios", ctaRastrear: "Rastrear mi paquete",
     statAgencias: "Agencias", statPaquetes: "Paquetes gestionados", statGps: "Rastreo GPS",
-    secServiciosH: "Nuestros servicios", secServiciosP: "Todo bajo la marca Leisure Exporting LLC.",
+    secServiciosH: "Nuestros servicios", secServiciosP: "Envíos, exportación, viajes y logística.",
     s1t: "Envíos de paquetes", s1d: "Paquetería persona a persona de EE.UU. a Cuba. Etiqueta con QR, rastreo punto a punto y prueba de entrega.",
     s2t: "Trámites de pasaporte", s2d: "Gestión y asesoría para trámites de pasaporte y documentos de viaje. Te acompañamos en todo el proceso.",
     s3t: "Exportación de combustible", s3d: "Suministro y transporte de petróleo y gasolina con control de cada traslado y punto de control.",
     s4t: "Exportación de autos", s4d: "Compra y exporta vehículos hacia Cuba con documentación gestionada y seguimiento de la carga.",
     sMas: "Más información",
     nosH: "Logística moderna, simple de operar",
-    nosP: "En Leisure Exporting LLC combinamos la experiencia de años en exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR; cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.",
+    nosP: "Combinamos la experiencia de años en exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR; cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.",
     f1: "Etiqueta con QR", f1b: " lista para imprimir en segundos",
     f2: "Rastreo GPS", f2b: " en cada escaneo, sin internet",
     f3: "Red de agencias", f3b: " y subagencias gestionada desde la matriz",
@@ -77,15 +77,15 @@ const SERVICIOS = [
   { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d", href: "/servicios/autos" },
 ] as const;
 
-// Datos reales de leisureexportingllc.com
+// Datos del grupo empresarial
 const CONTACTO = {
   tel: "+1 727-598-6802",
   telHref: "tel:+17275986802",
   whatsapp: "https://wa.me/17275986802?text=Hello%2C%20I%20need%20help",
   whatsappEs: "https://wa.me/17275986802?text=Hola%2C%20necesito%20ayuda",
-  email: "sales@leisureexportingllc.com",
-  web: "leisureexportingllc.com",
-  webHref: "https://www.leisureexportingllc.com",
+  email: "info@grupo-empresarial.com",
+  web: "grupo-empresarial.com",
+  webHref: "https://grupo-empresarial.com",
   dir1: "6800 N Ave, Florida FL 33604",
   dir2: "6800 N Ave, Tampa Florida FL 33604",
   horarioEn: "Mon–Fri: 8:00 AM – 5:00 PM",
@@ -108,22 +108,13 @@ export default function HomePage() {
 
       {/* Navbar */}
       <nav className="landing-nav">
-        <div className="nav-logo">{/* logo SVG blanco */}
-          <svg viewBox="0 0 380 120" height="38" role="img" aria-label="Leisure Exporting LLC">
-            <g fill="#fff">
-              <g>
-                <rect x="40" y="26" width="9" height="20" rx="1.5" /><rect x="60" y="26" width="9" height="20" rx="1.5" />
-                <rect x="34" y="46" width="58" height="20" rx="2" />
-                <rect x="36" y="50" width="13" height="12" /><rect x="51" y="50" width="13" height="12" /><rect x="66" y="50" width="13" height="12" /><rect x="81" y="50" width="9" height="12" />
-                <path d="M20 70 H106 L96 94 a6 6 0 0 1 -6 4 H36 a6 6 0 0 1 -6 -4 Z" />
-              </g>
-              <g fontFamily="Arial, Helvetica, sans-serif" fontWeight="900">
-                <text x="140" y="50" fontSize="32">LEISURE</text>
-                <text x="140" y="76" fontSize="21" letterSpacing="1.2">EXPORTING</text>
-                <text x="140" y="100" fontSize="16" letterSpacing="2.5">L L C</text>
-              </g>
-            </g>
-          </svg>
+        <div className="nav-logo nav-grupo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#ff6b00", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto", filter: "brightness(0) invert(1)" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
         </div>
         <div className="nav-links">
           <a href="#servicios">{t.navServicios}</a>
@@ -242,8 +233,8 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="footer-brand"><strong>Leisure Exporting LLC</strong> · {t.footBrand}</div>
-        <small>© {new Date().getFullYear()} Leisure Exporting LLC. {t.footRights}</small>
+        <div className="footer-brand"><strong>Grupo Empresarial</strong> · {t.footBrand}</div>
+        <small>© {new Date().getFullYear()} Grupo Empresarial. {t.footRights}</small>
         <a className="footer-agencias" href="/app">{t.navAgencias}</a>
       </footer>
     </main>

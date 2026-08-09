@@ -18,7 +18,7 @@ async function main() {
   // ── 1. Agencias: matriz → agencias → subagencia ──
   const matriz = await prisma.agencia.create({
     data: {
-      nombre: "Leisure Exporting LLC — Matriz",
+      nombre: "Grupo Empresarial — Matriz",
       tipo: "matriz",
       direccion: "Miami, FL, USA",
       telefono: "+1 305 000 0000",

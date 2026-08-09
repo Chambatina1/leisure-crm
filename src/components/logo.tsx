@@ -1,7 +1,7 @@
-// Logo SVG de Leisure Exporting LLC — fondo transparente, color terracota.
+// Logo SVG del Grupo Empresarial — fondo transparente, color terracota.
 export default function Logo({ height = 40 }: { height?: number }) {
   return (
-    <svg viewBox="0 0 380 120" role="img" aria-label="Leisure Exporting LLC" height={height}>
+    <svg viewBox="0 0 380 120" role="img" aria-label="Grupo Empresarial" height={height}>
       <g fill="#C23B22">
         <g>
           <path d="M44 20 q5 -6 0 -12 q-5 -6 0 -10" fill="none" stroke="#C23B22" strokeWidth="3" strokeLinecap="round" />

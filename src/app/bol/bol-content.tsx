@@ -51,7 +51,7 @@ export default function BOLContent({
             <div className="bol-marca">
               <div className="bol-barco">LE</div>
               <div>
-                <strong>LEISURE EXPORTING LLC</strong>
+                <strong>GRUPO EMPRESARIAL</strong>
                 <small>6800 N Ave, Tampa FL 33604 · +1 727-598-6802</small>
                 <div className="bol-grupo-logos">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -138,7 +138,7 @@ export default function BOLContent({
           </div>
 
           <div className="bol-footer">
-            Leisure Exporting LLC · sales@leisureexportingllc.com · leisureexportingllc.com
+            Grupo Empresarial · +1 727-598-6802
           </div>
 
           {/* Aviso de desarrollo — no se imprime */}

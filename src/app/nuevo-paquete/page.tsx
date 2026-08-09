@@ -319,8 +319,8 @@ function PreviewEtiqueta({ peso, pesoKg, piezas, vol, remitente, destinatario, c
     <div style={{ border: "2px dashed #d1d5db", borderRadius: 10, padding: 14, background: "#fafafa", fontFamily: "Arial", fontSize: 13 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #000", paddingBottom: 8 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 800, color: "#C23B22" }}>LEISURE EXPORTING LLC</div>
-          <div style={{ fontSize: 9, color: "#6b7280" }}>Tampa FL · Cuba</div>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#C23B22" }}>GRUPO EMPRESARIAL</div>
+          <div style={{ fontSize: 9, color: "#6b7280" }}>Grupo Empresarial</div>
         </div>
         <div style={{ fontSize: 28, fontWeight: 900, color: "#C23B22", border: "3px solid #C23B22", borderRadius: 8, padding: "2px 12px" }}>K</div>
       </div>

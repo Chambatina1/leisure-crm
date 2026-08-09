@@ -142,7 +142,7 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
 
         {/* ── FILA 7: Footer ── */}
         <div className="etq-footer">
-          LEISURE EXPORTING LLC · +1 727-598-6802 · SALES@LEISUREEXPORTINGLLC.COM
+          GRUPO EMPRESARIAL · +1 727-598-6802
         </div>
       </div>
     </>

@@ -8,7 +8,7 @@ import FotoPasaporte from "../_components/foto-pasaporte";
 
 const IMG = "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG";
 
-export const metadata = { title: "Trámites de pasaporte · Leisure Exporting LLC" };
+export const metadata = { title: "Trámites de pasaporte · Grupo Empresarial" };
 
 // Precios referenciales del trámite (en USD). Editables.
 const COSTOS = [

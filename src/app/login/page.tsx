@@ -52,7 +52,7 @@ export default function LoginPage() {
     <div className="login-wrap">
       <div className="login-card">
         <div className="login-logo"><Logo height={64} /></div>
-        <h1>Leisure Exporting LLC</h1>
+        <h1>Grupo Empresarial</h1>
         <p className="sub">Acceso a agencias · CRM y rastreo</p>
         <form onSubmit={onSubmit}>
           <div className="field">
