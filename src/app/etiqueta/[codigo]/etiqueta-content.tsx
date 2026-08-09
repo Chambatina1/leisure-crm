@@ -53,7 +53,7 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData }) {
         <div className="etq-top">
           <div className="etq-grupo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logos/chambatina.png" alt="Chambatina" className="etq-logo-chambatina" />
+            <img src="/logos/chambatina.png" alt="Chambatina" className="etq-logo-blanco" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logos/servitravel.png" alt="ServiTravels" className="etq-logo-blanco" />
             {/* eslint-disable-next-line @next/next/no-img-element */}

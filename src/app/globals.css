@@ -337,3 +337,21 @@ body {
   .srv-tarifa-num { font-size: 2.5rem; }
   .srv-comb-precios { flex-direction: column; gap: 8px; }
 }
+
+/* Texto Chambatina en navbar (naranja brillante, sobre fondo oscuro) */
+.nav-chambatina {
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: #ff8c1a;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+/* Texto Chambatina en footer (sobre fondo oscuro) */
+.footer-chambatina {
+  font-weight: 900;
+  font-size: 1rem;
+  color: #ff8c1a;
+  letter-spacing: 1px;
+  display: block;
+}

@@ -110,6 +110,7 @@ const ETIQUETA_CSS = `
   .etq-grupo img { height: 30px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px 5px; }
   .etq-logo-chambatina { background: #ff6b00 !important; height: 34px !important; padding: 3px 8px !important; filter: brightness(0) invert(1); }
   .etq-logo-blanco { background: #fff; }
+  .etq-chambatina { font-weight: 900; font-size: 11px; color: #ff6b00; background: #fff; border-radius: 3px; padding: 4px 8px; letter-spacing: .5px; }
   .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; flex-shrink: 0; }
 
   /* ── Fila 2: HBL/HAWB ── */

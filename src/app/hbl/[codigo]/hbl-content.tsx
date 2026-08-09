@@ -54,7 +54,7 @@ export default function HblContent({ p }: { p: HblData }) {
             <small>+1 727-598-6802 · info@grupo-empresarial.com</small>
             <div className="hbl-grupo-logos">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/chambatina.png" alt="Chambatina" />
+              <img src="/logos/chambatina.png" alt="Chambatina" style={{ maxHeight: 32, maxWidth: 90, background: "#fff", borderRadius: 4, padding: "2px 6px" }} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logos/servitravel.png" alt="ServiTravels" />
               {/* eslint-disable-next-line @next/next/no-img-element */}

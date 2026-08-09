@@ -110,7 +110,7 @@ export default function HomePage() {
       <nav className="landing-nav">
         <div className="nav-logo nav-grupo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#ff6b00", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto", filter: "brightness(0) invert(1)" }} />
+          <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logos/mdl-travel.png" alt="MDL Travel" style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto" }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -219,7 +219,7 @@ export default function HomePage() {
           <div className="footer-grupo-logos">
             <div className="footer-grupo-logo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#ff6b00", borderRadius: 8, padding: "6px 12px" }} />
+              <img src="/logos/chambatina.png" alt="Chambatina" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px", maxHeight: 56 }} />
             </div>
             <div className="footer-grupo-divider"></div>
             <div className="footer-grupo-logo">
