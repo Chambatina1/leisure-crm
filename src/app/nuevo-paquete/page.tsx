@@ -13,7 +13,7 @@ import { useState, useEffect, useMemo } from "react";
 
 const HEADER_IMG = "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
-const PROVINCIAS = ["La Habana","Artemisa","Mayabeque","Matanzas","Villa Clara","Cienfuegos","Sancti Spíritus","Ciego de Ávila","Camagüey","Las Tunas","Holguín","Granma","Santiago de Cuba","Guantánamo","Isla de la Juventud","Pinar del Río"];
+import { PROVINCIAS, MUNICIPIOS } from "@/lib/municipios";
 const CATEGORIAS = ["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Otro"];
 
 export default function NuevoPaquetePage() {
@@ -35,6 +35,7 @@ export default function NuevoPaquetePage() {
   const [remitente, setRemitente] = useState("");
   const [remitenteTel, setRemitenteTel] = useState("");
   const [remitenteCarnet, setRemitenteCarnet] = useState("");
+  const [remitenteDir, setRemitenteDir] = useState("");
   const [destinatario, setDestinatario] = useState("");
   const [consignatarioCarnet, setConsignatarioCarnet] = useState("");
   const [consignatarioTel, setConsignatarioTel] = useState("");
@@ -48,6 +49,14 @@ export default function NuevoPaquetePage() {
   const [tarifa, setTarifa] = useState("");
 
   const [guardando, setGuardando] = useState(false);
+  // Buscador de clientes (remitente/receptor ya existentes)
+  const [clientes, setClientes] = useState<any[]>([]);
+  const [buscandoRem, setBuscandoRem] = useState(false);
+  const [buscandoDes, setBuscandoDes] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/clientes").then(r => r.json()).then(d => setClientes(d.clientes || [])).catch(() => {});
+  }, []);
   const [guardandoMsg, setGuardandoMsg] = useState("");
   const [error, setError] = useState("");
   const [creado, setCreado] = useState<string | null>(null);
@@ -225,7 +234,10 @@ export default function NuevoPaquetePage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={card}>
             <div style={sectionHeader}>Remitente <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién envía)</span></div>
-            <BigField label="Nombre *" value={remitente} onChange={setRemitente} placeholder="Ana Pérez" required />
+            <label style={lbl}>Nombre *</label>
+            <BuscadorCliente valor={remitente} onChange={setRemitente} clientes={clientes}
+              placeholder="Ana Pérez"
+              onSeleccionar={cl => { setRemitente(cl.nombre); setRemitenteTel(cl.telefono || ""); setRemitenteDir(cl.direccion || ""); }} />
             <div style={grid2}>
               <Field label="Carnet / Pasaporte" value={remitenteCarnet} onChange={setRemitenteCarnet} />
               <Field label="Teléfono" value={remitenteTel} onChange={setRemitenteTel} />
@@ -234,16 +246,26 @@ export default function NuevoPaquetePage() {
 
           <div style={card}>
             <div style={sectionHeader}>Receptor <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién recibe en Cuba)</span></div>
-            <BigField label="Nombre *" value={destinatario} onChange={setDestinatario} placeholder="José Gómez" required />
+            <label style={lbl}>Nombre *</label>
+            <BuscadorCliente valor={destinatario} onChange={setDestinatario} clientes={clientes}
+              placeholder="José Gómez"
+              onSeleccionar={cl => { setDestinatario(cl.nombre); setConsignatarioTel(cl.telefono || ""); setConsignatarioCalle(cl.direccion || ""); }} />
             <div style={grid2}>
               <Field label="Carnet de identidad" value={consignatarioCarnet} onChange={setConsignatarioCarnet} />
               <Field label="Teléfono" value={consignatarioTel} onChange={setConsignatarioTel} />
             </div>
-            <Field label="Calle y número" value={consignatarioCalle} onChange={setConsignatarioCalle} />
-            <Field label="Entre calles" value={consignatarioEntre} onChange={setConsignatarioEntre} />
+            <div>
+              <label style={lbl}>DIRECCIÓN (calle, número, entre calles, reparto)</label>
+              <textarea value={consignatarioCalle} onChange={e => setConsignatarioCalle(e.target.value)}
+                placeholder="Ej: Calle Loma No. 62, e/ Aspuru y Linea, Poblado Camarioca"
+                style={{ ...inp, minHeight: 70, resize: "vertical", fontFamily: "inherit" }} />
+            </div>
             <div style={grid2}>
-              <Field label="Municipio" value={consignatarioMunicipio} onChange={setConsignatarioMunicipio} />
-              <SelectField label="Provincia" value={consignatarioProvincia} onChange={setConsignatarioProvincia} options={PROVINCIAS} />
+              <SelectField label="Municipio" value={consignatarioMunicipio} onChange={(v) => { setConsignatarioMunicipio(v); }}
+                options={(MUNICIPIOS[consignatarioProvincia] || []).length > 0 ? MUNICIPIOS[consignatarioProvincia] : ["(Selecciona provincia)"]} />
+              <SelectField label="Provincia" value={consignatarioProvincia}
+                onChange={(v) => { setConsignatarioProvincia(v); setConsignatarioMunicipio(""); }}
+                options={[...PROVINCIAS]} />
             </div>
           </div>
 
@@ -301,6 +323,56 @@ export default function NuevoPaquetePage() {
       {agenciaNombre && (
         <div style={{ textAlign: "center", color: "#9ca3af", fontSize: 12, marginTop: 8 }}>
           Agencia: {agenciaNombre}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// BuscadorCliente — autocompleta desde la base de datos de clientes.
+// Muestra sugerencias mientras se escribe. Al seleccionar, llena los campos.
+// ════════════════════════════════════════════════════════════════════════════
+function BuscadorCliente({
+  valor, onChange, clientes, placeholder, onSeleccionar,
+}: {
+  valor: string; onChange: (v: string) => void;
+  clientes: any[]; placeholder: string;
+  onSeleccionar: (c: any) => void;
+}) {
+  const [mostrar, setMostrar] = useState(false);
+  const txt = valor.toLowerCase().trim();
+  const sugerencias = txt.length >= 2
+    ? clientes.filter(c =>
+        (c.nombre || "").toLowerCase().includes(txt) ||
+        (c.telefono || "").includes(txt)
+      ).slice(0, 5)
+    : [];
+
+  return (
+    <div style={{ position: "relative" }}>
+      <input value={valor} onChange={e => { onChange(e.target.value); setMostrar(true); }}
+        onFocus={() => setMostrar(true)} onBlur={() => setTimeout(() => setMostrar(false), 200)}
+        placeholder={placeholder} required
+        style={{ ...inp, fontSize: 18, padding: "14px 16px" }} />
+      {mostrar && sugerencias.length > 0 && (
+        <div style={{
+          position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50,
+          background: "#fff", border: "1px solid #d1d5db", borderRadius: "0 0 10px 10px",
+          boxShadow: "0 4px 12px rgba(0,0,0,.1)", maxHeight: 200, overflowY: "auto",
+        }}>
+          <div style={{ fontSize: 10, color: "#9ca3af", padding: "6px 12px", borderBottom: "1px solid #f3f4f6", fontWeight: 700, textTransform: "uppercase" }}>
+            Clientes existentes
+          </div>
+          {sugerencias.map(cl => (
+            <div key={cl.id} onMouseDown={() => { onSeleccionar(cl); setMostrar(false); }}
+              style={{ padding: "10px 12px", cursor: "pointer", borderBottom: "1px solid #f9fafb", fontSize: 14 }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#fef3c7")}
+              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+              <div style={{ fontWeight: 700 }}>{cl.nombre}</div>
+              {cl.telefono && <div style={{ fontSize: 11, color: "#6b7280" }}>{cl.telefono}</div>}
+            </div>
+          ))}
         </div>
       )}
     </div>
