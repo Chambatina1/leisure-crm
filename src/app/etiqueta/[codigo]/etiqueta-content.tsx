@@ -35,6 +35,13 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
   const cod = p.codigo;
   const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
+  // Direccion completa: calle + entre calles + municipio + provincia (todo en una linea)
+  const direccionCompleta = [
+    upper(p.consignatarioCalle),
+    p.consignatarioEntre ? `E/ ${upper(p.consignatarioEntre)}` : null,
+    upper(p.consignatarioMunicipio),
+    upper(p.consignatarioProvincia),
+  ].filter(Boolean).join(", ");
   const hawb = p.hawb || cod;
 
   const upper = (s?: string | null) => (s || "").toUpperCase();
@@ -82,7 +89,7 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
           </div>
           <div className="etq-field etq-field-wide">
             <label>DIRECCION</label>
-            <div className="etq-field-val">{upper(p.consignatarioCalle)}</div>
+            <div className="etq-field-val">{direccionCompleta}</div>
           </div>
         </div>
 
