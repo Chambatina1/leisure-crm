@@ -47,8 +47,9 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
     <>
       <div className="no-print etq-toolbar">
         <button onClick={() => window.print()}>IMPRIMIR ETIQUETA</button>
+        <a href={`/hbl/${cod}`} target="_blank" className="etq-link">VER HBL</a>
+        <a href="/bol" target="_blank" className="etq-link">MANIFIESTO</a>
         <a href="/nuevo-paquete" className="etq-link">NUEVA ETIQUETA</a>
-        <a href="/bol" className="etq-link">MANIFIESTO</a>
         <a href="/" className="etq-link">INICIO</a>
       </div>
 
