@@ -1,8 +1,8 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// hbl-content — Client Component del House Bill of Lading.
-// Estilo solvecargo: documento A4 profesional con secciones del transportista.
+// hbl-content — Client Component del HBL (Combined Transport Bill of Lading).
+// Formato exacto del sistema de referencia (ikomsoft/solvedcargo).
 // ════════════════════════════════════════════════════════════════════════════
 
 interface HblData {
@@ -34,8 +34,8 @@ interface HblData {
 const upper = (s?: string | null) => (s || "").toUpperCase();
 
 export default function HblContent({ p, brands = [] }: { p: HblData; brands?: { nombre: string; logo: string }[] }) {
-  const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" });
-  const dirConsign = [p.consignatarioCalle, p.consignatarioEntre ? `E/ ${p.consignatarioEntre}` : null, p.consignatarioMunicipio, p.consignatarioProvincia, "CUBA"].filter(Boolean).join(", ");
+  const fechaEmision = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const pesoKg = p.pesoKg ?? Number(p.peso) * 0.453592;
 
   return (
     <>
@@ -47,124 +47,104 @@ export default function HblContent({ p, brands = [] }: { p: HblData; brands?: { 
       </div>
 
       <div className="hbl">
-        {/* Header */}
-        <div className="hbl-header">
-          <div className="hbl-header-left">
-            <strong>GRUPO EMPRESARIAL</strong>
-            <small>+1 727-598-6802 · info@grupo-empresarial.com</small>
-            <div className="hbl-grupo-logos">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-                            {brands.map(b => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ maxHeight: 32, maxWidth: 90, background: "#fff", borderRadius: 4, padding: "2px 6px", objectFit: "contain" }} />
-              ))}
-            </div>
+        {/* ── FILA SUPERIOR: Título + HBL ── */}
+        <div className="hbl-top">
+          <div className="hbl-forwarding">
+            <label>FORWARDING AGENT</label>
+            <div className="hbl-agent-name">{p.agenciaNombre ? upper(p.agenciaNombre) : "GRUPO EMPRESARIAL"}</div>
+            {brands.length > 0 && (
+              <div className="hbl-grupo-logos">
+                {brands.map(b => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={b.nombre} src={b.logo} alt={b.nombre} />
+                ))}
+              </div>
+            )}
           </div>
-          <div className="hbl-header-right">
-            <div className="hbl-doc-title">HOUSE BILL OF LADING</div>
-            <div className="hbl-doc-num">HBL: {p.hawb}</div>
-            <div className="hbl-doc-num">Fecha: {fecha}</div>
-          </div>
-        </div>
-
-        {/* Partes: Shipper / Consignee / Notify */}
-        <div className="hbl-partes">
-          <div className="hbl-parte">
-            <label>Shipper / Embarcador</label>
-            <div className="nombre">{upper(p.remitente)}</div>
-            {p.remitenteCarnet && <div className="linea">Doc: {upper(p.remitenteCarnet)}</div>}
-            {p.remitenteTel && <div className="linea">Tel: {p.remitenteTel}</div>}
-            {p.remitenteDir && <div className="linea">{upper(p.remitenteDir)}</div>}
-            <div className="linea">{upper(p.agenciaCiudad)}, {upper(p.agenciaPais)}</div>
-          </div>
-          <div className="hbl-parte">
-            <label>Consignee / Consignatario</label>
-            <div className="nombre">{upper(p.destinatario)}</div>
-            {p.consignatarioCarnet && <div className="linea">CI/Pas: <b>{upper(p.consignatarioCarnet)}</b></div>}
-            {p.consignatarioTel && <div className="linea">Tel: {p.consignatarioTel}</div>}
-            <div className="linea">{upper(dirConsign)}</div>
-          </div>
-          <div className="hbl-parte hbl-parte-full">
-            <label>Notify Party / Notificante</label>
-            <div className="linea">Mismo consignatario arriba · Tel: {p.consignatarioTel || p.remitenteTel || "—"}</div>
+          <div className="hbl-title-area">
+            <div className="hbl-title">COMBINED TRANSPORT BILL OF LADING</div>
+            <div className="hbl-num"><label>HBL</label> <b>{p.hawb}</b></div>
           </div>
         </div>
 
-        {/* Detalles del envío */}
-        <div className="hbl-detalles">
-          <div className="hbl-detalles-row">
-            <div className="hbl-detalle"><label>Vessel / Buque</label><div className="val">—</div></div>
-            <div className="hbl-detalle"><label>Voyage / Viaje</label><div className="val">—</div></div>
-            <div className="hbl-detalle"><label>Port of Loading</label><div className="val">TAMPA, FL, USA</div></div>
-            <div className="hbl-detalle"><label>Port of Discharge</label><div className="val">LA HABANA, CUBA</div></div>
+        {/* ── SHIPPER + NOTIFY PARTY ── */}
+        <div className="hbl-row-2">
+          <div className="hbl-block">
+            <label>SHIPPER</label>
+            <div className="hbl-val">{upper(p.remitente)}</div>
           </div>
-          <div className="hbl-detalles-row">
-            <div className="hbl-detalle"><label>Place of Delivery</label><div className="val">{upper(p.consignatarioProvincia) || "LA HABANA"}, CUBA</div></div>
-            <div className="hbl-detalle"><label>Type of Move</label><div className="val">K · MARÍTIMO</div></div>
-            <div className="hbl-detalle"><label>Container</label><div className="val">—</div></div>
-            <div className="hbl-detalle"><label>Booking</label><div className="val">—</div></div>
+          <div className="hbl-block">
+            <label>NOTIFY PARTY / INTERMEDIATE CONSIGNEE</label>
+            <div className="hbl-val">TRANSCARGO</div>
+            <div className="hbl-sub">Fabrica no. 54 e/ Aspuru y Linea del Ferrocarril</div>
+            <div className="hbl-sub">Habana Vieja, La Habana, Cuba · Tel: +537 698 1458</div>
           </div>
         </div>
 
-        {/* Tabla de mercancía */}
-        <div className="hbl-mercancia">
-          <div className="hbl-mercancia-title">Descripción de mercancía / Description of goods</div>
-          <table className="hbl-tabla">
-            <thead>
-              <tr>
-                <th>Marks & Nº</th>
-                <th>Description</th>
-                <th>Packages</th>
-                <th>Gross Weight (kg)</th>
-                <th>Volume (m³)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{p.hawb}</td>
-                <td>{upper(p.contenido)}{p.categoria ? ` · ${upper(p.categoria)}` : ""}</td>
-                <td>{p.piezas}</td>
-                <td>{Number(p.pesoKg).toFixed(2)}</td>
-                <td>—</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={2}>TOTAL</td>
-                <td>{p.piezas}</td>
-                <td>{Number(p.pesoKg).toFixed(2)}</td>
-                <td>—</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-
-        {/* Términos */}
-        <div className="hbl-terminos">
-          <strong>Terms and Conditions:</strong> Shipped in apparent good order and condition, unless otherwise indicated herein,
-          from Tampa, FL, USA to Cuba. The Shipper, Consignee and Owner of the goods, and their respective agents, accept and
-          agree to all terms and conditions on this Bill of Lading. Goods are transported at the risk of the owner of the goods.
-          Grupo Empresarial acts as Non-Vessel Operating Common Carrier (NVOCC).
-        </div>
-
-        {/* Firmas */}
-        <div className="hbl-firmas">
-          <div className="hbl-firma">
-            <div className="hbl-firma-linea"></div>
-            <small>Shipper / Embarcador</small>
+        {/* ── CONSIGNED TO ── */}
+        <div className="hbl-row-2">
+          <div className="hbl-block">
+            <label>CONSIGNED TO</label>
+            <div className="hbl-val">{upper(p.destinatario)}</div>
           </div>
-          <div className="hbl-firma">
-            <div className="hbl-firma-linea"></div>
-            <small>Grupo Empresarial · Carrier</small>
-          </div>
-          <div className="hbl-firma">
-            <div className="hbl-firma-linea"></div>
-            <small>Received by / Recibido por</small>
+          <div className="hbl-block hbl-block-tel">
+            <label>TELEFONOS</label>
+            <div className="hbl-sub">{p.consignatarioTel || p.remitenteTel || "—"}</div>
           </div>
         </div>
 
-        <div className="hbl-footer">
-          GRUPO EMPRESARIAL · +1 727-598-6802 · info@grupo-empresarial.com
+        {/* ── Datos del consignatario ── */}
+        <div className="hbl-datos">
+          <div className="hbl-dato"><label>CI:</label><span>{upper(p.consignatarioCarnet) || "—"}</span></div>
+          <div className="hbl-dato hbl-dato-wide"><label>Direccion:</label><span>{upper(p.consignatarioCalle)}{p.consignatarioEntre ? ` E/ ${upper(p.consignatarioEntre)}` : ""}</span></div>
+          <div className="hbl-dato"><label>Municipio:</label><span>{upper(p.consignatarioMunicipio) || "—"}</span></div>
+          <div className="hbl-dato"><label>Provincia:</label><span>{upper(p.consignatarioProvincia) || "—"}</span></div>
+        </div>
+
+        {/* ── Tabla de mercancía ── */}
+        <table className="hbl-tabla">
+          <thead>
+            <tr>
+              <th className="col-marks">MARKS AND NUMBERS</th>
+              <th className="col-pack">N PACK</th>
+              <th>DESCRIPTION OF COMMODITIES</th>
+              <th className="col-gw">G W (KG)</th>
+              <th className="col-m3">M. (M3)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="mono">{p.hawb}</td>
+              <td className="num">{p.piezas}</td>
+              <td>{upper(p.contenido)}{p.categoria ? ` · ${upper(p.categoria)}` : ""}</td>
+              <td className="num">{pesoKg.toFixed(2)}</td>
+              <td className="num">—</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* ── Casillas inferiores ── */}
+        <div className="hbl-footer-grid">
+          <div className="hbl-foot-box">
+            <label>FECHA EMISION</label>
+            <div className="hbl-foot-val">{fechaEmision}</div>
+          </div>
+          <div className="hbl-foot-box">
+            <label>FECHA ENTREGA</label>
+            <div className="hbl-foot-val">—</div>
+          </div>
+          <div className="hbl-foot-box">
+            <label>FIRMA AGENTE</label>
+            <div className="hbl-foot-line"></div>
+          </div>
+          <div className="hbl-foot-box">
+            <label>MANIFIESTO</label>
+            <div className="hbl-foot-val">MANIFIESTO</div>
+          </div>
+          <div className="hbl-foot-box">
+            <label>TIPO ENVIO</label>
+            <div className="hbl-foot-val">ENVIO</div>
+          </div>
         </div>
       </div>
     </>

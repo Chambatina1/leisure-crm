@@ -52,61 +52,70 @@ export default async function BOLPage() {
 
 const BOL_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f0f0f0; color: #1f2937; }
-  .toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; }
-  .toolbar button, .toolbar .btn-link { padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; background: #C23B22; color: #fff; border: none; font-size: .9rem; }
-  .toolbar .btn-link { background: #6b7280; }
+  body { font-family: Arial, sans-serif; background: #e8e8e8; color: #1a1a1a; font-size: 10px; }
+  .toolbar { display: flex; gap: 10px; padding: 12px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; }
+  .toolbar button, .toolbar .btn-link { padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; background: #C23B22; color: #fff; border: none; font-size: .85rem; }
+  .toolbar .btn-link { background: #374151; }
 
-  .bol { max-width: 800px; margin: 20px auto; background: #fff; padding: 28px; }
-  .bol-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #C23B22; padding-bottom: 12px; margin-bottom: 14px; }
-  .bol-marca { display: flex; align-items: center; gap: 10px; }
-  .bol-barco { font-size: 30px; }
-  .bol-marca strong { display: block; font-size: 16px; color: #C23B22; }
-  .bol-marca small { font-size: 10px; color: #666; }
-  .bol-grupo-logos { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
-  .bol-grupo-logos img { max-height: 26px; max-width: 70px; width: auto; height: auto; object-fit: contain; }
+  /* Hoja A4 horizontal (landscape) */
+  .bol { width: 297mm; min-height: 200mm; margin: 16px auto; padding: 12mm; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+
+  /* Header */
+  .bol-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C23B22; padding-bottom: 10px; margin-bottom: 12px; }
+  .bol-marca { display: flex; flex-direction: column; gap: 8px; }
+  .bol-barco { background: #C23B22; color: #fff; font-weight: 900; font-size: 20px; padding: 4px 12px; border-radius: 4px; letter-spacing: 1px; display: inline-block; width: fit-content; }
+  .bol-marca strong { display: block; font-size: 16px; color: #C23B22; letter-spacing: .5px; }
+  .bol-marca small { font-size: 9px; color: #666; }
+  .bol-grupo-logos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .bol-titulo { text-align: right; }
-  .bol-titulo h1 { font-size: 22px; color: #1f2937; letter-spacing: 1px; }
-  .bol-fecha { font-size: 11px; color: #666; }
-  .bol-k { font-size: 12px; margin-top: 4px; }
+  .bol-titulo h1 { font-size: 18px; color: #1f2937; letter-spacing: 1.5px; }
+  .bol-fecha { font-size: 10px; color: #666; margin-top: 2px; }
+  .bol-k { font-size: 11px; margin-top: 4px; }
   .bol-k span { background: #C23B22; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: 900; }
 
-  .bol-ruta { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 12px; }
-  .bol-ruta small { display: block; color: #6b7280; font-size: 9px; text-transform: uppercase; }
-  .bol-flecha { font-size: 18px; }
+  /* Datos del embarque */
+  .bol-embarque { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .bol-embarque > div { border: 1px solid #ddd; padding: 6px 10px; border-radius: 6px; background: #f9fafb; }
+  .bol-embarque label { display: block; font-size: 7px; font-weight: 800; color: #C23B22; text-transform: uppercase; letter-spacing: .5px; }
+  .bol-embarque b { font-size: 11px; color: #1f2937; }
 
-  .bol-resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-  .bol-resumen > div { background: #fef3c7; padding: 10px; border-radius: 8px; text-align: center; }
+  /* Resumen */
+  .bol-resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+  .bol-resumen > div { background: #fef3c7; padding: 8px; border-radius: 6px; text-align: center; }
   .bol-resumen b { display: block; font-size: 18px; color: #C23B22; }
-  .bol-resumen span { font-size: 10px; color: #666; }
+  .bol-resumen span { font-size: 9px; color: #666; }
 
-  .bol-tabla { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .bol-tabla th { background: #1f2937; color: #fff; padding: 8px; text-align: left; font-size: 9px; text-transform: uppercase; }
-  .bol-tabla td { padding: 6px 8px; border-bottom: 1px solid #e5e7eb; }
-  .bol-tabla small { color: #6b7280; font-size: 9px; }
-  .bol-tabla .mono { font-family: "Courier New", monospace; }
+  /* Tabla del manifiesto */
+  .bol-tabla { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .bol-tabla th { background: #1f2937; color: #fff; padding: 6px 5px; text-align: left; font-size: 8px; text-transform: uppercase; letter-spacing: .3px; border: 1px solid #1f2937; }
+  .bol-tabla td { padding: 4px 5px; border: 1px solid #ddd; vertical-align: top; }
+  .bol-tabla .mono { font-family: "Courier New", monospace; font-weight: 700; }
   .bol-tabla .num { text-align: right; font-family: "Courier New", monospace; }
-  .bol-tabla tfoot td { border-top: 2px solid #1f2937; background: #f9fafb; }
+  .bol-tabla tfoot td { border-top: 2px solid #1f2937; background: #f3f4f6; font-weight: 800; }
 
-  .bol-firmas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 40px; }
+  /* Anchos de columnas */
+  .bol-tabla .col-n { width: 25px; text-align: center; }
+  .bol-tabla .col-track { width: 90px; }
+  .bol-tabla .col-ci { width: 70px; }
+  .bol-tabla .col-tel { width: 70px; }
+  .bol-tabla .col-dir { width: 120px; }
+  .bol-tabla .col-prov { width: 70px; }
+  .bol-tabla .col-cont { width: 80px; }
+  .bol-tabla .col-num { width: 45px; }
+
+  /* Firmas */
+  .bol-firmas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 30px; }
   .bol-firma { text-align: center; }
-  .bol-linea { border-top: 1px solid #1f2937; margin-bottom: 6px; height: 30px; }
-  .bol-firma small { font-size: 10px; color: #6b7280; }
+  .bol-linea { border-top: 1px solid #333; margin-bottom: 4px; height: 30px; }
+  .bol-firma small { font-size: 8px; color: #6b7280; }
 
-  .bol-footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 10px; color: #6b7280; }
-
-  .bol-dev { margin-top: 28px; padding: 20px; background: #fffbeb; border: 2px dashed #e0a106; border-radius: 12px; }
-  .bol-dev-head { display: inline-block; background: #e0a106; color: #fff; font-size: 11px; font-weight: 900; letter-spacing: 1.5px; padding: 3px 12px; border-radius: 5px; }
-  .bol-dev-sub { font-size: 13px; font-weight: 700; color: #92400e; margin: 10px 0 8px; }
-  .bol-dev-list { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 6px; }
-  .bol-dev-list li { font-size: 12px; color: #78350f; padding-left: 16px; position: relative; line-height: 1.5; }
-  .bol-dev-list li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: #e0a106; }
-  .bol-dev-foot { font-size: 11px; color: #92400e; font-style: italic; margin: 0; }
+  /* Footer */
+  .bol-footer { margin-top: 16px; padding-top: 6px; border-top: 2px solid #C23B22; text-align: center; font-size: 8px; color: #6b7280; }
 
   @media print {
     body { background: #fff; }
-    .toolbar, .no-print { display: none !important; }
-    .bol { margin: 0; max-width: 100%; padding: 10px; }
-    @page { size: A4; margin: 12mm; }
+    .no-print { display: none !important; }
+    .bol { box-shadow: none; margin: 0; width: 100%; min-height: auto; padding: 8mm; }
+    @page { size: A4 landscape; margin: 8mm; }
   }
 `;
