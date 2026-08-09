@@ -226,14 +226,14 @@ export default function HomePage() {
         <div className="footer-grupo">
           <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
           <div className="footer-grupo-logos">
-            <div className="footer-grupo-logo">
+            <div className="footer-grupo-logo logo-blanco">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logos/chambatina.png" alt="Chambatina" />
             </div>
             <div className="footer-grupo-divider"></div>
             <div className="footer-grupo-logo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logos/servitravel.svg" alt="ServiTravel" />
+              <img src="/logos/servitravel.png" alt="ServiTravels" style={{ background: "#fff", borderRadius: 8, padding: "4px 10px" }} />
             </div>
           </div>
         </div>
