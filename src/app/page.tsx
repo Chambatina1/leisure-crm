@@ -128,6 +128,7 @@ export default function HomePage() {
             <button className={lang === "es" ? "active" : ""} onClick={() => setLang("es")}>ES</button>
           </div>
           <a className="btn-agencias" href="/nuevo-paquete">{t.navEtiqueta}</a>
+          <a className="btn-agencias2" href="/envios">Mis envíos</a>
           <a className="btn-agencias2" href="/app">{t.navAgencias}</a>
         </div>
       </nav>

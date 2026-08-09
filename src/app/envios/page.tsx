@@ -72,6 +72,7 @@ export default function EnviosPage() {
     { k: "pagado", l: "Pagado" },
     { k: "observaciones", l: "Observaciones" },
     { k: "factura", l: "# Factura" },
+    { k: "_acciones", l: "Acciones", w: "140px" },
   ];
 
   const cellVal = (p: Paquete, i: number, k: string) => {
