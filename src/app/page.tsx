@@ -129,7 +129,7 @@ export default function HomePage() {
           </div>
           <a className="btn-agencias" href="/nuevo-paquete">{t.navEtiqueta}</a>
           <a className="btn-agencias2" href="/envios">Mis envíos</a>
-          <a className="btn-agencias2" href="/app">{t.navAgencias}</a>
+          <a className="btn-agencias2" href="/login">Acceso</a>
         </div>
       </nav>
 
@@ -232,7 +232,7 @@ export default function HomePage() {
         </div>
         <div className="footer-brand"><strong>Grupo Empresarial</strong> · {t.footBrand}</div>
         <small>© {new Date().getFullYear()} Grupo Empresarial. {t.footRights}</small>
-        <a className="footer-agencias" href="/app">{t.navAgencias}</a>
+        <a className="footer-agencias" href="/login">Acceso al sistema</a>
       </footer>
     </main>
   );
