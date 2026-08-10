@@ -55,3 +55,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return errorResponse(`Error al editar: ${e?.message?.slice(0, 200) || String(e)}`, 500);
   }
 }
+
+// DELETE /api/paquetes/[codigo] — eliminar un envío.
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ codigo: string }> }) {
+  const s = await getSession(request);
+  if (!s) return errorResponse("No autenticado", 401);
+  const { codigo } = await params;
+  const cod = codigo.toUpperCase();
+  try {
+    // Eliminar eventos primero (FK), luego el paquete
+    await db.evento.deleteMany({ where: { paqueteCodigo: cod } });
+    await db.paquete.delete({ where: { codigo: cod } });
+    return jsonResponse({ ok: true });
+  } catch (e: any) {
+    return errorResponse(`Error al eliminar: ${e?.message?.slice(0, 200)}`, 500);
+  }
+}

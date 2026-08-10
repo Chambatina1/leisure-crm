@@ -23,6 +23,15 @@ export default function EnviosPage() {
     } catch {} setCargando(false);
   }
 
+  async function eliminarEnvio(codigo: string) {
+    if (!confirm(`¿Eliminar el envío ${codigo}? Esta acción no se puede deshacer.`)) return;
+    try {
+      const r = await fetch(`/api/paquetes/${codigo}`, { method: "DELETE" });
+      if (r.ok) cargar();
+      else { const d = await r.json().catch(() => ({})); alert(d.error || "No se pudo eliminar"); }
+    } catch { alert("No se pudo conectar"); }
+  }
+
   const txt = filtro.toLowerCase();
   const filtrados = paquetes.filter(p => {
     if (!txt) return true;
@@ -42,37 +51,27 @@ export default function EnviosPage() {
 
   const COLS: { k: string; l: string; w?: string; num?: boolean }[] = [
     { k: "idx", l: "#", w: "40px" },
-    { k: "creadoPorNombre", l: "Creado por" },
-    { k: "imagen", l: "Imagen" },
     { k: "codigo", l: "HAWB" },
     { k: "estado", l: "Estado" },
-    { k: "escaneado", l: "Escaneado" },
-    { k: "manifiesto", l: "Manifiesto" },
-    { k: "guiaBuque", l: "Guía/Buque" },
-    { k: "clasificacion", l: "Clasificación" },
-    { k: "mercancias", l: "Mercancías" },
-    { k: "palet", l: "Palet" },
     { k: "creado", l: "Fecha" },
+    { k: "remitente", l: "REMITENTE" },
+    { k: "remitenteCarnet", l: "Carnet Rem." },
+    { k: "remitenteTel", l: "Tel. Rem." },
     { k: "destinatario", l: "CONSIGNATARIO" },
-    { k: "consignatarioCarnet", l: "Pasaporte" },
-    { k: "consignatarioCarnet", l: "C.Identidad" },
-    { k: "consignatarioCalle", l: "Dirección Con." },
+    { k: "consignatarioCarnet", l: "CI/Carnet" },
     { k: "consignatarioTel", l: "Teléfono" },
-    { k: "remitente", l: "EMBARCADOR" },
-    { k: "remitenteCarnet", l: "Pasaporte" },
-    { k: "remitenteDir", l: "Dirección Emb." },
-    { k: "valorFact", l: "Valor Fact.", num: true },
-    { k: "valorDocum", l: "Valor Docum", num: true },
-    { k: "piezas", l: "Cantidad", num: true },
+    { k: "consignatarioCalle", l: "DIRECCIÓN" },
+    { k: "consignatarioMunicipio", l: "MUNICIPIO" },
+    { k: "consignatarioProvincia", l: "PROVINCIA" },
+    { k: "contenido", l: "DESCRIPCIÓN" },
+    { k: "piezas", l: "Pzs", num: true },
     { k: "peso", l: "Peso (Lb)", num: true },
     { k: "pesoKg", l: "Kg", num: true },
-    { k: "volumenM3", l: "Volumen m³", num: true },
+    { k: "volumenM3", l: "m³", num: true },
     { k: "valor", l: "Valor", num: true },
-    { k: "valorPelig", l: "Valor Pelig.", num: true },
     { k: "pagado", l: "Pagado" },
-    { k: "observaciones", l: "Observaciones" },
-    { k: "factura", l: "# Factura" },
-    { k: "_acciones", l: "Acciones", w: "140px" },
+    { k: "notas", l: "Notas" },
+    { k: "_acciones", l: "Acciones", w: "200px" },
   ];
 
   const cellVal = (p: Paquete, i: number, k: string) => {
@@ -86,6 +85,7 @@ export default function EnviosPage() {
           <a href={`/hbl/${cod}`} target="_blank" rel="noopener" style={{ fontSize: 9, padding: "3px 6px", background: "#1f6b3a", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>HBL</a>
           <a href="/bol" target="_blank" rel="noopener" style={{ fontSize: 9, padding: "3px 6px", background: "#374151", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>Manif</a>
           <a href={`/envios/${cod}/editar`} style={{ fontSize: 9, padding: "3px 6px", background: "#e0a106", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>Editar</a>
+          <button onClick={() => eliminarEnvio(cod)} style={{ fontSize: 9, padding: "3px 6px", background: "#dc2626", color: "#fff", border: "none", borderRadius: 4, fontWeight: 700, cursor: "pointer" }}>Eliminar</button>
         </div>
       );
     }
