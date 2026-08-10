@@ -654,11 +654,14 @@ function AgenciasTab() {
   }
 
   async function subirLogo(a: any, file: File) {
+    if (!file) return;
+    alert("Subiendo logo de " + a.nombre + "...");
     try {
       const logo = await leerImagen(file);
       const r = await fetch(`/api/agencias/${a.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ logo }) });
-      if (r.ok) cargar(); else alert("Error al guardar el logo");
-    } catch (e) { alert("No se pudo leer la imagen: " + e); }
+      if (r.ok) { cargar(); alert("Logo guardado correctamente."); }
+      else { const d = await r.json().catch(()=>({})); alert("Error: " + (d.error || "no se pudo guardar")); }
+    } catch (e: any) { alert("No se pudo leer: " + (e?.message || e)); }
   }
 
   async function togglePermiso(a: any) {
@@ -705,11 +708,9 @@ function AgenciasTab() {
                       {a.puedeCrearSubagencias ? "Subagencias ✓" : "Sin subagencias"}
                     </button>
                   )}
-                  <label style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af", cursor: "pointer" }}>
-                    Logo
-                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} />
-                  </label>
-                  <button onClick={() => setEditandoAgencia(a)} style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af" }}>Editar</button>
+                  <button onClick={() => document.getElementById("file-logo-" + a.id)?.click()} style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af" }}>Logo</button>
+                  <input id={"file-logo-" + a.id} type="file" onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} style={{ display: "none" }} />
+                  <button onClick={() => setEditandoAgencia(a)} style={{ ...miniBtn, background: "#fef3c7", color: "#92400e" }}>Editar</button>
                   <a href={`/portal/${a.id}`} style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
                   {a.tipo !== "matriz" && (
                     <button onClick={() => eliminarAgencia(a)} style={{ ...miniBtn, background: "#fef2f2", color: "#dc2626" }}>Eliminar</button>
