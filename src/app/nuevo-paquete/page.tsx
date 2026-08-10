@@ -14,14 +14,14 @@ import { useState, useEffect, useMemo } from "react";
 const HEADER_IMG = "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
 import { PROVINCIAS, MUNICIPIOS } from "@/lib/municipios";
-// Las categorías se cargan dinámicamente desde /api/categorias
-  const [CATEGORIAS, setCategorias] = useState(["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Miscelánea","Otro"]);
 
 export default function NuevoPaquetePage() {
   const [paso, setPaso] = useState(1);
   const [agenciaId, setAgenciaId] = useState("");
   const [agenciaNombre, setAgenciaNombre] = useState("");
   const [contabilidad, setContabilidad] = useState(false);
+  // Las categorías se cargan dinámicamente desde /api/categorias
+  const [CATEGORIAS, setCategorias] = useState(["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Miscelánea","Otro"]);
 
   // ── Campos del wizard ──
   const [peso, setPeso] = useState("1");
