@@ -167,9 +167,14 @@ const ETIQUETA_CSS = `
   .etq-footer { border-top: 2px solid #C23B22; padding-top: 3px; text-align: center; font-size: 7px; color: #555; letter-spacing: .3px; }
 
   @media print {
-    body { background: #fff; }
+    body { background: #fff; margin: 0; padding: 0; }
     .no-print { display: none !important; }
-    .etq { border: none; margin: 0; width: 4in; padding: 6px; }
+    .etq {
+      border: none; margin: 0; padding: 5px;
+      width: 4in; height: 6in;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
     /* En B/N: logos en blanco puro sobre fondo negro para maximo contraste */
     .etq-grupo { background: #000; padding: 3px 6px; border-radius: 3px; }
     .etq-grupo img, .etq-logo-blanco { background: #000 !important; filter: brightness(0) invert(1) !important; }
