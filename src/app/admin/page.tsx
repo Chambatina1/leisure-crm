@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 // 4 pilares: CONTABILIDAD · ANÁLISIS · ESTADO DE PAQUETES · RASTREADOR
 // Control, soporte y supervisión de todas las agencias.
 // ════════════════════════════════════════════════════════════════════════════
-type Tab = "contabilidad" | "analisis" | "estados" | "rastreador" | "brands";
+type Tab = "contabilidad" | "analisis" | "estados" | "rastreador" | "brands" | "agencias";
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("estados");
@@ -49,6 +49,7 @@ export default function AdminPage() {
         <TabBtn active={tab === "contabilidad"} onClick={() => setTab("contabilidad")}>💰 Contabilidad</TabBtn>
         <TabBtn active={tab === "analisis"} onClick={() => setTab("analisis")}>📊 Análisis</TabBtn>
         <TabBtn active={tab === "brands"} onClick={() => setTab("brands")}>🏷️ Marcas</TabBtn>
+        <TabBtn active={tab === "agencias"} onClick={() => setTab("agencias")}>🏢 Agencias</TabBtn>
       </div>
 
       {/* Contenido */}
@@ -57,6 +58,7 @@ export default function AdminPage() {
       {tab === "contabilidad" && <ContabilidadTab resumen={resumen} />}
       {tab === "analisis" && <AnalisisTab />}
       {tab === "brands" && <BrandsTab />}
+      {tab === "agencias" && <AgenciasTab />}
     </div>
   );
 }
@@ -519,6 +521,199 @@ function BrandsTab() {
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                 <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
                 <button type="submit" style={btnPrim}>{modal.id ? "Guardar" : "Crear"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// AgenciasTab — gestionar agencias y usuarios del multi-agencia.
+// Crear agencias, crear usuarios con login/contraseña, conceder permisos.
+// ════════════════════════════════════════════════════════════════════════════
+function AgenciasTab() {
+  const [agencias, setAgencias] = useState<any[]>([]);
+  const [usuarios, setUsuarios] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState<null | "agencia" | "usuario">(null);
+  const [agenciaSeleccionada, setAgenciaSeleccionada] = useState<string>("");
+
+  function cargar() {
+    Promise.all([
+      fetch("/api/agencias").then(r => r.json()),
+      fetch("/api/usuarios").then(r => r.json()),
+    ]).then(([a, u]) => {
+      setAgencias(a.agencias || []);
+      setUsuarios(u.usuarios || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }
+  useEffect(cargar, []);
+
+  async function crearAgencia(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const body = {
+      nombre: fd.get("nombre"), tipo: fd.get("tipo"), padreId: fd.get("padreId") || null,
+      direccion: fd.get("direccion"), ciudad: fd.get("ciudad"), pais: fd.get("pais"),
+      telefono: fd.get("telefono"), puedeCrearSubagencias: fd.get("puedeCrearSubagencias") === "on",
+    };
+    if (!body.nombre) return;
+    const r = await fetch("/api/agencias", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) { const d = await r.json(); alert(d.error || "Error"); return; }
+    setModal(null); cargar();
+  }
+
+  async function crearUsuario(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const body = {
+      usuario: fd.get("usuario"), password: fd.get("password"), nombre: fd.get("nombre"),
+      rol: fd.get("rol"), agenciaId: fd.get("agenciaId"),
+    };
+    if (!body.usuario || !body.password || !body.nombre) { alert("Usuario, contraseña y nombre son obligatorios"); return; }
+    const r = await fetch("/api/usuarios", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) { const d = await r.json(); alert(d.error || "Error"); return; }
+    setModal(null); cargar();
+  }
+
+  async function togglePermiso(a: any) {
+    await fetch(`/api/agencias/${a.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ puedeCrearSubagencias: !a.puedeCrearSubagencias }) });
+    cargar();
+  }
+
+  if (loading) return <p style={{ color: "#6b7280" }}>Cargando...</p>;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <h2 style={{ margin: 0, color: "#1f2937", fontSize: 18 }}>Agencias y usuarios</h2>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => setModal("agencia")} style={btnPrim}>+ Nueva agencia</button>
+          <button onClick={() => setModal("usuario")} style={btnPrim}>+ Nuevo usuario</button>
+        </div>
+      </div>
+      <p style={{ color: "#6b7280", fontSize: 13, marginBottom: 20 }}>
+        Cada agencia tiene su propio acceso con usuario y contraseña. Solo ven sus propios envíos y clientes. La matriz (admin) ve todo.
+      </p>
+
+      {/* Lista de agencias */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {agencias.map(a => {
+          const users = usuarios.filter((u: any) => u.agenciaId === a.id);
+          return (
+            <div key={a.id} style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, background: "#fff" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <strong style={{ fontSize: 16 }}>{a.nombre}</strong>
+                    <span style={{ fontSize: 10, background: a.tipo === "matriz" ? "#C23B22" : a.tipo === "subagencia" ? "#e0a106" : "#1f6b3a", color: "#fff", padding: "2px 8px", borderRadius: 999, fontWeight: 700, textTransform: "uppercase" }}>{a.tipo}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>
+                    {[a.ciudad, a.pais].filter(Boolean).join(", ") || "Sin ubicación"}
+                    {a.telefono && ` · ${a.telefono}`}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {a.tipo !== "matriz" && (
+                    <button onClick={() => togglePermiso(a)} style={{ ...miniBtn, background: a.puedeCrearSubagencias ? "#d1fae5" : "#f3f4f6", color: a.puedeCrearSubagencias ? "#065f46" : "#6b7280" }}>
+                      {a.puedeCrearSubagencias ? "Puede crear subagencias ✓" : "No puede crear subagencias"}
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* Usuarios de esta agencia */}
+              {users.length > 0 && (
+                <div style={{ marginTop: 10, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", textTransform: "uppercase", marginBottom: 6 }}>Usuarios ({users.length})</div>
+                  {users.map((u: any) => (
+                    <div key={u.id} style={{ display: "flex", gap: 12, fontSize: 13, padding: "3px 0" }}>
+                      <span style={{ fontWeight: 700 }}>{u.nombre}</span>
+                      <span style={{ color: "#6b7280" }}>@{u.usuario}</span>
+                      <span style={{ fontSize: 10, background: u.rol === "admin" ? "#C23B22" : "#374151", color: "#fff", padding: "1px 6px", borderRadius: 999 }}>{u.rol}</span>
+                      {!u.activo && <span style={{ fontSize: 10, color: "#dc2626" }}>inactivo</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Modal crear agencia */}
+      {modal === "agencia" && (
+        <div style={modalBg} onClick={() => setModal(null)}>
+          <div style={modalCard} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, color: "#C23B22" }}>Nueva agencia</h3>
+            <form onSubmit={crearAgencia} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div><label style={lbl}>Nombre *</label><input name="nombre" placeholder="Ej: Agencia Miami" style={inp} required /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div><label style={lbl}>Tipo</label>
+                  <select name="tipo" style={inp}>
+                    <option value="agencia">Agencia</option>
+                    <option value="subagencia">Subagencia</option>
+                  </select>
+                </div>
+                <div><label style={lbl}>Depende de (padre)</label>
+                  <select name="padreId" style={inp}>
+                    <option value="">— Matriz (sin padre) —</option>
+                    {agencias.filter(a => a.tipo !== "subagencia").map(a => <option key={a.id} value={a.id}>{a.nombre}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div><label style={lbl}>Ciudad</label><input name="ciudad" placeholder="Miami" style={inp} /></div>
+                <div><label style={lbl}>País</label><input name="pais" placeholder="USA" style={inp} /></div>
+              </div>
+              <div><label style={lbl}>Dirección</label><input name="direccion" style={inp} /></div>
+              <div><label style={lbl}>Teléfono</label><input name="telefono" style={inp} /></div>
+              <div><label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13, cursor: "pointer" }}><input type="checkbox" name="puedeCrearSubagencias" /> Puede crear subagencias</label></div>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
+                <button type="submit" style={btnPrim}>Crear agencia</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal crear usuario */}
+      {modal === "usuario" && (
+        <div style={modalBg} onClick={() => setModal(null)}>
+          <div style={modalCard} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, color: "#C23B22" }}>Nuevo usuario</h3>
+            <form onSubmit={crearUsuario} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div><label style={lbl}>Nombre completo *</label><input name="nombre" placeholder="Juan Pérez" style={inp} required /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div><label style={lbl}>Usuario (login) *</label><input name="usuario" placeholder="juan" style={inp} required /></div>
+                <div><label style={lbl}>Contraseña *</label><input name="password" type="text" placeholder="contraseña" style={inp} required /></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div><label style={lbl}>Rol</label>
+                  <select name="rol" style={inp}>
+                    <option value="agencia">Agencia (opera su agencia)</option>
+                    <option value="operario">Operario</option>
+                    <option value="camionero">Camionero (escanea)</option>
+                    <option value="admin">Admin (ve todo)</option>
+                  </select>
+                </div>
+                <div><label style={lbl}>Agencia *</label>
+                  <select name="agenciaId" style={inp} required>
+                    <option value="">— Seleccionar —</option>
+                    {agencias.map(a => <option key={a.id} value={a.id}>{a.nombre}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div style={{ background: "#fef3c7", padding: 10, borderRadius: 8, fontSize: 12, color: "#92400e" }}>
+                Este usuario podrá entrar con su usuario/contraseña y solo verá los datos de su agencia.
+              </div>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
+                <button type="submit" style={btnPrim}>Crear usuario</button>
               </div>
             </form>
           </div>

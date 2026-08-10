@@ -1,73 +1,48 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Middleware — MODO PRUEBA: auto-login como admin (sin pantalla de login).
-// La landing "/" es pública. /app y /api/* quedan con sesión admin auto-creada.
+// Middleware — LOGIN REAL. Exige sesión válida para /app y /api/*.
+// Si no hay sesión: redirige a /login (páginas) o 401 (API).
+// Páginas públicas: landing, login, etiquetas, BOL (para choferes/clientes).
 // ════════════════════════════════════════════════════════════════════════════
 import { NextRequest, NextResponse } from "next/server";
-import { getSession, signToken } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 
-const PUBLIC_API = ["/api/auth/login", "/api/health", "/api/db-check", "/api/migrate", "/api/brands"];
-const WEEK = 60 * 60 * 24 * 7;
+const PUBLIC_API = ["/api/auth/login", "/api/auth/logout", "/api/health", "/api/db-check", "/api/migrate", "/api/brands"];
 
-function withSessionCookie(res: NextResponse, token: string) {
-  res.cookies.set("leisure_session", token, {
-    httpOnly: true, secure: process.env.NODE_ENV === "production",
-    sameSite: "lax", path: "/", maxAge: WEEK,
-  });
-  return res;
+function isPublicApi(pathname: string): boolean {
+  if (PUBLIC_API.includes(pathname)) return true;
+  if (pathname.startsWith("/api/aduana/")) return true;
+  if (pathname.startsWith("/api/paquetes/") && pathname.endsWith("/qr")) return true;
+  return false;
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Assets y login → libres.
-  if (pathname.startsWith("/_next") || pathname === "/login") return NextResponse.next();
+  if (pathname.startsWith("/_next") || pathname.startsWith("/favicon")) return NextResponse.next();
+  if (pathname === "/" || pathname === "/login") return NextResponse.next();
+  if (pathname.startsWith("/etiqueta/") || pathname === "/bol") return NextResponse.next();
+  if (pathname.startsWith("/servicios/")) return NextResponse.next();
+  if (pathname.startsWith("/api/") && isPublicApi(pathname)) return NextResponse.next();
 
-  // QR público sin sesión.
-  if (pathname.startsWith("/api/paquetes/") && pathname.endsWith("/qr")) return NextResponse.next();
-  if (PUBLIC_API.includes(pathname)) return NextResponse.next();
-  // Catálogo de aduana → público.
-  if (pathname.startsWith("/api/aduana/")) return NextResponse.next();
-
-  // Etiquetas, Bill of Lading y páginas admin → públicos (auto-login en middleware).
-  if (pathname.startsWith("/etiqueta/") || pathname === "/bol" || pathname.startsWith("/admin") || pathname.startsWith("/envios") || pathname.startsWith("/nuevo-paquete")) return NextResponse.next();
-
-  // ¿Hay sesión válida?
   const session = await getSession(request);
-  const token = await signToken({
-    userId: "auto-admin", usuario: "admin", rol: "admin", nombre: "Administrador", agenciaId: null,
-  });
 
-  // /app: servir el CRM estático. Si /app sin barra final → reescribir al HTML.
   if (pathname === "/app" || pathname.startsWith("/app/")) {
-    let res: NextResponse;
-    if (pathname === "/app") {
-      // Reescribir a /app/index.html
-      res = NextResponse.rewrite(new URL("/app/index.html", request.url));
-    } else if (pathname === "/app/") {
-      res = NextResponse.rewrite(new URL("/app/index.html", request.url));
-    } else {
-      res = NextResponse.next();
+    if (!session) return NextResponse.redirect(new URL("/login", request.url));
+    if (pathname === "/app" || pathname === "/app/") {
+      return NextResponse.rewrite(new URL("/app/index.html", request.url));
     }
-    if (!session) return withSessionCookie(res, token);
-    return res;
+    return NextResponse.next();
   }
 
-  // Resto de /api/*: si no hay sesión, inyectar el token por header interno
-  // Y dejar pasar el request al handler en la MISMA petición. Esto es crítico
-  // para los POST (crear paquete, etc.) que antes devolvían "session-created"
-  // y rompían el flujo del cliente.
   if (pathname.startsWith("/api/")) {
-    if (session) return NextResponse.next();
-    // Auto-login: setear cookie en la respuesta + pasar token al handler vía header.
-    const headers = new Headers(request.headers);
-    headers.set("x-auto-session", token);
-    const nextRes = NextResponse.next({ request: { headers } });
-    return withSessionCookie(nextRes, token);
+    if (!session) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    return NextResponse.next();
   }
 
+  if (!session) return NextResponse.redirect(new URL("/login", request.url));
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/api/:path*"],
+  matcher: ["/app/:path*", "/api/:path*", "/admin/:path*", "/envios/:path*", "/nuevo-paquete/:path*", "/hbl/:path*"],
 };
