@@ -143,6 +143,11 @@ const ETIQUETA_CSS = `
   .etq-dest-mun { font-size: 26px; font-weight: 900; color: #C23B22; line-height: 1; }
   .etq-dest-sep { font-size: 22px; color: #999; }
   .etq-dest-prov { font-size: 26px; font-weight: 900; color: #C23B22; line-height: 1; }
+  .etq-dest-datos { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; text-align: left; }
+  .etq-dest-dato { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 3px 6px; }
+  .etq-dest-dato-wide { grid-column: 1 / -1; }
+  .etq-dest-dato label { font-size: 7px; font-weight: 800; color: #C23B22; text-transform: uppercase; display: block; }
+  .etq-dest-dato b { font-size: 10px; font-weight: 700; color: #000; }
 
   /* ── Fila 5: Peso / Bultos / QR ── */
   .etq-peso-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 3px; }

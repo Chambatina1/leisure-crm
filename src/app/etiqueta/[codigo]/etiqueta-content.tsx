@@ -77,18 +77,6 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
             <label>EMBARCADOR</label>
             <div className="etq-field-val">{upper(p.remitente)}</div>
           </div>
-          <div className="etq-field">
-            <label>CARNET / ID</label>
-            <div className="etq-field-val">{upper(p.consignatarioCarnet) || "—"}</div>
-          </div>
-          <div className="etq-field">
-            <label>TELEFONO</label>
-            <div className="etq-field-val">{p.consignatarioTel || "—"}</div>
-          </div>
-          <div className="etq-field etq-field-wide">
-            <label>DIRECCION</label>
-            <div className="etq-field-val">{direccionCompleta}</div>
-          </div>
         </div>
 
         {/* ── CONSIGNATARIO DESTACADO — lo más grande de la etiqueta ── */}
@@ -100,13 +88,19 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
             <span className="etq-dest-sep">·</span>
             <span className="etq-dest-prov">{upper(p.consignatarioProvincia) || "LA HABANA"}</span>
           </div>
+          {/* Datos del consignatario debajo del cuadro resaltado */}
+          <div className="etq-dest-datos">
+            <div className="etq-dest-dato"><label>CI / CARNE</label><b>{upper(p.consignatarioCarnet) || "—"}</b></div>
+            <div className="etq-dest-dato"><label>TELEFONO</label><b>{p.consignatarioTel || "—"}</b></div>
+            <div className="etq-dest-dato etq-dest-dato-wide"><label>DIRECCION</label><b>{direccionCompleta}</b></div>
+          </div>
         </div>
 
         {/* ── FILA 4: Descripción + Envío ── */}
         <div className="etq-grid">
           <div className="etq-field etq-field-wide">
             <label>DESCRIPCION</label>
-            <div className="etq-field-val">{upper(p.contenido)}{p.categoria ? ` · ${upper(p.categoria)}` : ""}</div>
+            <div className="etq-field-val">{upper(p.contenido)}</div>
           </div>
           <div className="etq-field">
             <label>FECHA ENVIO</label>

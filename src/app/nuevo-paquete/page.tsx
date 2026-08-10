@@ -14,7 +14,7 @@ import { useState, useEffect, useMemo } from "react";
 const HEADER_IMG = "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
 import { PROVINCIAS, MUNICIPIOS } from "@/lib/municipios";
-const CATEGORIAS = ["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Otro"];
+const CATEGORIAS = ["Comida","Ropa","Electrodoméstico","Medicina","Documentos","Higiene","Repuestos","Combustible","Vehículo","Miscelánea","Otro"];
 
 export default function NuevoPaquetePage() {
   const [paso, setPaso] = useState(1);
@@ -29,7 +29,7 @@ export default function NuevoPaquetePage() {
   const [alto, setAlto] = useState("");
   const [largo, setLargo] = useState("");
   const [ancho, setAncho] = useState("");
-  const [contenido, setContenido] = useState("Paquete");
+  const [contenido, setContenido] = useState("");
   const [notas, setNotas] = useState("");
 
   const [remitente, setRemitente] = useState("");
@@ -94,7 +94,7 @@ export default function NuevoPaquetePage() {
     } catch {}
 
     const payload: Record<string, unknown> = {
-      agenciaId: agIdActual, peso, piezas, categoria, contenido, notas,
+      agenciaId: agIdActual, peso, piezas, categoria, contenido: contenido || "Miscelánea", notas,
       remitente, remitenteTel, remitenteCarnet,
       destinatario, consignatarioCarnet, consignatarioTel,
       consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
@@ -206,7 +206,11 @@ export default function NuevoPaquetePage() {
 
           <div style={grid2}>
             <Field label="Piezas" value={piezas} onChange={setPiezas} type="number" />
-            <SelectField label="Categoría" value={categoria} onChange={setCategoria} options={CATEGORIAS} />
+            <SelectField label="Categoría" value={categoria} onChange={(v) => {
+              setCategoria(v);
+              if (v === "Miscelánea") setContenido("Miscelánea");
+              else if (contenido === "Miscelánea") setContenido("");
+            }} options={CATEGORIAS} />
           </div>
 
           <div style={dimBox}>
@@ -221,7 +225,12 @@ export default function NuevoPaquetePage() {
             </div>
           </div>
 
-          <Field label="Contenido" value={contenido} onChange={setContenido} />
+          <div>
+            <label style={lbl}>Descripción del contenido (lo que aparece en la etiqueta)</label>
+            <textarea value={contenido} onChange={e => setContenido(e.target.value)}
+              placeholder="Describí el artículo a enviar. Ej: Ropa usada, 2 cajas de comida, medicina surtida..."
+              style={{ ...inp, minHeight: 60, resize: "vertical", fontFamily: "inherit" }} />
+          </div>
 
           <button onClick={() => setPaso(2)} disabled={!paso1Ok} style={{ ...btnPrim, width: "100%", opacity: paso1Ok ? 1 : 0.5 }}>
             Siguiente
