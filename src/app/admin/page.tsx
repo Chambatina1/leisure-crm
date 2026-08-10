@@ -708,8 +708,10 @@ function AgenciasTab() {
                       {a.puedeCrearSubagencias ? "Subagencias ✓" : "Sin subagencias"}
                     </button>
                   )}
-                  <button onClick={() => document.getElementById("file-logo-" + a.id)?.click()} style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af" }}>Logo</button>
-                  <input id={"file-logo-" + a.id} type="file" onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} style={{ display: "none" }} />
+                  <label style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af", cursor: "pointer", display: "inline-flex", alignItems: "center" }}>
+                    📷 Logo
+                    <input type="file" onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} style={{ position: "absolute", opacity: 0, width: 0, height: 0 }} />
+                  </label>
                   <button onClick={() => setEditandoAgencia(a)} style={{ ...miniBtn, background: "#fef3c7", color: "#92400e" }}>Editar</button>
                   <a href={`/portal/${a.id}`} style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
                   {a.tipo !== "matriz" && (

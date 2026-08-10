@@ -15,7 +15,14 @@ function imgToDataUrl(path: string): string {
 async function main() {
   console.log("🌱 Seed Leisure CRM…");
 
-  // Limpiar (orden por FK)
+  // PROTECCIÓN: Si ya hay agencias, NO hacer nada (no borrar datos existentes).
+  const agenciasCount = await prisma.agencia.count();
+  if (agenciasCount > 0) {
+    console.log("✓ BD ya tiene " + agenciasCount + " agencias. NO se borra nada. Seed cancelado.");
+    return;
+  }
+
+  console.log("BD vacía → creando datos iniciales…");
   await prisma.evento.deleteMany();
   await prisma.asiento.deleteMany();
   await prisma.paquete.deleteMany();
