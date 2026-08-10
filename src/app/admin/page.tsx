@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 // 4 pilares: CONTABILIDAD · ANÁLISIS · ESTADO DE PAQUETES · RASTREADOR
 // Control, soporte y supervisión de todas las agencias.
 // ════════════════════════════════════════════════════════════════════════════
-type Tab = "contabilidad" | "analisis" | "estados" | "rastreador" | "brands" | "agencias";
+type Tab = "contabilidad" | "analisis" | "estados" | "rastreador" | "brands" | "agencias" | "categorias";
 
 export default function AdminPage() {
   const [tab, setTab] = useState<Tab>("estados");
@@ -50,6 +50,7 @@ export default function AdminPage() {
         <TabBtn active={tab === "analisis"} onClick={() => setTab("analisis")}>📊 Análisis</TabBtn>
         <TabBtn active={tab === "brands"} onClick={() => setTab("brands")}>🏷️ Marcas</TabBtn>
         <TabBtn active={tab === "agencias"} onClick={() => setTab("agencias")}>🏢 Agencias</TabBtn>
+        <TabBtn active={tab === "categorias"} onClick={() => setTab("categorias")}>📂 Categorías</TabBtn>
       </div>
 
       {/* Contenido */}
@@ -59,6 +60,7 @@ export default function AdminPage() {
       {tab === "analisis" && <AnalisisTab />}
       {tab === "brands" && <BrandsTab />}
       {tab === "agencias" && <AgenciasTab />}
+      {tab === "categorias" && <CategoriasTab />}
     </div>
   );
 }
@@ -880,6 +882,53 @@ function AgenciasTab() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// CategoriasTab — gestionar categorías de etiquetas.
+// ════════════════════════════════════════════════════════════════════════════
+function CategoriasTab() {
+  const [cats, setCats] = useState<string[]>([]);
+  const [nueva, setNueva] = useState("");
+
+  function cargar() {
+    fetch("/api/categorias").then(r => r.json()).then(d => setCats(d.categorias || [])).catch(() => {});
+  }
+  useEffect(cargar, []);
+
+  async function agregar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nueva.trim()) return;
+    const r = await fetch("/api/categorias", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nombre: nueva.trim() }) });
+    if (r.ok) { setNueva(""); cargar(); }
+  }
+
+  async function eliminar(cat: string) {
+    if (!confirm("¿Eliminar la categoría '" + cat + "'?")) return;
+    await fetch(`/api/categorias?nombre=${encodeURIComponent(cat)}`, { method: "DELETE" });
+    cargar();
+  }
+
+  return (
+    <div>
+      <h2 style={{ margin: "0 0 8px", color: "#1f2937", fontSize: 18 }}>Categorías de etiquetas</h2>
+      <p style={{ color: "#6b7280", fontSize: 13, marginBottom: 20 }}>Estas categorías aparecen en el formulario al crear etiquetas. Añadí o eliminá las que necesites.</p>
+
+      <form onSubmit={agregar} style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <input value={nueva} onChange={e => setNueva(e.target.value)} placeholder="Nueva categoría..." style={{ ...inp, flex: 1 }} />
+        <button type="submit" style={btnPrim}>+ Añadir</button>
+      </form>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {cats.map(cat => (
+          <div key={cat} style={{ display: "flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 999, padding: "6px 8px 6px 14px" }}>
+            <span style={{ fontSize: 14, fontWeight: 600 }}>{cat}</span>
+            <button onClick={() => eliminar(cat)} style={{ background: "#fef2f2", border: "none", borderRadius: 999, width: 22, height: 22, cursor: "pointer", color: "#dc2626", fontWeight: 700, fontSize: 12 }}>×</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
