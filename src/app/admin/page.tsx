@@ -677,7 +677,7 @@ function AgenciasTab() {
                     Logo
                     <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} />
                   </label>
-                  <a href="/login" target="_blank" style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
+                  <a href={`/portal/${a.id}`} style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
                   {a.tipo !== "matriz" && (
                     <button onClick={() => eliminarAgencia(a)} style={{ ...miniBtn, background: "#fef2f2", color: "#dc2626" }}>Eliminar</button>
                   )}

@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/" || pathname === "/login") return NextResponse.next();
   if (pathname.startsWith("/etiqueta/") || pathname === "/bol") return NextResponse.next();
   if (pathname.startsWith("/servicios/")) return NextResponse.next();
+  if (pathname.startsWith("/portal/")) return NextResponse.next();
   if (pathname.startsWith("/api/") && isPublicApi(pathname)) return NextResponse.next();
 
   const session = await getSession(request);
