@@ -78,6 +78,17 @@ export default function EnviosPage() {
   const cellVal = (p: Paquete, i: number, k: string) => {
     if (k === "idx") return i + 1;
     if (k === "creadoPorNombre") return "—";
+    if (k === "_acciones") {
+      const cod = String(p.codigo);
+      return (
+        <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+          <a href={`/etiqueta/${cod}`} target="_blank" rel="noopener" style={{ fontSize: 9, padding: "3px 6px", background: "#C23B22", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>Etiqueta</a>
+          <a href={`/hbl/${cod}`} target="_blank" rel="noopener" style={{ fontSize: 9, padding: "3px 6px", background: "#1f6b3a", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>HBL</a>
+          <a href="/bol" target="_blank" rel="noopener" style={{ fontSize: 9, padding: "3px 6px", background: "#374151", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>Manif</a>
+          <a href={`/envios/${cod}/editar`} style={{ fontSize: 9, padding: "3px 6px", background: "#e0a106", color: "#fff", textDecoration: "none", borderRadius: 4, fontWeight: 700 }}>Editar</a>
+        </div>
+      );
+    }
     const v = p[k];
     if (v === null || v === undefined || v === "") return "—";
     if (k === "creado") return new Date(v as string).toLocaleDateString("es", { day: "2-digit", month: "2-digit", year: "2-digit" });
