@@ -540,6 +540,7 @@ function AgenciasTab() {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState<null | "agencia" | "usuario">(null);
   const [agenciaSeleccionada, setAgenciaSeleccionada] = useState<string>("");
+  const [credNueva, setCredNueva] = useState<null | { usuario: string; password: string; nombre: string }>(null);
 
   function cargar() {
     Promise.all([
@@ -559,7 +560,8 @@ function AgenciasTab() {
     const body = {
       nombre: fd.get("nombre"), tipo: fd.get("tipo"), padreId: fd.get("padreId") || null,
       direccion: fd.get("direccion"), ciudad: fd.get("ciudad"), pais: fd.get("pais"),
-      telefono: fd.get("telefono"), puedeCrearSubagencias: fd.get("puedeCrearSubagencias") === "on",
+      telefono: fd.get("telefono"), logo: fd.get("logoData") || null,
+      puedeCrearSubagencias: fd.get("puedeCrearSubagencias") === "on",
     };
     if (!body.nombre) return;
     const r = await fetch("/api/agencias", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -577,7 +579,36 @@ function AgenciasTab() {
     if (!body.usuario || !body.password || !body.nombre) { alert("Usuario, contraseña y nombre son obligatorios"); return; }
     const r = await fetch("/api/usuarios", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (!r.ok) { const d = await r.json(); alert(d.error || "Error"); return; }
-    setModal(null); cargar();
+    setModal(null);
+    setCredNueva({ usuario: String(body.usuario), password: String(body.password), nombre: String(body.nombre) });
+    cargar();
+  }
+
+  async function resetPassword(u: any) {
+    const nueva = prompt(`Nueva contraseña para ${u.nombre} (${u.usuario}):`);
+    if (!nueva) return;
+    const r = await fetch(`/api/usuarios/${u.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: nueva }) });
+    if (!r.ok) { alert("Error al cambiar contraseña"); return; }
+    setCredNueva({ usuario: u.usuario, password: nueva, nombre: u.nombre });
+  }
+
+  async function eliminarAgencia(a: any) {
+    if (!confirm(`¿Eliminar la agencia "${a.nombre}"? Se eliminarán también sus envíos y usuarios.`)) return;
+    try {
+      const r = await fetch(`/api/agencias/${a.id}`, { method: "DELETE" });
+      if (!r.ok) { const d = await r.json(); alert(d.error || "No se pudo eliminar"); return; }
+      cargar();
+    } catch { alert("No se pudo conectar"); }
+  }
+
+  async function subirLogo(a: any, file: File) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const logo = reader.result as string;
+      const r = await fetch(`/api/agencias/${a.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ logo }) });
+      if (r.ok) cargar();
+    };
+    reader.readAsDataURL(file);
   }
 
   async function togglePermiso(a: any) {
@@ -617,11 +648,19 @@ function AgenciasTab() {
                     {a.telefono && ` · ${a.telefono}`}
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                  {a.logo && <img src={a.logo} alt={a.nombre} style={{ height: 32, width: "auto", objectFit: "contain", background: "#fff", borderRadius: 4, padding: "2px 4px" }} />}
                   {a.tipo !== "matriz" && (
                     <button onClick={() => togglePermiso(a)} style={{ ...miniBtn, background: a.puedeCrearSubagencias ? "#d1fae5" : "#f3f4f6", color: a.puedeCrearSubagencias ? "#065f46" : "#6b7280" }}>
-                      {a.puedeCrearSubagencias ? "Puede crear subagencias ✓" : "No puede crear subagencias"}
+                      {a.puedeCrearSubagencias ? "Subagencias ✓" : "Sin subagencias"}
                     </button>
+                  )}
+                  <label style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af", cursor: "pointer" }}>
+                    Logo
+                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} />
+                  </label>
+                  {a.tipo !== "matriz" && (
+                    <button onClick={() => eliminarAgencia(a)} style={{ ...miniBtn, background: "#fef2f2", color: "#dc2626" }}>Eliminar</button>
                   )}
                 </div>
               </div>
@@ -630,11 +669,12 @@ function AgenciasTab() {
                 <div style={{ marginTop: 10, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", textTransform: "uppercase", marginBottom: 6 }}>Usuarios ({users.length})</div>
                   {users.map((u: any) => (
-                    <div key={u.id} style={{ display: "flex", gap: 12, fontSize: 13, padding: "3px 0" }}>
+                    <div key={u.id} style={{ display: "flex", gap: 8, fontSize: 13, padding: "4px 0", alignItems: "center", flexWrap: "wrap" }}>
                       <span style={{ fontWeight: 700 }}>{u.nombre}</span>
                       <span style={{ color: "#6b7280" }}>@{u.usuario}</span>
                       <span style={{ fontSize: 10, background: u.rol === "admin" ? "#C23B22" : "#374151", color: "#fff", padding: "1px 6px", borderRadius: 999 }}>{u.rol}</span>
                       {!u.activo && <span style={{ fontSize: 10, color: "#dc2626" }}>inactivo</span>}
+                      <button onClick={() => resetPassword(u)} style={{ fontSize: 9, padding: "2px 8px", background: "#e0a106", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 700 }}>Resetear clave</button>
                     </div>
                   ))}
                 </div>
@@ -671,7 +711,15 @@ function AgenciasTab() {
               </div>
               <div><label style={lbl}>Dirección</label><input name="direccion" style={inp} /></div>
               <div><label style={lbl}>Teléfono</label><input name="telefono" style={inp} /></div>
-              <div><label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13, cursor: "pointer" }}><input type="checkbox" name="puedeCrearSubagencias" /> Puede crear subagencias</label></div>
+              <div>
+                  <label style={lbl}>Logo de la agencia</label>
+                  <input type="file" name="logoFile" accept="image/*" style={{ fontSize: 13 }} onChange={e => {
+                    const f = e.currentTarget.files?.[0];
+                    if (f) { const r = new FileReader(); r.onload = () => { (e.currentTarget.parentElement?.querySelector('input[name="logoData"]') as HTMLInputElement).value = r.result as string; }; r.readAsDataURL(f); }
+                  }} />
+                  <input type="hidden" name="logoData" />
+                </div>
+                <div><label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13, cursor: "pointer" }}><input type="checkbox" name="puedeCrearSubagencias" /> Puede crear subagencias</label></div>
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                 <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
                 <button type="submit" style={btnPrim}>Crear agencia</button>
@@ -716,6 +764,25 @@ function AgenciasTab() {
                 <button type="submit" style={btnPrim}>Crear usuario</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: credenciales recién creadas */}
+      {credNueva && (
+        <div style={modalBg} onClick={() => setCredNueva(null)}>
+          <div style={modalCard} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, color: "#1f6b3a" }}>Credenciales creadas</h3>
+            <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 16 }}>Anotá estos datos. La contraseña no se volverá a mostrar.</p>
+            <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10, padding: 16, fontSize: 15, fontFamily: "monospace" }}>
+              <div style={{ marginBottom: 8 }}><span style={{ color: "#6b7280", fontSize: 11 }}>USUARIO</span><br /><b>{credNueva.usuario}</b></div>
+              <div style={{ marginBottom: 8 }}><span style={{ color: "#6b7280", fontSize: 11 }}>CONTRASEÑA</span><br /><b>{credNueva.password}</b></div>
+              <div><span style={{ color: "#6b7280", fontSize: 11 }}>NOMBRE</span><br /><b>{credNueva.nombre}</b></div>
+            </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 16, justifyContent: "flex-end" }}>
+              <button onClick={() => setCredNueva(null)} style={btn}>Cerrar</button>
+              <a href="/login" style={btnPrim}>Probar login</a>
+            </div>
           </div>
         </div>
       )}

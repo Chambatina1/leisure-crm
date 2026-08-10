@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     data: {
       nombre, tipo: tipo || "agencia", padreId: padreId || null,
       direccion: direccion || null, ciudad: ciudad || null, pais: pais || null,
-      telefono: telefono || null, puedeCrearSubagencias: !!puedeCrearSubagencias,
+      telefono: telefono || null, logo: body.logo || null, puedeCrearSubagencias: !!puedeCrearSubagencias,
     },
   });
   return jsonResponse({ agencia: a }, 201);

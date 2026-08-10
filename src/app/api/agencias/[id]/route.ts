@@ -34,6 +34,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       ciudad: body.ciudad ?? a.ciudad,
       pais: body.pais ?? a.pais,
       telefono: body.telefono ?? a.telefono,
+      logo: body.logo !== undefined ? body.logo : a.logo,
       puedeCrearSubagencias: body.puedeCrearSubagencias !== undefined ? !!body.puedeCrearSubagencias : a.puedeCrearSubagencias,
       activa: body.activa !== undefined ? !!body.activa : a.activa,
     };
@@ -46,6 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       ciudad: body.ciudad ?? a.ciudad,
       pais: body.pais ?? a.pais,
       telefono: body.telefono ?? a.telefono,
+      logo: body.logo !== undefined ? body.logo : a.logo,
     };
   }
   const upd = await db.agencia.update({ where: { id }, data });

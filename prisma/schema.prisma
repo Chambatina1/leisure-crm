@@ -27,6 +27,7 @@ model Agencia {
   ciudad               String?
   pais                 String?
   telefono             String?
+  logo                 String?  // data URL base64 del logo de la agencia
   puedeCrearSubagencias Boolean @default(false)
   contabilidadActiva   Boolean  @default(false)
   activa               Boolean  @default(true)
