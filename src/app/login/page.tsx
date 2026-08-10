@@ -15,10 +15,12 @@ export default function LoginPage() {
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    // Si ya hay sesión, redirigir
+    // Si ya hay sesión, redirigir al lugar correcto
     fetch("/api/auth/me").then(r => r.json()).then(d => {
       if (d.usuario) {
-        router.push(d.usuario.rol === "admin" ? "/admin" : "/app");
+        if (d.usuario.rol === "admin") router.push("/admin");
+        else if (d.usuario.agenciaId) router.push(`/portal/${d.usuario.agenciaId}`);
+        else router.push("/admin");
       }
     }).catch(() => {});
   }, [router]);
@@ -34,8 +36,13 @@ export default function LoginPage() {
       const d = await res.json();
       if (!res.ok) { setError(d.error || "Credenciales incorrectas"); setCargando(false); return; }
       // Redirigir según el rol
-      if (d.usuario.rol === "admin") router.push("/admin");
-      else router.push("/app");
+      if (d.usuario.rol === "admin") {
+        router.push("/admin");
+      } else if (d.usuario.agenciaId) {
+        router.push(`/portal/${d.usuario.agenciaId}`);
+      } else {
+        router.push("/admin");
+      }
       router.refresh();
     } catch {
       setError("No se pudo conectar con el servidor");
