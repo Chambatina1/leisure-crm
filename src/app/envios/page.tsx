@@ -150,11 +150,10 @@ export default function EnviosPage() {
           </tbody>
           <tfoot>
             <tr style={{ background: "#1f2937", color: "#fff" }}>
-              <td colSpan={22} style={{ textAlign: "right", padding: "8px 12px", fontSize: 11 }}>TOTALES</td>
+              <td colSpan={14} style={{ textAlign: "right", padding: "8px 12px", fontSize: 11 }}>TOTALES</td>
               <td style={tfootNum}>{tot("piezas")}</td>
               <td style={tfootNum}>{tot("peso").toFixed(2)}</td>
               <td style={tfootNum}>{tot("pesoKg").toFixed(2)}</td>
-              <td style={tfootNum}>{tot("volumenM3").toFixed(3)}</td>
               <td colSpan={5}></td>
             </tr>
           </tfoot>
