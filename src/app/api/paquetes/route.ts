@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { getSession, jsonResponse, errorResponse } from "@/lib/auth";
-import { whereAlcance, puedeVerAgencia } from "@/lib/permisos";
+import { whereAlcance, puedeVerAgencia, alcanceAgencias } from "@/lib/permisos";
 import { generarCodigoPaquete } from "@/lib/codigo";
 import { registrarIngresoEnvio } from "@/lib/contabilidad";
 
@@ -52,17 +52,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
 
     let { agenciaId, clienteId, formaPago } = body;
-    // Auto-resolver agenciaId si viene vacío: tomar la primera agencia activa.
-    // (El formulario a veces no la carga si /api/agencias falla en el navegador.)
-    if (!agenciaId) {
-      const primera = await db.agencia.findFirst({ where: { activa: true }, orderBy: { creado: "asc" } });
-      if (primera) agenciaId = primera.id;
+    // AUTO-RESOLVER agenciaId: priorizar la agencia de la SESION del usuario.
+    // Asi cada agencia crea paquetes en SU propia agencia, no en otra.
+    if (!agenciaId && s.agenciaId) {
+      // El usuario tiene agencia propia (agencia, operario, camionero)
+      agenciaId = s.agenciaId;
+    } else if (!agenciaId) {
+      // Admin sin agenciaId explicito: tomar la primera del alcance
+      const ags = await alcanceAgencias(s);
+      if (ags.length > 0) agenciaId = ags[0].id;
     }
     if (!agenciaId || !body.remitente || !body.destinatario) {
-      // Diagnóstico: contar agencias para ver si la DB tiene datos.
-      let diag = "";
-      try { const c = await db.agencia.count(); diag = ` (agencias en DB: ${c})`; } catch (e:any) { diag = ` (count error: ${e.message?.slice(0,100)})`; }
-      return errorResponse(`agenciaId, remitente y destinatario son requeridos${diag}`, 400);
+      return errorResponse("remitente y destinatario son requeridos", 400);
     }
     if (!(await puedeVerAgencia(s, agenciaId))) {
       return errorResponse("No puedes crear paquetes fuera de tu agencia", 403);
