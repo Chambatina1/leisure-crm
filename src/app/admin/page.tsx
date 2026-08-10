@@ -563,10 +563,28 @@ function AgenciasTab() {
       telefono: fd.get("telefono"), logo: fd.get("logoData") || null,
       puedeCrearSubagencias: fd.get("puedeCrearSubagencias") === "on",
     };
+    const usuarioLogin = fd.get("usuarioLogin") as string;
+    const passwordLogin = fd.get("passwordLogin") as string;
+    const nombreUsuario = fd.get("nombreUsuario") as string;
     if (!body.nombre) return;
+    if (!usuarioLogin || !passwordLogin) { alert("Debe crear un usuario y contraseña para la agencia"); return; }
+
+    // 1. Crear la agencia
     const r = await fetch("/api/agencias", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    if (!r.ok) { const d = await r.json(); alert(d.error || "Error"); return; }
-    setModal(null); cargar();
+    if (!r.ok) { const d = await r.json(); alert(d.error || "Error al crear agencia"); return; }
+    const ag = await r.json();
+
+    // 2. Crear el usuario para esa agencia
+    const r2 = await fetch("/api/usuarios", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario: usuarioLogin, password: passwordLogin, nombre: nombreUsuario || body.nombre, rol: "agencia", agenciaId: ag.agencia.id }),
+    });
+    if (!r2.ok) { const d = await r2.json(); alert("Agencia creada pero error al crear usuario: " + (d.error || "")); }
+
+    // 3. Mostrar credenciales
+    setModal(null);
+    setCredNueva({ usuario: usuarioLogin, password: passwordLogin, nombre: String(nombreUsuario || body.nombre) });
+    cargar();
   }
 
   async function crearUsuario(e: React.FormEvent<HTMLFormElement>) {
@@ -659,6 +677,7 @@ function AgenciasTab() {
                     Logo
                     <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} />
                   </label>
+                  <a href="/login" target="_blank" style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
                   {a.tipo !== "matriz" && (
                     <button onClick={() => eliminarAgencia(a)} style={{ ...miniBtn, background: "#fef2f2", color: "#dc2626" }}>Eliminar</button>
                   )}
@@ -718,6 +737,14 @@ function AgenciasTab() {
                     if (f) { const r = new FileReader(); r.onload = () => { (e.currentTarget.parentElement?.querySelector('input[name="logoData"]') as HTMLInputElement).value = r.result as string; }; r.readAsDataURL(f); }
                   }} />
                   <input type="hidden" name="logoData" />
+                </div>
+                <div style={{ background: "#fef3c7", border: "1px solid #e0a106", borderRadius: 8, padding: 12, marginTop: 4 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#92400e", textTransform: "uppercase", marginBottom: 8 }}>Acceso de la agencia (usuario y contraseña)</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <div><label style={lbl}>Nombre del responsable</label><input name="nombreUsuario" placeholder="Ej: Carlos Perez" style={inp} /></div>
+                    <div><label style={lbl}>Usuario (login) *</label><input name="usuarioLogin" placeholder="Ej: miami" style={inp} required /></div>
+                  </div>
+                  <div style={{ marginTop: 8 }}><label style={lbl}>Contraseña *</label><input name="passwordLogin" type="text" placeholder="Ej: miami2026" style={inp} required /></div>
                 </div>
                 <div><label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13, cursor: "pointer" }}><input type="checkbox" name="puedeCrearSubagencias" /> Puede crear subagencias</label></div>
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
