@@ -362,6 +362,34 @@ function AnalisisTab() {
   );
 }
 
+// Leer cualquier imagen (PNG, JPG, WEBP, etc) y convertirla a base64.
+// Redimensiona si es muy grande para no saturar la BD.
+async function leerImagen(file: File, maxDim: number = 400): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { resolve(reader.result as string); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => resolve(reader.result as string);
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject("No se pudo leer el archivo");
+    reader.readAsDataURL(file);
+  });
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 // BrandsTab — gestión de logos/marcas del grupo empresarial.
 // Subir logo nuevo, activar/desactivar, reordenar (↑↓), editar, eliminar.
@@ -429,12 +457,13 @@ function BrandsTab() {
     cargar();
   }
 
-  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => setModal(m => m ? { ...m, logo: reader.result as string } : m);
-    reader.readAsDataURL(f);
+    try {
+      const data = await leerImagen(f, 300);
+      setModal(m => m ? { ...m, logo: data } : m);
+    } catch { alert("No se pudo leer la imagen"); }
   }
 
   return (
@@ -541,6 +570,7 @@ function AgenciasTab() {
   const [modal, setModal] = useState<null | "agencia" | "usuario">(null);
   const [agenciaSeleccionada, setAgenciaSeleccionada] = useState<string>("");
   const [credNueva, setCredNueva] = useState<null | { usuario: string; password: string; nombre: string }>(null);
+  const [editandoAgencia, setEditandoAgencia] = useState<any>(null);
 
   function cargar() {
     Promise.all([
@@ -619,14 +649,32 @@ function AgenciasTab() {
     } catch { alert("No se pudo conectar"); }
   }
 
-  async function subirLogo(a: any, file: File) {
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const logo = reader.result as string;
-      const r = await fetch(`/api/agencias/${a.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ logo }) });
-      if (r.ok) cargar();
+  async function guardarEdicionAgencia(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const logoData = fd.get("logoData") as string;
+    const body: Record<string, unknown> = {
+      nombre: fd.get("nombre"),
+      direccion: fd.get("direccion"),
+      ciudad: fd.get("ciudad"),
+      pais: fd.get("pais"),
+      telefono: fd.get("telefono"),
     };
-    reader.readAsDataURL(file);
+    if (logoData) body.logo = logoData;
+    const r = await fetch(`/api/agencias/${editandoAgencia.id}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+    if (!r.ok) { const d = await r.json(); alert(d.error || "Error"); return; }
+    setEditandoAgencia(null);
+    cargar();
+  }
+
+  async function subirLogo(a: any, file: File) {
+    try {
+      const logo = await leerImagen(file);
+      const r = await fetch(`/api/agencias/${a.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ logo }) });
+      if (r.ok) cargar(); else alert("Error al guardar el logo");
+    } catch (e) { alert("No se pudo leer la imagen: " + e); }
   }
 
   async function togglePermiso(a: any) {
@@ -677,6 +725,7 @@ function AgenciasTab() {
                     Logo
                     <input type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) subirLogo(a, f); }} />
                   </label>
+                  <button onClick={() => setEditandoAgencia(a)} style={{ ...miniBtn, background: "#dbeafe", color: "#1e40af" }}>Editar</button>
                   <a href={`/portal/${a.id}`} style={{ ...miniBtn, background: "#1f6b3a", color: "#fff", textDecoration: "none" }}>Entrar</a>
                   {a.tipo !== "matriz" && (
                     <button onClick={() => eliminarAgencia(a)} style={{ ...miniBtn, background: "#fef2f2", color: "#dc2626" }}>Eliminar</button>
@@ -789,6 +838,42 @@ function AgenciasTab() {
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                 <button type="button" onClick={() => setModal(null)} style={btn}>Cancelar</button>
                 <button type="submit" style={btnPrim}>Crear usuario</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: editar agencia */}
+      {editandoAgencia && (
+        <div style={modalBg} onClick={() => setEditandoAgencia(null)}>
+          <div style={modalCard} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0, color: "#C23B22" }}>Editar agencia</h3>
+            <form onSubmit={guardarEdicionAgencia} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div><label style={lbl}>Nombre</label><input name="nombre" defaultValue={editandoAgencia.nombre} style={inp} required /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                <div><label style={lbl}>Ciudad</label><input name="ciudad" defaultValue={editandoAgencia.ciudad || ""} style={inp} /></div>
+                <div><label style={lbl}>País</label><input name="pais" defaultValue={editandoAgencia.pais || ""} style={inp} /></div>
+              </div>
+              <div><label style={lbl}>Dirección</label><input name="direccion" defaultValue={editandoAgencia.direccion || ""} style={inp} /></div>
+              <div><label style={lbl}>Teléfono</label><input name="telefono" defaultValue={editandoAgencia.telefono || ""} style={inp} /></div>
+              <div>
+                <label style={lbl}>Logo actual</label>
+                {editandoAgencia.logo && <img src={editandoAgencia.logo} alt="logo" style={{ maxHeight: 50, marginBottom: 8, background: "#f9fafb", borderRadius: 6, padding: 4 }} />}
+                <label style={{ fontSize: 13, color: "#1e40af", cursor: "pointer", fontWeight: 700 }}>Cambiar logo (cualquier foto)
+                  <input type="file" accept="image/*" style={{ display: "none" }} onChange={async (e) => {
+                    const f = e.target.files?.[0]; if (!f) return;
+                    try {
+                      const data = await leerImagen(f);
+                      (e.target?.closest("form")?.querySelector('input[name="logoData"]') as HTMLInputElement).value = data;
+                    } catch { alert("No se pudo leer la imagen"); }
+                  }} />
+                </label>
+                <input type="hidden" name="logoData" />
+              </div>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button type="button" onClick={() => setEditandoAgencia(null)} style={btn}>Cancelar</button>
+                <button type="submit" style={btnPrim}>Guardar cambios</button>
               </div>
             </form>
           </div>

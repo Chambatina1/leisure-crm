@@ -60,6 +60,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   if (!s) return errorResponse("No autenticado", 401);
   if (!esAdmin(s)) return errorResponse("Solo el administrador puede eliminar agencias", 403);
   const { id } = await params;
+  // Borrar todos los datos relacionados antes de eliminar la agencia
+  await db.evento.deleteMany({ where: { paquete: { agenciaId: id } } });
+  await db.asiento.deleteMany({ where: { agenciaId: id } });
+  await db.paquete.deleteMany({ where: { agenciaId: id } });
+  await db.cliente.deleteMany({ where: { agenciaId: id } });
+  await db.usuario.deleteMany({ where: { agenciaId: id } });
+  // Subagencias si tiene
+  await db.agencia.deleteMany({ where: { padreId: id } });
+  // Finalmente la agencia
   await db.agencia.delete({ where: { id } });
   return jsonResponse({ ok: true });
 }
