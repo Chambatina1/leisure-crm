@@ -147,7 +147,7 @@ const ETIQUETA_CSS = `
   .etq-dest-dato { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 5px 8px; }
   .etq-dest-dato-wide { grid-column: 1 / -1; }
   .etq-dest-dato label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; display: block; }
-  .etq-dest-dato b { font-size: 13px; font-weight: 800; color: #000; }
+  .etq-dest-dato b { font-size: 15px; font-weight: 800; color: #000; }
 
   /* ── Fila 5: Peso / Bultos / QR ── */
   .etq-peso-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 3px; }
