@@ -1,250 +1,239 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ════════════════════════════════════════════════════════════════════════════
-// Landing Vuela Cargo — envíos y logística.
-// Rastreo conectado a /r/[codigo] de nuestra API.
+// Landing pública bilingue (EN/ES) — Vuela Cargo
+// Datos del grupo empresarial
+// Fotos reales por servicio (sin emojis).
 // ════════════════════════════════════════════════════════════════════════════
+type Lang = "en" | "es";
+
+const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4";
+
+const T = {
+  en: {
+    navServicios: "Services", navNosotros: "About", navContacto: "Contact", navAgencias: "Agency access",
+    navEtiqueta: "Create label",
+    ctaEtiqueta: "Create shipping label",
+    pill: "Person-to-person exporting · U.S. → Cuba",
+    h1a: "Your cargo, your fleet and your",
+    h1b: "paperwork, always tracked",
+    sub: "Package shipping, car exports, fuel and passport processing. Modern logistics with QR labels and real-time GPS tracking.",
+    ctaServicios: "View services", ctaRastrear: "Track my package",
+    statAgencias: "Agencies", statPaquetes: "Packages handled", statGps: "GPS tracking",
+    secServiciosH: "Our services", secServiciosP: "Shipping, exports, travel and logistics.",
+    s1t: "Package shipping", s1d: "Person-to-person packages from the U.S. to Cuba. QR label, point-to-point tracking and proof of delivery.",
+    s2t: "Passport processing", s2d: "Management and advisory for passport and travel document procedures. We guide you through the whole process.",
+    s3t: "Fuel export", s3d: "Supply and transport of oil and gasoline with control of every shipment and checkpoint.",
+    s4t: "Car export", s4d: "Buy and export vehicles to Cuba with managed paperwork and shipment tracking.",
+    sMas: "More information",
+    nosH: "Modern logistics, simple to operate", 
+    nosP: "We combine years of export experience with cutting-edge technology. Every package carries a QR-code label; every driver scans the package and its GPS location is recorded instantly.",
+    f1: "QR label", f1b: " ready to print in seconds",
+    f2: "GPS tracking", f2b: " on every scan, even offline",
+    f3: "Agency network", f3b: " and subagencies managed from HQ",
+    f4: "Integrated accounting", f4b: " double-entry bookkeeping",
+    nosCardH: "U.S. → Cuba coverage", nosCardP: "Operations in Tampa, Florida and more, with an expanding network of agencies.",
+    conH: "Ready for your next shipment?", conP: "Get in touch with our team and we'll guide you.",
+    conTel: "Direct call", conEmail: "Corporate email", conWeb: "Official website",
+    footBrand: "Shipping, exports and logistics",
+    footRights: "All rights reserved.",
+  },
+  es: {
+    navServicios: "Servicios", navNosotros: "Nosotros", navContacto: "Contacto", navAgencias: "Acceso agencias",
+    navEtiqueta: "Crear etiqueta",
+    ctaEtiqueta: "Crear etiqueta de envío",
+    pill: "Exportación persona a persona · EE.UU. → Cuba",
+    h1a: "Tu carga, tu flota y tus",
+    h1b: "trámites, siempre rastreados",
+    sub: "Envíos de paquetes, exportación de autos, combustible y trámites de pasaporte. Logística moderna con etiquetas QR y rastreo GPS en tiempo real.",
+    ctaServicios: "Ver servicios", ctaRastrear: "Rastrear mi paquete",
+    statAgencias: "Agencias", statPaquetes: "Paquetes gestionados", statGps: "Rastreo GPS",
+    secServiciosH: "Nuestros servicios", secServiciosP: "Envíos, exportación, viajes y logística.",
+    s1t: "Envíos de paquetes", s1d: "Paquetería persona a persona de EE.UU. a Cuba. Etiqueta con QR, rastreo punto a punto y prueba de entrega.",
+    s2t: "Trámites de pasaporte", s2d: "Gestión y asesoría para trámites de pasaporte y documentos de viaje. Te acompañamos en todo el proceso.",
+    s3t: "Exportación de combustible", s3d: "Suministro y transporte de petróleo y gasolina con control de cada traslado y punto de control.",
+    s4t: "Exportación de autos", s4d: "Compra y exporta vehículos hacia Cuba con documentación gestionada y seguimiento de la carga.",
+    sMas: "Más información",
+    nosH: "Logística moderna, simple de operar",
+    nosP: "Combinamos la experiencia de años en exportación con tecnología de punta. Cada paquete lleva una etiqueta con código QR; cada camionero escanea el paquete y su ubicación GPS queda registrada al instante.",
+    f1: "Etiqueta con QR", f1b: " lista para imprimir en segundos",
+    f2: "Rastreo GPS", f2b: " en cada escaneo, sin internet",
+    f3: "Red de agencias", f3b: " y subagencias gestionada desde la matriz",
+    f4: "Contabilidad integrada", f4b: " de doble entrada",
+    nosCardH: "Cobertura EE.UU. → Cuba", nosCardP: "Operaciones en Tampa, Florida y más, con red de agencias en expansión.",
+    conH: "¿Hacemos tu próximo envío?", conP: "Ponete en contacto con nuestro equipo y te asesoramos.",
+    conTel: "Llamada directa", conEmail: "Email corporativo", conWeb: "Web oficial",
+    footBrand: "Envíos, exportación y logística",
+    footRights: "Todos los derechos reservados.",
+  },
+};
+
+// Fotos reales por servicio (sin emojis — visual profesional)
+const SERVICIOS = [
+  { img: "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#C23B22", tKey: "s1t", dKey: "s1d", href: "/servicios/paquetes" },
+  { img: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG", color: "#1f6b3a", tKey: "s2t", dKey: "s2d", href: "/servicios/pasaporte" },
+  { img: "https://images.pexels.com/photos/5804986/pexels-photo-5804986.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#e0a106", tKey: "s3t", dKey: "s3d", href: "/servicios/combustible" },
+  { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d", href: "/servicios/autos" },
+] as const;
+
+// Datos del grupo empresarial
+const CONTACTO = {
+  tel: "+1 727-598-6802",
+  telHref: "tel:+17275986802",
+  whatsapp: "https://wa.me/17275986802?text=Hello%2C%20I%20need%20help",
+  whatsappEs: "https://wa.me/17275986802?text=Hola%2C%20necesito%20ayuda",
+  email: "info@grupo-empresarial.com",
+  web: "grupo-empresarial.com",
+  webHref: "https://grupo-empresarial.com",
+  dir1: "6800 N Ave, Florida FL 33604",
+  dir2: "6800 N Ave, Tampa Florida FL 33604",
+  horarioEn: "Mon–Fri: 8:00 AM – 5:00 PM",
+  horarioEs: "Lun–Vie: 8:00 AM – 5:00 PM",
+};
 
 export default function HomePage() {
-  const [tracking, setTracking] = useState("");
-  const [resultado, setResultado] = useState<null | { estado: string; remitente: string; destinatario: string }>(null);
-  const [buscando, setBuscando] = useState(false);
+  const [lang, setLang] = useState<Lang>("es");
+  const [brands, setBrands] = useState<{ nombre: string; logo: string }[]>([]);
+  const t = T[lang];
 
-  async function buscar(e: React.FormEvent) {
-    e.preventDefault();
-    if (!tracking.trim()) return;
-    setBuscando(true);
-    setResultado(null);
-    try {
-      const res = await fetch(`/api/paquetes/${encodeURIComponent(tracking.trim().toUpperCase())}`);
-      if (!res.ok) { setResultado({ estado: "No encontrado", remitente: "", destinatario: "" }); setBuscando(false); return; }
-      const d = await res.json();
-      const p = d.paquete;
-      const labels: Record<string, string> = { en_origen: "En origen", en_transito: "En tránsito", en_almacen: "En almacén", entregado: "Entregado" };
-      setResultado({
-        estado: labels[p.estado] || p.estado,
-        remitente: p.remitente || "",
-        destinatario: p.destinatario || "",
-      });
-    } catch {
-      setResultado({ estado: "Error de conexión", remitente: "", destinatario: "" });
-    }
-    setBuscando(false);
-  }
+  useEffect(() => {
+    fetch("/api/brands").then(r => r.json()).then(d => setBrands(d.brands || [])).catch(() => {});
+  }, []);
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: VUELA_CSS }} />
-      <header className="v-header">
-        <nav className="v-navbar">
-          <a href="#" className="v-brand">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/vuela-cargo-logo.svg" alt="Vuela Cargo" />
-            <div className="v-brand-text">Vuela Cargo</div>
-          </a>
-          <div className="v-nav-links">
-            <a href="#inicio">Inicio</a>
-            <a href="#servicios">Servicios</a>
-            <a href="#proceso">Cómo funciona</a>
-            <a href="#rastreo">Rastreo</a>
-            <a href="/login">Acceso</a>
-          </div>
-          <a href="#rastreo" className="v-btn v-btn-primary">Rastrear envío</a>
-        </nav>
-      </header>
+    <main className="landing">
+      {/* Video de fondo */}
+      <div className="video-bg">
+        <video autoPlay muted loop playsInline>
+          <source src={VIDEO_BG} type="video/mp4" />
+        </video>
+        <div className="video-overlay" />
+      </div>
 
-      <main>
-        {/* VIDEO DE FONDO */}
-        <div className="v-video-bg">
-          <video autoPlay muted loop playsInline>
-            <source src="https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4" type="video/mp4" />
-          </video>
-          <div className="v-video-overlay" />
+      {/* Navbar */}
+      <nav className="landing-nav">
+        <div className="nav-logo nav-grupo">
+          {brands.map(b => (
+            <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto", maxWidth: 90, objectFit: "contain" }} />
+          ))}
         </div>
+        <div className="nav-links">
+          <a href="#servicios">{t.navServicios}</a>
+          <a href="#nosotros">{t.navNosotros}</a>
+          <a href="#contacto">{t.navContacto}</a>
+          {/* Selector de idioma */}
+          <div className="lang-switch">
+            <button className={lang === "en" ? "active" : ""} onClick={() => setLang("en")}>EN</button>
+            <button className={lang === "es" ? "active" : ""} onClick={() => setLang("es")}>ES</button>
+          </div>
+          <a className="btn-agencias" href="/nuevo-paquete">{t.navEtiqueta}</a>
+          <a className="btn-agencias2" href="/envios">Mis envíos</a>
+          <a className="btn-agencias2" href="/login">Acceso</a>
+        </div>
+      </nav>
 
-        {/* HERO + RASTREO */}
-        <section className="v-hero" id="inicio">
-          <div className="v-hero-container">
-            <div>
-              <div className="v-hero-badge">Logística simple, rápida y confiable</div>
-              <h1 className="v-hero-title">Tus envíos, <span>siempre bajo control.</span></h1>
-              <p className="v-hero-desc">Gestiona tus cargas, consulta el estado de tus paquetes y mantente informado durante todo el proceso de entrega.</p>
-              <div className="v-hero-actions">
-                <a href="#rastreo" className="v-btn v-btn-primary">Rastrear paquete</a>
-                <a href="#servicios" className="v-btn v-btn-outline">Conocer servicios</a>
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-content">
+          <span className="hero-pill">{t.pill}</span>
+          <h1>{t.h1a}<br /><span className="hl">{t.h1b}</span></h1>
+          <p className="hero-sub">{t.sub}</p>
+          <div className="hero-cta">
+            <a href="/nuevo-paquete" className="btn-primary">{t.ctaEtiqueta}</a>
+            <a href="/bol" className="btn-outline">Bill of Lading</a>
+          </div>
+        </div>
+      </section>
+
+      {/* Servicios (con foto real por servicio) */}
+      <section id="servicios" className="servicios">
+        <div className="section-head">
+          <h2>{t.secServiciosH}</h2>
+          <p>{t.secServiciosP}</p>
+        </div>
+        <div className="servicios-grid">
+          {SERVICIOS.map((s) => (
+            <a className="servicio-card" key={s.tKey} href={s.href}>
+              <div className="servicio-foto" style={{ borderTopColor: s.color }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.img} alt={t[s.tKey as keyof typeof t] as string} loading="lazy" />
               </div>
-            </div>
-
-            {/* TRACKING CARD */}
-            <div className="v-hero-card" id="rastreo">
-              <div className="v-tracking-title">Rastrea tu envío</div>
-              <div className="v-tracking-desc">Introduce tu número de guía para consultar el estado de tu carga.</div>
-              <form onSubmit={buscar} className="v-tracking-box">
-                <input type="text" value={tracking} onChange={e => setTracking(e.target.value)} placeholder="Ej. LXE0000000001" />
-                <button type="submit" className="v-btn v-btn-primary" disabled={buscando}>{buscando ? "Buscando..." : "Buscar"}</button>
-              </form>
-              {resultado && (
-                <div className="v-tracking-result">
-                  <div className="v-tracking-status">{resultado.estado}</div>
-                  {resultado.remitente && <p style={{ marginTop: 7, color: "#5c6b73" }}>De: {resultado.remitente} → Para: {resultado.destinatario}</p>}
-                  {resultado.estado === "No encontrado" && <p style={{ marginTop: 7, color: "#dc2626" }}>El código no existe en el sistema.</p>}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* STATS */}
-        <section className="v-stats">
-          <div className="v-stats-container">
-            <div className="v-stat"><strong>24/7</strong><span>Consulta de rastreo</span></div>
-            <div className="v-stat"><strong>100%</strong><span>Gestión digital</span></div>
-            <div className="v-stat"><strong>QR</strong><span>Identificación de cargas</span></div>
-            <div className="v-stat"><strong>PDF</strong><span>Documentación automática</span></div>
-          </div>
-        </section>
-
-        {/* SERVICIOS */}
-        <section className="v-section v-services" id="servicios">
-          <div className="v-container">
-            <div className="v-section-head">
-              <div className="v-eyebrow">Nuestros servicios</div>
-              <h2 className="v-section-title">Todo tu proceso logístico en un solo lugar</h2>
-              <p className="v-section-text">Una plataforma preparada para gestionar envíos, documentación, rastreo y operaciones de agencias.</p>
-            </div>
-            <div className="v-services-grid">
-              <div className="v-service-card"><div className="v-service-icon">📦</div><h3>Gestión de envíos</h3><p>Registra remitentes, destinatarios, bultos, pesos y mercancías desde una misma operación.</p></div>
-              <div className="v-service-card"><div className="v-service-icon">🏷️</div><h3>Etiquetas inteligentes</h3><p>Genera etiquetas profesionales con QR, códigos de barras y toda la información necesaria.</p></div>
-              <div className="v-service-card"><div className="v-service-icon">📄</div><h3>Facturación</h3><p>Cada agencia puede generar facturas directamente desde el proceso de creación del envío.</p></div>
-              <div className="v-service-card"><div className="v-service-icon">🚚</div><h3>Manifiestos</h3><p>Agrupa múltiples facturas y envíos para generar manifiestos completos por carga.</p></div>
-              <div className="v-service-card"><div className="v-service-icon">📍</div><h3>Seguimiento</h3><p>Permite a clientes y agencias consultar las diferentes etapas del envío.</p></div>
-              <div className="v-service-card"><div className="v-service-icon">🧾</div><h3>HBL automático</h3><p>Genera House Bills of Lading asociados directamente a los envíos registrados.</p></div>
-            </div>
-          </div>
-        </section>
-
-        {/* PROCESO */}
-        <section className="v-section" id="proceso">
-          <div className="v-container">
-            <div className="v-section-head">
-              <div className="v-eyebrow">Cómo funciona</div>
-              <h2 className="v-section-title">De la agencia al destino</h2>
-            </div>
-            <div className="v-process-grid">
-              <div className="v-process-card"><div className="v-process-number">1</div><h3>Registrar envío</h3><p>Introduce los datos del remitente, destinatario y mercancía.</p></div>
-              <div className="v-process-card"><div className="v-process-number">2</div><h3>Crear documentos</h3><p>Genera etiqueta, factura y HBL según corresponda.</p></div>
-              <div className="v-process-card"><div className="v-process-number">3</div><h3>Agrupar carga</h3><p>Organiza los envíos dentro de manifiestos y pallets.</p></div>
-              <div className="v-process-card"><div className="v-process-number">4</div><h3>Entregar</h3><p>Actualiza el estado hasta completar la entrega al destinatario.</p></div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="v-cta">
-          <div className="v-cta-box">
-            <div>
-              <h2>¿Tienes un envío pendiente?</h2>
-              <p>Consulta el estado utilizando tu número de guía.</p>
-            </div>
-            <a href="#rastreo" className="v-btn" style={{ background: "#fff", color: "#087580" }}>Rastrear ahora</a>
-          </div>
-        </section>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="v-footer" id="contacto">
-        <div className="v-footer-grid">
-          <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/vuela-cargo-logo.svg" className="v-footer-logo" alt="Vuela Cargo" />
-            <p>Soluciones digitales para envíos, logística y gestión de carga.</p>
-          </div>
-          <div><h4>Empresa</h4><p><a href="#">Inicio</a></p><p><a href="#servicios">Servicios</a></p><p><a href="/login">Acceso</a></p></div>
-          <div><h4>Envíos</h4><p><a href="#rastreo">Rastreo</a></p><p><a href="/login">Agencias</a></p></div>
-          <div><h4>Ayuda</h4><p>Servicio al cliente</p><p>Información de envíos</p></div>
+              <div className="servicio-body">
+                <h3 style={{ color: s.color }}>{t[s.tKey as keyof typeof t]}</h3>
+                <p>{t[s.dKey as keyof typeof t]}</p>
+                <span className="servicio-link" style={{ color: s.color }}>{t.sMas} →</span>
+              </div>
+            </a>
+          ))}
         </div>
-        <div className="v-footer-bottom">© 2026 Vuela Cargo. Todos los derechos reservados.</div>
+      </section>
+
+      {/* Nosotros */}
+      <section id="nosotros" className="nosotros">
+        <div className="nosotros-grid">
+          <div>
+            <h2>{t.nosH}</h2>
+            <p>{t.nosP}</p>
+            <ul className="features">
+              <li><span><strong>{t.f1}</strong>{t.f1b}</span></li>
+              <li><span><strong>{t.f2}</strong>{t.f2b}</span></li>
+              <li><span><strong>{t.f3}</strong>{t.f3b}</span></li>
+              <li><span><strong>{t.f4}</strong>{t.f4b}</span></li>
+            </ul>
+          </div>
+          <div className="nosotros-card">
+            <h3>{t.nosCardH}</h3>
+            <p>{t.nosCardP}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contacto */}
+      <section id="contacto" className="contacto">
+        <h2>{t.conH}</h2>
+        <p>{t.conP}</p>
+        <div className="contacto-grid">
+          <a className="contacto-card" href={CONTACTO.telHref}>
+            <strong>{CONTACTO.tel}</strong>
+            <small>{t.conTel}</small>
+          </a>
+          <a className="contacto-card" href={lang === "es" ? CONTACTO.whatsappEs : CONTACTO.whatsapp} target="_blank" rel="noopener">
+            <strong>WhatsApp</strong>
+            <small>{CONTACTO.tel}</small>
+          </a>
+          <a className="contacto-card" href={`mailto:${CONTACTO.email}`}>
+            <strong>{CONTACTO.email}</strong>
+            <small>{t.conEmail}</small>
+          </a>
+        </div>
+        <div className="contacto-info">
+          <div>{CONTACTO.dir2}</div>
+          <div>{lang === "es" ? CONTACTO.horarioEs : CONTACTO.horarioEn}</div>
+          <div><a href={CONTACTO.webHref} target="_blank" rel="noopener">{CONTACTO.web}</a></div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer-landing">
+        {/* Logos del grupo empresarial */}
+        <div className="footer-grupo">
+          <div className="footer-grupo-label">VUELA CARGO</div>
+          <div className="footer-grupo-logos">
+            {brands.map((b, i) => (
+              <div key={b.nombre} style={{ display: "contents" }}>
+                {i > 0 && <div className="footer-grupo-divider"></div>}
+                <div className="footer-grupo-logo">
+                  <img src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 8, padding: "4px 10px", maxHeight: 56, maxWidth: 140, objectFit: "contain" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="footer-brand"><strong>Vuela Cargo</strong> · {t.footBrand}</div>
+        <small>© {new Date().getFullYear()} Vuela Cargo. {t.footRights}</small>
+        <a className="footer-agencias" href="/login">Acceso al sistema</a>
       </footer>
-    </>
+    </main>
   );
 }
-
-const VUELA_CSS = `
-:root{--primary:#159dac;--primary-dark:#087580;--dark:#12212a;--text:#43515a;--light:#f5f8f9;--border:#e4eaed;}
-*{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--dark);}
-a{text-decoration:none;color:inherit;}
-.v-header{position:sticky;top:0;z-index:1000;background:rgba(18,33,42,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
-.v-navbar{max-width:1240px;margin:auto;height:78px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
-.v-brand{display:flex;align-items:center;gap:14px;}
-.v-brand img{width:58px;height:58px;object-fit:contain;}
-.v-brand-text{font-size:20px;font-weight:900;letter-spacing:-.5px;color:#fff;}
-.v-nav-links{display:flex;align-items:center;gap:28px;}
-.v-nav-links a{font-size:14px;font-weight:700;color:rgba(255,255,255,.85);}
-.v-nav-links a:hover{color:var(--primary);}
-.v-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:10px;font-weight:800;border:0;cursor:pointer;transition:.2s;font-size:14px;text-decoration:none;}
-.v-btn-primary{background:var(--primary);color:#fff;}
-.v-btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);}
-.v-btn-outline{border:1px solid var(--border);background:#fff;color:var(--dark);}
-.v-btn-outline:hover{border-color:var(--primary);color:var(--primary);}
-.v-video-bg{position:fixed;top:0;left:0;width:100%;height:100vh;z-index:-1;overflow:hidden;}
-.v-video-bg video{width:100%;height:100%;object-fit:cover;}
-.v-video-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,33,42,.55) 0%,rgba(18,33,42,.75) 100%);}
-.v-hero{min-height:650px;background:transparent;}
-.v-hero-title{color:#fff !important;}
-.v-hero-title span{color:#159dac !important;}
-.v-hero-desc{color:rgba(255,255,255,.85) !important;}
-.v-hero-badge{background:rgba(21,157,172,.3) !important;color:#fff !important;}
-.v-hero-container{max-width:1240px;min-height:650px;margin:auto;padding:70px 24px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:60px;}
-.v-hero-badge{display:inline-flex;padding:8px 14px;border-radius:30px;background:#e7f7f8;color:var(--primary-dark);font-size:13px;font-weight:800;margin-bottom:22px;}
-.v-hero-title{font-size:62px;line-height:1.02;letter-spacing:-2.5px;max-width:670px;}
-.v-hero-title span{color:var(--primary);}
-.v-hero-desc{margin-top:24px;max-width:610px;color:var(--text);font-size:19px;line-height:1.6;}
-.v-hero-actions{display:flex;gap:14px;margin-top:32px;}
-.v-hero-card{background:#fff;border:1px solid var(--border);border-radius:26px;box-shadow:0 28px 70px rgba(24,50,60,.12);padding:28px;}
-.v-tracking-title{font-size:22px;font-weight:900;margin-bottom:8px;}
-.v-tracking-desc{color:var(--text);font-size:14px;margin-bottom:22px;}
-.v-tracking-box{display:flex;gap:10px;}
-.v-tracking-box input{flex:1;min-width:0;height:52px;padding:0 16px;border:1px solid var(--border);border-radius:10px;font-size:15px;outline:none;}
-.v-tracking-box input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(21,157,172,.12);}
-.v-tracking-result{margin-top:20px;padding:18px;border-radius:12px;background:#f4fafb;}
-.v-tracking-status{font-weight:900;color:var(--primary-dark);}
-.v-stats{border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.v-stats-container{max-width:1240px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);}
-.v-stat{padding:30px;text-align:center;border-right:1px solid var(--border);}
-.v-stat:last-child{border-right:0;}
-.v-stat strong{display:block;font-size:30px;color:var(--dark);}
-.v-stat span{display:block;margin-top:6px;font-size:13px;color:#718089;}
-.v-section{padding:90px 24px;}
-.v-container{max-width:1240px;margin:auto;}
-.v-section-head{max-width:700px;margin-bottom:45px;}
-.v-eyebrow{font-size:13px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:1px;}
-.v-section-title{margin-top:10px;font-size:42px;letter-spacing:-1.4px;}
-.v-section-text{margin-top:14px;color:var(--text);line-height:1.7;}
-.v-services{background:var(--light);}
-.v-services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.v-service-card{background:#fff;padding:30px;border-radius:18px;border:1px solid var(--border);transition:.25s;}
-.v-service-card:hover{transform:translateY(-5px);box-shadow:0 20px 45px rgba(26,55,65,.09);}
-.v-service-icon{width:52px;height:52px;border-radius:14px;background:#e8f7f8;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:22px;}
-.v-service-card h3{font-size:20px;margin-bottom:10px;}
-.v-service-card p{color:var(--text);line-height:1.6;font-size:14px;}
-.v-process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
-.v-process-card{border:1px solid var(--border);border-radius:16px;padding:24px;}
-.v-process-number{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--dark);color:#fff;font-weight:900;margin-bottom:18px;}
-.v-process-card h3{font-size:17px;margin-bottom:8px;}
-.v-process-card p{font-size:13px;line-height:1.55;color:var(--text);}
-.v-cta{padding:80px 24px;}
-.v-cta-box{max-width:1240px;margin:auto;border-radius:28px;background:linear-gradient(135deg,#0b7781,#169dac);padding:60px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:40px;}
-.v-cta-box h2{font-size:40px;max-width:650px;}
-.v-cta-box p{margin-top:12px;opacity:.9;}
-.v-footer{background:#101a20;color:#fff;padding:65px 24px 25px;}
-.v-footer-grid{max-width:1240px;margin:auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:45px;}
-.v-footer-logo{width:72px;margin-bottom:18px;}
-.v-footer p,.v-footer a{color:#aebbc1;line-height:1.8;font-size:14px;}
-.v-footer h4{margin-bottom:15px;}
-.v-footer-bottom{max-width:1240px;margin:45px auto 0;padding-top:20px;border-top:1px solid #26343b;color:#88979e;font-size:13px;}
-@media(max-width:900px){.v-nav-links{display:none;}.v-hero-container{grid-template-columns:1fr;padding-top:45px;}.v-hero{min-height:auto;}.v-hero-title{font-size:44px;}.v-stats-container{grid-template-columns:1fr 1fr;}.v-services-grid,.v-process-grid{grid-template-columns:1fr 1fr;}.v-footer-grid{grid-template-columns:1fr 1fr;}.v-cta-box{flex-direction:column;align-items:flex-start;}}
-@media(max-width:600px){.v-hero-title{font-size:38px;}.v-hero-actions,.v-tracking-box{flex-direction:column;}.v-services-grid,.v-process-grid,.v-stats-container,.v-footer-grid{grid-template-columns:1fr;}.v-stat{border-right:0;border-bottom:1px solid var(--border);}.v-section{padding:65px 20px;}.v-cta-box{padding:35px 25px;}.v-cta-box h2{font-size:30px;}}
-`;
