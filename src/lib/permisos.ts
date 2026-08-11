@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Leisure CRM — Permisos y aislamiento por agencia (SERVIDOR)
+// Vuela Cargo — Permisos y aislamiento por agencia (SERVIDOR)
 // ════════════════════════════════════════════════════════════════════════════
 // Reglas de negocio (aislamiento estricto):
 //   • admin (matriz)  → ve TODAS las agencias y el consolidado. Único que crea

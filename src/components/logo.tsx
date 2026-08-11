@@ -1,7 +1,7 @@
-// Logo SVG del Grupo Empresarial — fondo transparente, color terracota.
+// Logo SVG del Vuela Cargo — fondo transparente, color terracota.
 export default function Logo({ height = 40 }: { height?: number }) {
   return (
-    <svg viewBox="0 0 380 120" role="img" aria-label="Grupo Empresarial" height={height}>
+    <svg viewBox="0 0 380 120" role="img" aria-label="Vuela Cargo" height={height}>
       <g fill="#C23B22">
         <g>
           <path d="M44 20 q5 -6 0 -12 q-5 -6 0 -10" fill="none" stroke="#C23B22" strokeWidth="3" strokeLinecap="round" />
@@ -17,7 +17,7 @@ export default function Logo({ height = 40 }: { height?: number }) {
           <path d="M8 100 H118" fill="none" stroke="#C23B22" strokeWidth="3" strokeLinecap="round" strokeDasharray="7 6" />
         </g>
         <g fontFamily="Arial, Helvetica, sans-serif" fontWeight="900">
-          <text x="140" y="46" fontSize="34">LEISURE</text>
+          <text x="140" y="46" fontSize="34">VUELA CARGO</text>
           <text x="140" y="74" fontSize="22" letterSpacing="1.2">EXPORTING</text>
           <text x="140" y="98" fontSize="17" letterSpacing="2.5">L L C</text>
         </g>

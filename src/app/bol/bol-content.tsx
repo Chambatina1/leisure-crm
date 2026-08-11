@@ -66,9 +66,9 @@ export default function BOLContent({
 
             {/* EMPRESA */}
             <div className="company-info">
-              <div className="company-name">GRUPO EMPRESARIAL</div>
+              <div className="company-name">VUELA CARGO</div>
               <div>Envíos, exportación y logística</div>
-              <div>+1 727-598-6802 · info@grupo-empresarial.com</div>
+              <div>+1 727-598-6802 · info@vuela-cargo.com</div>
               <div>Fecha: {fecha}</div>
             </div>
           </section>

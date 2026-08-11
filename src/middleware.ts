@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/_next") || pathname.startsWith("/favicon")) return NextResponse.next();
   if (pathname === "/" || pathname === "/login") return NextResponse.next();
-  if (pathname.startsWith("/etiqueta/") || pathname === "/bol") return NextResponse.next();
+  if (pathname.startsWith("/etiqueta/") || pathname === "/bol" || pathname.startsWith("/r/")) return NextResponse.next();
   if (pathname.startsWith("/servicios/")) return NextResponse.next();
   if (pathname.startsWith("/api/") && isPublicApi(pathname)) return NextResponse.next();
 

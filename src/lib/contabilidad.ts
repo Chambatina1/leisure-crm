@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Leisure CRM — Contabilidad (doble entrada)
+// Vuela Cargo — Contabilidad (doble entrada)
 // Plan de cuentas mínimo + registro de asientos + libro mayor + resumen.
 // Reproduce exactamente la lógica del frontend original.
 // ════════════════════════════════════════════════════════════════════════════

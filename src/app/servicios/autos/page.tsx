@@ -7,7 +7,7 @@ import { FotoHeader } from "../_components/foto-header";
 
 const IMG = "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
-export const metadata = { title: "Exportación de autos · Grupo Empresarial" };
+export const metadata = { title: "Exportación de autos · Vuela Cargo" };
 
 export default function ServicioAutosPage() {
   return (
@@ -55,7 +55,7 @@ export default function ServicioAutosPage() {
               <strong>$450</strong>
             </div>
             <div className="srv-precio-row">
-              <span>Honorarios Grupo Empresarial</span>
+              <span>Honorarios Vuela Cargo</span>
               <strong>$600</strong>
             </div>
             <div className="srv-precio-row srv-precio-total">

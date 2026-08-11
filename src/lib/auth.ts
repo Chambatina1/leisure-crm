@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Leisure CRM — Auth helpers
+// Vuela Cargo — Auth helpers
 // JWT (jose) + bcryptjs. Token en cookie httpOnly.
 // JWT_SECRET: si no está definido, genera uno aleatorio y lo persiste en /tmp
 // (Render) o .jwt_secret (local) para que sobreviva entre requests del mismo deploy.
@@ -8,16 +8,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 
-const COOKIE_NAME = "leisure_session";
+const COOKIE_NAME = "vuela_session";
 const ALG = "HS256";
-const ISSUER = "leisure-crm";
-const AUDIENCE = "leisure-crm-app";
+const ISSUER = "vuela-cargo";
+const AUDIENCE = "vuela-cargo-app";
 const EXPIRY = "7d";
 
 // Fallback fijo (compatible con Edge runtime, que NO tiene node:fs).
 // Esto permite que la app arranque sin configurar JWT_SECRET. Para producción
 // real con seguridad, define JWT_SECRET (>=32 chars) en las variables de entorno.
-const FALLBACK_SECRET = "leisure-exporting-llc-crm-fallback-secret-2026-change-me";
+const FALLBACK_SECRET = "vuela-cargo-fallback-secret-2026-change-me";
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET && process.env.JWT_SECRET.length >= 32
