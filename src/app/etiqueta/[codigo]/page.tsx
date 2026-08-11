@@ -95,103 +95,68 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
 }
 
 const ETIQUETA_CSS = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, Helvetica, sans-serif; background: #eee; color: #222; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{margin:0;padding:0;width:100%;background:#fff;font-family:Arial,Helvetica,sans-serif;}
 
-  .etq-toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
-  .etq-toolbar button, .etq-toolbar .etq-link {
-    padding: 10px 18px; border-radius: 6px; font-weight: 800; cursor: pointer; text-decoration: none;
-    background: #C23B22; color: #fff; border: none; font-size: .85rem;
-  }
-  .etq-toolbar .etq-link { background: #374151; }
-
-  /* ETIQUETA — misma escala que solvecargo (790px de ancho) */
-  .label {
-    width: 790px; min-height: 1170px; margin: 20px auto;
-    background: #fff; border: 4px solid #111; padding: 32px 18px 30px 18px;
+  /* ETIQUETA EXACTA 4 x 6 PULGADAS */
+  .label{
+    width:4in;height:6in;margin:0;padding:0.12in;
+    overflow:hidden;background:#fff;color:#000;border:none;
   }
 
   /* CABECERA */
-  .header { position: relative; height: 175px; }
-  .logo-area { position: absolute; left: 175px; top: 15px; width: 290px; text-align: center; }
-  .logo-area img { max-width: 260px; max-height: 115px; object-fit: contain; }
-  .fake-logo { font-weight: bold; font-size: 29px; line-height: 30px; }
-  .fake-logo .cargo { color: #a9164c; }
-  .fake-logo .pack { color: #063c82; }
-  .fake-logo .international { font-size: 22px; font-weight: normal; letter-spacing: 2px; color: #234979; }
-  .qr-box { position: absolute; right: 20px; top: 0; width: 150px; height: 150px; }
-  .qr-box img { width: 150px !important; height: 150px !important; }
+  .header{height:1.05in;position:relative;}
+  .logo{position:absolute;left:0.12in;top:0.05in;width:0.85in;height:0.85in;object-fit:contain;}
+  .qr{position:absolute;right:0.05in;top:0.02in;width:0.95in;height:0.95in;}
+  .qr img{width:100%;height:100%;object-fit:contain;}
 
-  /* NÚMERO DE GUÍA */
-  .guide-number { text-align: center; font-size: 57px; font-weight: 800; margin: 6px 0 12px 0; letter-spacing: -1px; }
+  /* NÚMERO GUÍA */
+  .guide{width:100%;text-align:center;font-size:0.38in;line-height:1;font-weight:900;white-space:nowrap;margin:0.03in 0 0.08in 0;}
 
-  /* FILAS (EMBARC, CARNET) */
-  .row { display: grid; grid-template-columns: 300px 1fr; align-items: start; margin: 7px 0; font-size: 35px; line-height: 1.08; }
-  .row .title { font-weight: 800; }
+  /* FILAS */
+  .row{display:flex;width:100%;margin-bottom:0.06in;font-size:0.20in;line-height:1.05;}
+  .label-title{width:1.55in;font-weight:900;flex-shrink:0;}
+  .label-value{flex:1;font-weight:700;overflow-wrap:anywhere;}
 
   /* CONSIGNATARIO */
-  .consig-title { font-size: 35px; font-weight: 800; margin-top: 10px; }
-  .consig-name { font-size: 38px; line-height: 1.08; font-weight: 800; margin: 12px 0 14px; }
+  .section-title{font-size:0.20in;font-weight:900;margin:0.06in 0 0.04in;}
+  .consignee{font-size:0.23in;line-height:1.05;font-weight:900;margin-bottom:0.07in;}
 
-  /* DIRECCION */
-  .address { font-size: 34px; line-height: 1.08; margin: 10px 0; font-weight: 700; }
+  /* DIRECCIÓN */
+  .address{font-size:0.18in;line-height:1.05;font-weight:700;margin-bottom:0.07in;}
+
+  /* MUNICIPIO */
+  .municipality{width:100%;text-align:center;font-size:0.25in;font-weight:900;border-top:2px solid #000;border-bottom:2px solid #000;padding:0.05in 0;margin:0.05in 0;}
 
   /* PROVINCIA */
-  .province { font-size: 41px; line-height: 1; font-weight: 800; text-align: center; margin: 16px 0; }
-
-  /* TELEFONO */
-  .phone-row { display: grid; grid-template-columns: 310px 1fr; font-size: 38px; margin: 10px 0 20px; }
-  .phone-row .title { font-weight: 800; }
+  .province{width:100%;text-align:center;font-size:0.34in;line-height:1;font-weight:900;margin:0.06in 0;}
 
   /* PRODUCTO */
-  .product { font-size: 29px; font-weight: 800; text-align: center; margin: 17px 0; white-space: nowrap; }
+  .product{width:100%;text-align:center;font-size:0.18in;line-height:1.05;font-weight:900;margin:0.07in 0;}
 
-  /* ENVIO / PESO / BULTO */
-  .shipping-info { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: center; gap: 10px; margin-top: 15px; }
-  .shipping-info div { font-size: 40px; font-weight: 800; white-space: nowrap; }
-  .shipping-info div:nth-child(2) { text-align: center; }
-  .shipping-info div:nth-child(3) { text-align: right; }
+  /* PESO / BULTO */
+  .shipping{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:0.19in;font-weight:900;margin-top:0.05in;}
 
   /* BARCODE */
-  .barcode-area { text-align: center; margin-top: 22px; }
-  .barcode-bars { display: flex; justify-content: center; }
-  .barcode-bars canvas { width: 540px !important; height: 90px !important; }
-  .barcode-text { font-size: 34px; font-weight: 800; margin-top: 4px; }
+  .barcode-container{text-align:center;width:100%;margin-top:0.10in;}
+  .barcode-bars{display:flex;justify-content:center;}
+  .barcode-bars canvas{width:3.25in !important;height:0.48in !important;}
+  .barcode-number{font-size:0.17in;font-weight:900;margin-top:0.02in;}
 
   /* DESTINO FINAL */
-  .destination { text-align: center; font-size: 69px; line-height: 1.15; font-weight: 900; margin-top: 20px; }
+  .destination{width:100%;text-align:center;font-size:0.31in;line-height:1;font-weight:900;margin-top:0.08in;}
 
-  @media print {
-    html, body {
-      width: 4in;
-      height: 6in;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: #fff !important;
-      overflow: hidden;
+  /* IMPRESIÓN */
+  @media print{
+    @page{size:4in 6in;margin:0;}
+    html,body{width:4in;height:6in;margin:0 !important;padding:0 !important;overflow:hidden !important;background:#fff !important;}
+    .no-print{display:none !important;}
+    .label{
+      width:4in !important;height:6in !important;margin:0 !important;
+      page-break-before:avoid;page-break-after:avoid;page-break-inside:avoid;
+      break-before:avoid;break-after:avoid;break-inside:avoid;
+      overflow:hidden !important;
     }
-    @page {
-      size: 4in 6in;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    .no-print { display: none !important; }
-    .label {
-      margin: 0 !important;
-      padding: 5px !important;
-      width: 4in !important;
-      height: 6in !important;
-      max-width: 4in !important;
-      max-height: 6in !important;
-      border: 2px solid #111 !important;
-      overflow: hidden !important;
-      box-sizing: border-box !important;
-      page-break-after: always;
-      page-break-inside: avoid;
-    }
-    .label * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
+    img,svg,canvas{max-width:100% !important;}
   }
 `;

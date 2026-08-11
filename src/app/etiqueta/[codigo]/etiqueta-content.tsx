@@ -1,20 +1,9 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// etiqueta-content — Réplica EXACTA de la etiqueta de solvecargo.
-// Estructura:
-//   1. Header: logo centrado-izquierda + QR derecha (150px)
-//   2. Número de guía centrado gigante
-//   3. EMBARC. (fila con título + valor)
-//   4. CONSIGNATARIO título + nombre grande
-//   5. CARNET (fila)
-//   6. DIRECCION
-//   7. PROVINCIA centrada
-//   8. TELEF. (fila)
-//   9. PRODUCTO centrado
-//   10. ENVIO / PESO / BULTO (3 columnas)
-//   11. Barcode Code128 + texto
-//   12. DESTINO final gigante
+// etiqueta-content — Etiqueta térmica 4×6 EXACTA.
+// Todas las medidas en pulgadas (in) para impresión térmica precisa.
+// Template basado en el código de referencia de Vuela Cargo.
 // ════════════════════════════════════════════════════════════════════════════
 
 interface EtiquetaData {
@@ -36,93 +25,83 @@ interface EtiquetaData {
 
 const upper = (s?: string | null) => (s || "").toUpperCase();
 
-export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; brands?: { nombre: string; logo: string }[] }) {
+export default function EtiquetaContent({ p }: { p: EtiquetaData; brands?: any[] }) {
   const cod = p.codigo;
   const guia = p.hawb || cod;
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
-  const pesoLb = Number(p.peso) || 0;
   const bulto = `${p.piezas} / ${p.piezas}`;
-  const barcodeText = cod.replace(/-/g, "");
 
   return (
     <>
-      <div className="no-print etq-toolbar">
-        <button onClick={() => window.print()}>IMPRIMIR ETIQUETA</button>
-        <a href={`/hbl/${cod}`} target="_blank" className="etq-link">VER HBL</a>
-        <a href="/bol" target="_blank" className="etq-link">MANIFIESTO</a>
-        <a href="/nuevo-paquete" className="etq-link">NUEVA</a>
-        <a href="/" className="etq-link">INICIO</a>
+      <div className="no-print" style={{ textAlign: "center", padding: 14, background: "#fff", borderBottom: "1px solid #ccc" }}>
+        <button onClick={() => window.print()} style={{ padding: "12px 28px", borderRadius: 8, background: "#159dac", color: "#fff", border: "none", fontWeight: 800, fontSize: 16, cursor: "pointer" }}>IMPRIMIR ETIQUETA 4×6</button>
+        <a href={`/hbl/${cod}`} target="_blank" style={{ marginLeft: 10, padding: "12px 20px", borderRadius: 8, background: "#374151", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>HBL</a>
+        <a href="/bol" target="_blank" style={{ marginLeft: 10, padding: "12px 20px", borderRadius: 8, background: "#374151", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>MANIFIESTO</a>
+        <a href="/nuevo-paquete" style={{ marginLeft: 10, padding: "12px 20px", borderRadius: 8, background: "#374151", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>NUEVA</a>
+        <a href="/" style={{ marginLeft: 10, padding: "12px 20px", borderRadius: 8, background: "#374151", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>INICIO</a>
       </div>
 
       <div className="label">
-        {/* CABECERA: logo + QR */}
+        {/* CABECERA: Logo izq + QR der */}
         <div className="header">
-          <div className="logo-area">
-            {brands.length > 0 ? (
-              brands.map(b => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={b.nombre} src={b.logo} alt={b.nombre} />
-              ))
-            ) : (
-              <div className="fake-logo">
-                <div><span className="cargo">GRUPO</span> <span className="pack">EMPRESARIAL</span></div>
-                <div className="international">INTERNATIONAL</div>
-              </div>
-            )}
-          </div>
-          <div className="qr-box">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/vuela-cargo-logo.svg" className="logo" alt="Vuela Cargo" />
+          <div className="qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="150" height="150" />
+            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="180" height="180" />
           </div>
         </div>
 
         {/* NÚMERO DE GUÍA */}
-        <div className="guide-number">{guia}</div>
+        <div className="guide">{guia}</div>
 
         {/* EMBARCADOR */}
         <div className="row">
-          <div className="title">EMBARC.:</div>
-          <div className="value">{upper(p.remitente)}</div>
+          <div className="label-title">EMBARC.:</div>
+          <div className="label-value">{upper(p.remitente)}</div>
         </div>
 
         {/* CONSIGNATARIO */}
-        <div className="consig-title">CONSIGNATARIO:</div>
-        <div className="consig-name">{upper(p.destinatario)}</div>
+        <div className="section-title">CONSIGNATARIO:</div>
+        <div className="consignee">{upper(p.destinatario)}</div>
 
         {/* CARNET */}
         <div className="row">
-          <div className="title">CARNET:</div>
-          <div>{upper(p.consignatarioCarnet) || "—"}</div>
+          <div className="label-title">CARNET:</div>
+          <div className="label-value">{upper(p.consignatarioCarnet) || "—"}</div>
         </div>
 
-        {/* DIRECCION */}
+        {/* DIRECCIÓN */}
         <div className="address">{upper(p.consignatarioCalle)}</div>
 
-        {/* PROVINCIA (primera mención) */}
+        {/* MUNICIPIO */}
+        <div className="municipality">{upper(p.consignatarioMunicipio) || "—"}</div>
+
+        {/* PROVINCIA */}
         <div className="province">{upper(p.consignatarioProvincia) || "CUBA"}</div>
 
-        {/* TELEFONO */}
-        <div className="phone-row">
-          <div className="title">TELEF.:</div>
-          <div>{p.consignatarioTel || "—"}</div>
+        {/* TELÉFONO */}
+        <div className="row">
+          <div className="label-title">TELEF.:</div>
+          <div className="label-value">{p.consignatarioTel || "—"}</div>
         </div>
 
         {/* PRODUCTO */}
         <div className="product">{upper(p.contenido)}</div>
 
         {/* ENVIO / PESO / BULTO */}
-        <div className="shipping-info">
-          <div>ENVIO</div>
-          <div>PESO: {pesoKg.toFixed(2)} KG</div>
-          <div>BULTO: {bulto}</div>
+        <div className="shipping">
+          <span>ENVIO</span>
+          <span>PESO: {pesoKg.toFixed(2)} KG</span>
+          <span>BULTO: {bulto}</span>
         </div>
 
         {/* BARCODE */}
-        <div className="barcode-area">
+        <div className="barcode-container">
           <div className="barcode-bars">
-            <Barcode128 code={barcodeText} />
+            <Barcode128 code={cod.replace(/-/g, "")} />
           </div>
-          <div className="barcode-text">{barcodeText}</div>
+          <div className="barcode-number">{cod.replace(/-/g, "")}</div>
         </div>
 
         {/* DESTINO FINAL */}
@@ -132,7 +111,7 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
   );
 }
 
-// Barcode Code128 real
+// Barcode Code128
 import { useEffect, useRef } from "react";
 function Barcode128({ code }: { code: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -141,10 +120,10 @@ function Barcode128({ code }: { code: string }) {
     try {
       const JsBarcode = require("jsbarcode");
       JsBarcode(canvasRef.current, code, {
-        format: "CODE128", width: 2, height: 90, displayValue: false, margin: 0,
+        format: "CODE128", width: 2, height: 55, displayValue: false, margin: 0,
         background: "#ffffff", lineColor: "#000000",
       });
     } catch (e) { console.error("jsbarcode", e); }
   }, [code]);
-  return <canvas ref={canvasRef} style={{ width: 540, height: 90 }} />;
+  return <canvas ref={canvasRef} style={{ width: "3.25in", height: "0.48in" }} />;
 }
