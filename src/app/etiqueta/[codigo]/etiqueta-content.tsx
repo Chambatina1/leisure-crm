@@ -1,17 +1,20 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// etiqueta-content — Etiqueta térmica 4×6 estilo solvecargo.
-//
-// Campos (orden exacto):
-//   1. LOGO izquierda + QR derecha (arriba)
-//   2. GUÍA/HAWB centrado grande
-//   3. Lateral derecho: EMBARC, CONSIGNATARIO, CARNET, DIRECCION
-//   4. DESCRIPCION del producto
-//   5. ENVIO + PESO (kg) + BULTO (extremo derecho)
-//   6. PROVINCIA/ISLA gigante centrada (mayúscula cerrada)
-//   7. TEL al costado
-//   8. Barcode Code128 abajo centrado
+// etiqueta-content — Réplica EXACTA de la etiqueta de solvecargo.
+// Estructura:
+//   1. Header: logo centrado-izquierda + QR derecha (150px)
+//   2. Número de guía centrado gigante
+//   3. EMBARC. (fila con título + valor)
+//   4. CONSIGNATARIO título + nombre grande
+//   5. CARNET (fila)
+//   6. DIRECCION
+//   7. PROVINCIA centrada
+//   8. TELEF. (fila)
+//   9. PRODUCTO centrado
+//   10. ENVIO / PESO / BULTO (3 columnas)
+//   11. Barcode Code128 + texto
+//   12. DESTINO final gigante
 // ════════════════════════════════════════════════════════════════════════════
 
 interface EtiquetaData {
@@ -37,7 +40,9 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
   const cod = p.codigo;
   const guia = p.hawb || cod;
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
+  const pesoLb = Number(p.peso) || 0;
   const bulto = `${p.piezas} / ${p.piezas}`;
+  const barcodeText = cod.replace(/-/g, "");
 
   return (
     <>
@@ -49,70 +54,79 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
         <a href="/" className="etq-link">INICIO</a>
       </div>
 
-      <div className="etq">
-        {/* ── 1. LOGO izquierda + QR derecha ── */}
-        <div className="etq-top">
-          <div className="etq-logos">
-            {brands.map(b => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={b.nombre} src={b.logo} alt={b.nombre} className="etq-logo" />
-            ))}
+      <div className="label">
+        {/* CABECERA: logo + QR */}
+        <div className="header">
+          <div className="logo-area">
+            {brands.length > 0 ? (
+              brands.map(b => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={b.nombre} src={b.logo} alt={b.nombre} />
+              ))
+            ) : (
+              <div className="fake-logo">
+                <div><span className="cargo">GRUPO</span> <span className="pack">EMPRESARIAL</span></div>
+                <div className="international">INTERNATIONAL</div>
+              </div>
+            )}
           </div>
-          <div className="etq-qr">
+          <div className="qr-box">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="90" height="90" />
+            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="150" height="150" />
           </div>
         </div>
 
-        {/* ── 2. GUÍA centrado grande ── */}
-        <div className="etq-guia">{guia}</div>
+        {/* NÚMERO DE GUÍA */}
+        <div className="guide-number">{guia}</div>
 
-        {/* ── 3. Cuerpo principal: datos lateral derecho ── */}
-        <div className="etq-cuerpo">
-          <div className="etq-campos">
-            <div className="etq-campo">
-              <label>EMBARC:</label>
-              <div className="etq-val">{upper(p.remitente)}</div>
-            </div>
-            <div className="etq-campo">
-              <label>CONSIGNATARIO:</label>
-              <div className="etq-val">{upper(p.destinatario)}</div>
-            </div>
-            <div className="etq-campo">
-              <label>CARNET:</label>
-              <div className="etq-val">{upper(p.consignatarioCarnet) || "—"}</div>
-            </div>
-            <div className="etq-campo">
-              <label>DIRECCION:</label>
-              <div className="etq-val">{upper(p.consignatarioCalle)}</div>
-            </div>
-            <div className="etq-campo">
-              <label>DESCRIPCION:</label>
-              <div className="etq-val">{upper(p.contenido)}</div>
-            </div>
+        {/* EMBARCADOR */}
+        <div className="row">
+          <div className="title">EMBARC.:</div>
+          <div className="value">{upper(p.remitente)}</div>
+        </div>
+
+        {/* CONSIGNATARIO */}
+        <div className="consig-title">CONSIGNATARIO:</div>
+        <div className="consig-name">{upper(p.destinatario)}</div>
+
+        {/* CARNET */}
+        <div className="row">
+          <div className="title">CARNET:</div>
+          <div>{upper(p.consignatarioCarnet) || "—"}</div>
+        </div>
+
+        {/* DIRECCION */}
+        <div className="address">{upper(p.consignatarioCalle)}</div>
+
+        {/* PROVINCIA (primera mención) */}
+        <div className="province">{upper(p.consignatarioProvincia) || "CUBA"}</div>
+
+        {/* TELEFONO */}
+        <div className="phone-row">
+          <div className="title">TELEF.:</div>
+          <div>{p.consignatarioTel || "—"}</div>
+        </div>
+
+        {/* PRODUCTO */}
+        <div className="product">{upper(p.contenido)}</div>
+
+        {/* ENVIO / PESO / BULTO */}
+        <div className="shipping-info">
+          <div>ENVIO</div>
+          <div>PESO: {pesoLb.toFixed(2)}</div>
+          <div>BULTO: {bulto}</div>
+        </div>
+
+        {/* BARCODE */}
+        <div className="barcode-area">
+          <div className="barcode-bars">
+            <Barcode128 code={barcodeText} />
           </div>
+          <div className="barcode-text">{barcodeText}</div>
         </div>
 
-        {/* ── 5. ENVIO + PESO + BULTO (extremo derecho) ── */}
-        <div className="etq-extra">
-          <div className="etq-extra-item"><label>ENVIO:</label><b>MARITIMO</b></div>
-          <div className="etq-extra-item"><label>PESO:</label><b>{pesoKg.toFixed(2)} KG</b></div>
-          <div className="etq-extra-item"><label>BULTO:</label><b>{bulto}</b></div>
-          <div className="etq-extra-item etq-tel-item"><label>TEL:</label><b>{p.consignatarioTel || "—"}</b></div>
-        </div>
-
-        {/* ── 6. PROVINCIA/ISLA gigante centrada ── */}
-        <div className="etq-provincia">
-          {upper(p.consignatarioProvincia) || "CUBA"}
-        </div>
-
-        {/* ── 8. Barcode Code128 abajo ── */}
-        <div className="etq-barcode-area">
-          <div className="etq-barcode-bars">
-            <Barcode128 code={cod} />
-          </div>
-          <div className="etq-barcode-num">*{cod}*</div>
-        </div>
+        {/* DESTINO FINAL */}
+        <div className="destination">{upper(p.consignatarioProvincia) || "CUBA"}</div>
       </div>
     </>
   );
@@ -127,10 +141,10 @@ function Barcode128({ code }: { code: string }) {
     try {
       const JsBarcode = require("jsbarcode");
       JsBarcode(canvasRef.current, code, {
-        format: "CODE128", width: 2, height: 50, displayValue: false, margin: 0,
+        format: "CODE128", width: 2, height: 90, displayValue: false, margin: 0,
         background: "#ffffff", lineColor: "#000000",
       });
     } catch (e) { console.error("jsbarcode", e); }
   }, [code]);
-  return <canvas ref={canvasRef} style={{ width: "100%", height: 50 }} />;
+  return <canvas ref={canvasRef} style={{ width: 540, height: 90 }} />;
 }

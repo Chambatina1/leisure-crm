@@ -96,7 +96,7 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
 
 const ETIQUETA_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: "Arial Narrow", Arial, sans-serif; background: #e8e8e8; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #eee; color: #222; }
 
   .etq-toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
   .etq-toolbar button, .etq-toolbar .etq-link {
@@ -105,59 +105,66 @@ const ETIQUETA_CSS = `
   }
   .etq-toolbar .etq-link { background: #374151; }
 
-  /* Hoja 4×6 */
-  .etq {
-    width: 384px; margin: 16px auto; padding: 10px;
-    background: #fff; border: 2px solid #000;
-    display: flex; flex-direction: column; gap: 6px;
-    font-size: 11px; color: #000;
+  /* ETIQUETA — misma escala que solvecargo (790px de ancho) */
+  .label {
+    width: 790px; min-height: 1170px; margin: 20px auto;
+    background: #fff; border: 4px solid #111; padding: 32px 18px 30px 18px;
   }
 
-  /* 1. Logo izq + QR der */
-  .etq-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .etq-logos { display: flex; align-items: center; gap: 4px; }
-  .etq-logo { max-height: 36px; max-width: 90px; object-fit: contain; background: #f9fafb; border-radius: 4px; padding: 2px 5px; }
-  .etq-qr img { border: 1px solid #000; }
+  /* CABECERA */
+  .header { position: relative; height: 175px; }
+  .logo-area { position: absolute; left: 175px; top: 15px; width: 290px; text-align: center; }
+  .logo-area img { max-width: 260px; max-height: 115px; object-fit: contain; }
+  .fake-logo { font-weight: bold; font-size: 29px; line-height: 30px; }
+  .fake-logo .cargo { color: #a9164c; }
+  .fake-logo .pack { color: #063c82; }
+  .fake-logo .international { font-size: 22px; font-weight: normal; letter-spacing: 2px; color: #234979; }
+  .qr-box { position: absolute; right: 20px; top: 0; width: 150px; height: 150px; }
+  .qr-box img { width: 150px !important; height: 150px !important; }
 
-  /* 2. Guía centrado */
-  .etq-guia {
-    text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px;
-    font-family: "Courier New", monospace; padding: 6px 0;
-    border-top: 2px solid #000; border-bottom: 2px solid #000;
-  }
+  /* NÚMERO DE GUÍA */
+  .guide-number { text-align: center; font-size: 57px; font-weight: 800; margin: 6px 0 12px 0; letter-spacing: -1px; }
 
-  /* 3. Cuerpo - campos del lateral */
-  .etq-cuerpo { padding: 2px 0; }
-  .etq-campos { display: flex; flex-direction: column; gap: 4px; }
-  .etq-campo { display: flex; align-items: baseline; gap: 6px; border-bottom: 1px solid #eee; padding: 2px 0; }
-  .etq-campo label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; min-width: 85px; }
-  .etq-val { font-size: 13px; font-weight: 800; color: #000; line-height: 1.3; }
+  /* FILAS (EMBARC, CARNET) */
+  .row { display: grid; grid-template-columns: 300px 1fr; align-items: start; margin: 7px 0; font-size: 35px; line-height: 1.08; }
+  .row .title { font-weight: 800; }
 
-  /* 5. ENVIO + PESO + BULTO + TEL (fila inferior) */
-  .etq-extra { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; padding: 4px 0; }
-  .etq-extra-item { display: flex; align-items: center; gap: 3px; border: 1px solid #999; border-radius: 4px; padding: 3px 6px; }
-  .etq-extra-item label { font-size: 7px; font-weight: 800; color: #C23B22; text-transform: uppercase; }
-  .etq-extra-item b { font-size: 12px; font-weight: 800; color: #000; }
+  /* CONSIGNATARIO */
+  .consig-title { font-size: 35px; font-weight: 800; margin-top: 10px; }
+  .consig-name { font-size: 38px; line-height: 1.08; font-weight: 800; margin: 12px 0 14px; }
 
-  /* 6. PROVINCIA/ISLA gigante centrada */
-  .etq-provincia {
-    text-align: center; font-size: 26px; font-weight: 900; color: #C23B22;
-    letter-spacing: 0; line-height: 1.1; text-transform: uppercase;
-    padding: 8px; margin: 4px 0; background: #fff5f5;
-    border: 2.5px solid #C23B22; border-radius: 4px;
-  }
+  /* DIRECCION */
+  .address { font-size: 34px; line-height: 1.08; margin: 10px 0; font-weight: 700; }
 
-  /* 8. Barcode abajo */
-  .etq-barcode-area { text-align: center; padding: 4px 0 2px; }
-  .etq-barcode-bars { height: 48px; overflow: hidden; }
-  .etq-barcode-bars canvas { height: 48px !important; width: 100% !important; }
-  .etq-barcode-num { font-size: 13px; font-weight: 800; letter-spacing: 3px; font-family: "Courier New", monospace; margin-top: 2px; }
+  /* PROVINCIA */
+  .province { font-size: 41px; line-height: 1; font-weight: 800; text-align: center; margin: 16px 0; }
+
+  /* TELEFONO */
+  .phone-row { display: grid; grid-template-columns: 310px 1fr; font-size: 38px; margin: 10px 0 20px; }
+  .phone-row .title { font-weight: 800; }
+
+  /* PRODUCTO */
+  .product { font-size: 29px; font-weight: 800; text-align: center; margin: 17px 0; white-space: nowrap; }
+
+  /* ENVIO / PESO / BULTO */
+  .shipping-info { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: center; gap: 10px; margin-top: 15px; }
+  .shipping-info div { font-size: 40px; font-weight: 800; white-space: nowrap; }
+  .shipping-info div:nth-child(2) { text-align: center; }
+  .shipping-info div:nth-child(3) { text-align: right; }
+
+  /* BARCODE */
+  .barcode-area { text-align: center; margin-top: 22px; }
+  .barcode-bars { display: flex; justify-content: center; }
+  .barcode-bars canvas { width: 540px !important; height: 90px !important; }
+  .barcode-text { font-size: 34px; font-weight: 800; margin-top: 4px; }
+
+  /* DESTINO FINAL */
+  .destination { text-align: center; font-size: 69px; line-height: 1.15; font-weight: 900; margin-top: 20px; }
 
   @media print {
-    body { background: #fff; margin: 0; padding: 0; }
+    @page { margin: 0; }
+    body { background: white; padding: 0; }
     .no-print { display: none !important; }
-    .etq { border: none; margin: 0; padding: 5px; width: 4in; height: 6in; overflow: hidden; box-sizing: border-box; }
-    .etq-logo { background: #000 !important; filter: brightness(0) invert(1) !important; }
-    @page { size: 4in 6in; margin: 0; }
+    .label { margin: 0; page-break-after: always; border: 4px solid #111; }
   }
 `;
