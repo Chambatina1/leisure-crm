@@ -1,9 +1,13 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// etiqueta-content — Client Component. Etiqueta térmica 4×6 replica exacta
-// del formato de referencia: grid de campos compacto, todo mayúsculas,
-// logo arriba, barcode + tracking abajo, QR lateral.
+// etiqueta-content — Etiqueta térmica 4×6.
+// Disposición estilo referencia (ikomsoft):
+//   - LOGO arriba izquierda + QR arriba derecha
+//   - TRACKING (código) centrado grande
+//   - Lateral derecho: EMBARC, CONSIGNATARIO, CARNET, DIRECCION
+//   - Centro: MUNICIPIO/ISLA en letra gigante mayúscula
+//   - Barcode Code128 abajo centrado
 // ════════════════════════════════════════════════════════════════════════════
 
 interface EtiquetaData {
@@ -11,37 +15,28 @@ interface EtiquetaData {
   remitente: string;
   remitenteCarnet?: string | null;
   remitenteTel?: string | null;
-  remitenteDir?: string | null;
   destinatario: string;
   consignatarioCarnet?: string | null;
   consignatarioTel?: string | null;
   consignatarioCalle?: string | null;
-  consignatarioEntre?: string | null;
   consignatarioMunicipio?: string | null;
   consignatarioProvincia?: string | null;
   peso: number;
   pesoKg?: number | null;
   piezas: number;
   contenido: string;
-  categoria?: string | null;
-  notas?: string;
   creado: string | Date;
   agenciaNombre?: string;
-  destino?: string;
   hawb?: string | null;
 }
+
+const upper = (s?: string | null) => (s || "").toUpperCase();
 
 export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; brands?: { nombre: string; logo: string }[] }) {
   const cod = p.codigo;
   const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
   const hawb = p.hawb || cod;
-
-  const upper = (s?: string | null) => (s || "").toUpperCase();
-  // Direccion completa: calle + entre calles + municipio + provincia (todo en una linea)
-  // La direccion (calle) va en DIRECCION. Municipio y provincia van aparte,
-  // grandes, en la seccion destacada de CONSIGNATARIO.
-  const direccionCompleta = upper(p.consignatarioCalle) || "—";
 
   return (
     <>
@@ -54,99 +49,104 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
       </div>
 
       <div className="etq">
-        {/* ── FILA 1: Logos del grupo + K ── */}
+        {/* ── FILA 1: LOGO izquierda + QR derecha ── */}
         <div className="etq-top">
-          <div className="etq-grupo">
+          <div className="etq-logos">
             {brands.map(b => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={b.nombre} src={b.logo} alt={b.nombre} className="etq-logo-blanco" />
+              <img key={b.nombre} src={b.logo} alt={b.nombre} className="etq-logo" />
             ))}
           </div>
-          <div className="etq-k">K</div>
-        </div>
-
-        {/* ── FILA 2: Tracking (HAWB) grande ── */}
-        <div className="etq-hawb">
-          <span className="etq-hawb-label">HBL / HAWB</span>
-          <span className="etq-hawb-num">{hawb}</span>
-        </div>
-
-        {/* ── FILA 3: EMBARCADOR (chico) + datos secundarios ── */}
-        <div className="etq-grid">
-          <div className="etq-field etq-field-wide">
-            <label>EMBARCADOR</label>
-            <div className="etq-field-val">{upper(p.remitente)}</div>
-          </div>
-        </div>
-
-        {/* ── CONSIGNATARIO DESTACADO — lo más grande de la etiqueta ── */}
-        <div className="etq-dest">
-          <label className="etq-dest-label">CONSIGNATARIO</label>
-          <div className="etq-dest-nombre">{upper(p.destinatario)}</div>
-          <div className="etq-dest-loc">
-            <span className="etq-dest-mun">{upper(p.consignatarioMunicipio) || "—"}</span>
-            <span className="etq-dest-sep">·</span>
-            <span className="etq-dest-prov">{upper(p.consignatarioProvincia) || "LA HABANA"}</span>
-          </div>
-          {/* Datos del consignatario debajo del cuadro resaltado */}
-          <div className="etq-dest-datos">
-            <div className="etq-dest-dato"><label>CI / CARNE</label><b>{upper(p.consignatarioCarnet) || "—"}</b></div>
-            <div className="etq-dest-dato"><label>TELEFONO</label><b>{p.consignatarioTel || "—"}</b></div>
-            <div className="etq-dest-dato etq-dest-dato-wide"><label>DIRECCION</label><b>{direccionCompleta}</b></div>
-          </div>
-        </div>
-
-        {/* ── FILA 4: Descripción + Envío ── */}
-        <div className="etq-grid">
-          <div className="etq-field etq-field-wide">
-            <label>DESCRIPCION</label>
-            <div className="etq-field-val">{upper(p.contenido)}</div>
-          </div>
-          <div className="etq-field">
-            <label>FECHA ENVIO</label>
-            <div className="etq-field-val">{fecha}</div>
-          </div>
-        </div>
-
-        {/* ── FILA 5: Peso / Bultos / Piezas — cajas grandes ── */}
-        <div className="etq-peso-row">
-          <div className="etq-peso-box">
-            <label>PESO LB</label>
-            <div className="etq-peso-val">{Number(p.peso).toFixed(1)}</div>
-          </div>
-          <div className="etq-peso-box">
-            <label>PESO KG</label>
-            <div className="etq-peso-val">{Number(pesoKg).toFixed(2)}</div>
-          </div>
-          <div className="etq-peso-box">
-            <label>BULTOS</label>
-            <div className="etq-peso-val">{p.piezas}</div>
-          </div>
-          <div className="etq-peso-box etq-qr-box">
+          <div className="etq-qr">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="88" height="88" />
+            <img src={`/api/paquetes/${cod}/qr`} alt="QR" width="90" height="90" />
           </div>
         </div>
 
-        {/* ── FILA 6: Barcode + número ── */}
+        {/* ── FILA 2: TRACKING centrado grande ── */}
+        <div className="etq-tracking">
+          <div className="etq-tracking-num">{hawb}</div>
+        </div>
+
+        {/* ── FILA 3: DOS COLUMNAS — peso/fecha izq + datos lateral der ── */}
+        <div className="etq-main">
+          {/* Columna izquierda: peso, piezas, fecha */}
+          <div className="etq-izq">
+            <div className="etq-dato-box">
+              <small>PESO LB</small>
+              <b>{Number(p.peso).toFixed(1)}</b>
+            </div>
+            <div className="etq-dato-box">
+              <small>PESO KG</small>
+              <b>{pesoKg.toFixed(2)}</b>
+            </div>
+            <div className="etq-dato-box">
+              <small>PIEZAS</small>
+              <b>{p.piezas}</b>
+            </div>
+            <div className="etq-dato-box">
+              <small>FECHA</small>
+              <b style={{ fontSize: 12 }}>{fecha}</b>
+            </div>
+          </div>
+
+          {/* Columna derecha: EMBARC, CONSIGNATARIO, CARNET, DIRECCION, DESCRIPCION */}
+          <div className="etq-der">
+            <div className="etq-campo">
+              <label>EMBARC:</label>
+              <div className="etq-campo-val">{upper(p.remitente)}</div>
+            </div>
+            <div className="etq-campo">
+              <label>CONSIGNATARIO:</label>
+              <div className="etq-campo-val">{upper(p.destinatario)}</div>
+            </div>
+            <div className="etq-campo">
+              <label>CARNET:</label>
+              <div className="etq-campo-val">{upper(p.consignatarioCarnet) || "—"}</div>
+            </div>
+            <div className="etq-campo">
+              <label>DIRECCION:</label>
+              <div className="etq-campo-val">{upper(p.consignatarioCalle)}</div>
+            </div>
+            <div className="etq-campo">
+              <label>DESCRIPCION:</label>
+              <div className="etq-campo-val">{upper(p.contenido)}</div>
+            </div>
+            <div className="etq-campo etq-campo-inline">
+              <label>ENVIO:</label>
+              <b>MARITIMO</b>
+              <label style={{ marginLeft: 12 }}>PESO:</label>
+              <b>{pesoKg.toFixed(2)} KG</b>
+            </div>
+          </div>
+        </div>
+
+        {/* ── FILA 4: MUNICIPIO/ISLA — letra GIGANTE centrada + TEL derecha ── */}
+        <div className="etq-dest-row">
+          <div className="etq-destino">
+            {upper(p.consignatarioMunicipio) || "—"}
+          </div>
+          {p.consignatarioTel && (
+            <div className="etq-dest-tel">
+              <small>TEL:</small>
+              <b>{p.consignatarioTel}</b>
+            </div>
+          )}
+        </div>
+
+        {/* ── FILA 5: Barcode Code128 abajo centrado ── */}
         <div className="etq-barcode-area">
           <div className="etq-barcode-bars">
             <Barcode128 code={cod} />
           </div>
           <div className="etq-barcode-num">*{cod}*</div>
         </div>
-
-        {/* ── FILA 7: Footer ── */}
-        <div className="etq-footer">
-          GRUPO EMPRESARIAL · +1 727-598-6802
-        </div>
       </div>
     </>
   );
 }
 
-// Barcode Code128 REAL — escaneable por lectores de código de barras físicos.
-// Usa jsbarcode para generar el patrón correcto sobre un <canvas>.
+// Barcode Code128 real — escaneable por lectores físicos
 import { useEffect, useRef } from "react";
 function Barcode128({ code }: { code: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -156,12 +156,8 @@ function Barcode128({ code }: { code: string }) {
       const JsBarcode = require("jsbarcode");
       JsBarcode(canvasRef.current, code, {
         format: "CODE128",
-        width: 2,           // ancho de barra fina
-        height: 50,         // altura
-        displayValue: false, // el número se muestra abajo aparte
-        margin: 0,
-        background: "#ffffff",
-        lineColor: "#000000",
+        width: 2, height: 50, displayValue: false, margin: 0,
+        background: "#ffffff", lineColor: "#000000",
       });
     } catch (e) { console.error("jsbarcode error", e); }
   }, [code]);

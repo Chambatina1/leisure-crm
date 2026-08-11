@@ -98,7 +98,6 @@ const ETIQUETA_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Arial Narrow", Arial, sans-serif; background: #e8e8e8; }
 
-  /* Toolbar */
   .etq-toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
   .etq-toolbar button, .etq-toolbar .etq-link {
     padding: 10px 18px; border-radius: 6px; font-weight: 800; cursor: pointer; text-decoration: none;
@@ -106,78 +105,67 @@ const ETIQUETA_CSS = `
   }
   .etq-toolbar .etq-link { background: #374151; }
 
-  /* Hoja 4×6 (384×576px ≈ 4×6 pulg) */
+  /* Hoja 4×6 */
   .etq {
     width: 384px; margin: 16px auto; padding: 10px;
-    background: #fffbef; border: 2px solid #000;
-    display: flex; flex-direction: column; gap: 5px;
-    font-size: 10px; color: #000; font-family: "Arial Narrow", Arial, sans-serif;
+    background: #fff; border: 2px solid #000;
+    display: flex; flex-direction: column; gap: 6px;
+    font-size: 11px; color: #000; font-family: "Arial Narrow", Arial, sans-serif;
   }
 
-  /* ── Fila 1: Logos del grupo + K ── */
-  .etq-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4px; border-bottom: 2px solid #000; }
-  .etq-grupo { display: flex; align-items: center; gap: 6px; }
-  .etq-grupo img { height: 30px; width: auto; object-fit: contain; border-radius: 4px; padding: 2px 5px; }
-  .etq-logo-chambatina { background: #ff6b00 !important; height: 34px !important; padding: 3px 8px !important; filter: brightness(0) invert(1); }
-  .etq-logo-blanco { background: #fff; }
-  .etq-chambatina { font-weight: 900; font-size: 11px; color: #ff6b00; background: #fff; border-radius: 3px; padding: 4px 8px; letter-spacing: .5px; }
-  .etq-k { background: #C23B22; color: #fff; font-size: 26px; font-weight: 900; padding: 2px 14px; border-radius: 4px; line-height: 1; flex-shrink: 0; }
+  /* Fila 1: Logo izq + QR der */
+  .etq-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .etq-logos { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .etq-logo { max-height: 36px; max-width: 90px; width: auto; height: auto; object-fit: contain; background: #f9fafb; border-radius: 4px; padding: 2px 5px; }
+  .etq-qr img { border: 1px solid #000; }
 
-  /* ── Fila 2: HBL/HAWB ── */
-  .etq-hawb { display: flex; justify-content: center; align-items: baseline; gap: 8px; padding: 3px 0; border-bottom: 1px solid #000; }
-  .etq-hawb-label { font-size: 9px; color: #555; font-weight: 700; letter-spacing: 1px; }
-  .etq-hawb-num { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+  /* Fila 2: Tracking centrado */
+  .etq-tracking { text-align: center; padding: 4px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; }
+  .etq-tracking-num { font-size: 22px; font-weight: 900; letter-spacing: 2px; font-family: "Courier New", monospace; }
 
-  /* ── Grid de campos ── */
-  .etq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
-  .etq-field { border: 1px solid #000; padding: 3px 5px; background: #fff; }
-  .etq-field-wide { grid-column: 1 / -1; }
-  .etq-field label { display: block; font-size: 7px; font-weight: 800; color: #C23B22; letter-spacing: .5px; margin-bottom: 1px; text-transform: uppercase; }
-  .etq-field-val { font-size: 11px; font-weight: 700; line-height: 1.25; }
+  /* Fila 3: Dos columnas */
+  .etq-main { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
 
-  /* ── CONSIGNATARIO destacado (lo más grande de la etiqueta) ── */
-  .etq-dest { background: #fff5f5; border: 2.5px solid #C23B22; border-radius: 6px; padding: 8px 10px; text-align: center; }
-  .etq-dest-label { font-size: 8px; font-weight: 900; color: #C23B22; letter-spacing: 1.5px; display: block; margin-bottom: 3px; }
-  .etq-dest-nombre { font-size: 15px; font-weight: 700; color: #000; line-height: 1.1; letter-spacing: .5px; }
-  .etq-dest-loc { margin-top: 6px; display: flex; justify-content: center; align-items: center; gap: 10px; }
-  .etq-dest-mun { font-size: 26px; font-weight: 900; color: #C23B22; line-height: 1; }
-  .etq-dest-sep { font-size: 22px; color: #999; }
-  .etq-dest-prov { font-size: 26px; font-weight: 900; color: #C23B22; line-height: 1; }
-  .etq-dest-datos { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; text-align: left; }
-  .etq-dest-dato { background: #fff; border: 1.5px solid #999; border-radius: 4px; padding: 6px 10px; }
-  .etq-dest-dato-wide { grid-column: 1 / -1; }
-  .etq-dest-dato label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; display: block; }
-  .etq-dest-dato b { font-size: 18px; font-weight: 800; color: #000; }
+  /* Columna izquierda: peso/piezas/fecha */
+  .etq-izq { display: flex; flex-direction: column; gap: 4px; }
+  .etq-dato-box { border: 1.5px solid #000; padding: 4px 8px; text-align: center; min-width: 70px; }
+  .etq-dato-box small { font-size: 7px; font-weight: 800; color: #C23B22; display: block; text-transform: uppercase; }
+  .etq-dato-box b { font-size: 15px; font-weight: 900; }
 
-  /* ── Fila 5: Peso / Bultos / QR ── */
-  .etq-peso-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 3px; }
-  .etq-peso-box { border: 1px solid #000; padding: 4px; text-align: center; background: #fff; display: flex; flex-direction: column; justify-content: center; }
-  .etq-peso-box label { font-size: 7px; font-weight: 800; color: #C23B22; letter-spacing: .5px; }
-  .etq-peso-val { font-size: 17px; font-weight: 900; }
-  .etq-qr-box { padding: 2px; align-items: center; }
-  .etq-qr-box img { display: block; }
+  /* Columna derecha: EMBARC, CONSIGNATARIO, CARNET, DIRECCION, DESCRIPCION */
+  .etq-der { display: flex; flex-direction: column; gap: 3px; }
+  .etq-campo { border-bottom: 1px solid #ddd; padding: 2px 0; }
+  .etq-campo label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; }
+  .etq-campo-val { font-size: 13px; font-weight: 800; color: #000; line-height: 1.2; }
+  .etq-campo-inline { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .etq-campo-inline b { font-size: 12px; font-weight: 800; }
 
-  /* ── Fila 6: Barcode ── */
+  /* Fila 4: MUNICIPIO gigante + TEL al lado */
+  .etq-dest-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .etq-destino {
+    flex: 1; text-align: center; font-size: 26px; font-weight: 900; color: #C23B22;
+    letter-spacing: 0; line-height: 1; text-transform: uppercase;
+    padding: 6px 4px; background: #fff5f5; border: 2px solid #C23B22; border-radius: 4px;
+  }
+  .etq-dest-tel { border: 1.5px solid #000; padding: 4px 8px; text-align: center; }
+  .etq-dest-tel small { font-size: 7px; font-weight: 800; color: #C23B22; display: block; }
+  .etq-dest-tel b { font-size: 13px; font-weight: 800; }
+
+  /* Fila 5: Barcode abajo */
   .etq-barcode-area { text-align: center; padding: 4px 0 2px; }
   .etq-barcode-bars { height: 48px; overflow: hidden; }
-  .etq-barcode-bars svg { height: 48px; width: 100%; }
+  .etq-barcode-bars canvas { height: 48px !important; width: 100% !important; }
   .etq-barcode-num { font-size: 13px; font-weight: 800; letter-spacing: 3px; font-family: "Courier New", monospace; margin-top: 2px; }
-
-  /* ── Footer ── */
-  .etq-footer { border-top: 2px solid #C23B22; padding-top: 3px; text-align: center; font-size: 7px; color: #555; letter-spacing: .3px; }
 
   @media print {
     body { background: #fff; margin: 0; padding: 0; }
     .no-print { display: none !important; }
     .etq {
       border: none; margin: 0; padding: 5px;
-      width: 4in; height: 6in;
-      overflow: hidden;
-      box-sizing: border-box;
+      width: 4in; height: 6in; overflow: hidden; box-sizing: border-box;
     }
-    /* En B/N: logos en blanco puro sobre fondo negro para maximo contraste */
     .etq-grupo { background: #000; padding: 3px 6px; border-radius: 3px; }
-    .etq-grupo img, .etq-logo-blanco { background: #000 !important; filter: brightness(0) invert(1) !important; }
+    .etq-grupo img, .etq-logo { background: #000 !important; filter: brightness(0) invert(1) !important; }
     @page { size: 4in 6in; margin: 0; }
   }
 `;
