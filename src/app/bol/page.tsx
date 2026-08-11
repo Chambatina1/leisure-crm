@@ -44,7 +44,7 @@ export default async function BOLPage() {
         <style dangerouslySetInnerHTML={{ __html: BOL_CSS }} />
       </head>
       <body>
-        <BOLContent fecha={fecha} dbError={dbError} paquetes={paquetes} totalLb={totalLb} totalKg={totalKg} totalPiezas={totalPiezas} brands={brands} />
+        <BOLContent fecha={fecha} dbError={dbError} paquetes={paquetes} brands={brands} />
       </body>
     </html>
   );
@@ -52,73 +52,56 @@ export default async function BOLPage() {
 
 const BOL_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #e8e8e8; color: #1a1a1a; font-size: 10px; }
-  .toolbar { display: flex; gap: 10px; padding: 12px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; }
-  .toolbar button, .toolbar .btn-link { padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; background: #C23B22; color: #fff; border: none; font-size: .85rem; }
-  .toolbar .btn-link { background: #374151; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f3f3f3; color: #222; }
 
-  /* Hoja A4 horizontal (landscape) */
-  .bol { width: 297mm; min-height: 200mm; margin: 16px auto; padding: 12mm; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+  .manifest-controls { width: 1780px; margin: 20px auto; display: flex; gap: 10px; }
+  .manifest-controls button { padding: 12px 24px; border: 0; border-radius: 6px; font-size: 17px; font-weight: bold; cursor: pointer; background: #222; color: white; }
+  .manifest-controls a { padding: 12px 24px; border-radius: 6px; font-size: 17px; font-weight: bold; text-decoration: none; background: #6b7280; color: white; }
 
-  /* Header */
-  .bol-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #C23B22; padding-bottom: 10px; margin-bottom: 12px; }
-  .bol-marca { display: flex; flex-direction: column; gap: 8px; }
-  .bol-barco { background: #C23B22; color: #fff; font-weight: 900; font-size: 20px; padding: 4px 12px; border-radius: 4px; letter-spacing: 1px; display: inline-block; width: fit-content; }
-  .bol-marca strong { display: block; font-size: 16px; color: #C23B22; letter-spacing: .5px; }
-  .bol-marca small { font-size: 9px; color: #666; }
-  .bol-grupo-logos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .bol-titulo { text-align: right; }
-  .bol-titulo h1 { font-size: 18px; color: #1f2937; letter-spacing: 1.5px; }
-  .bol-fecha { font-size: 10px; color: #666; margin-top: 2px; }
-  .bol-k { font-size: 11px; margin-top: 4px; }
-  .bol-k span { background: #C23B22; color: #fff; padding: 2px 10px; border-radius: 4px; font-weight: 900; }
+  .manifest { width: 1780px; min-height: 760px; margin: auto; background: white; border: 2px solid #222; }
 
-  /* Datos del embarque */
-  .bol-embarque { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-  .bol-embarque > div { border: 1px solid #ddd; padding: 6px 10px; border-radius: 6px; background: #f9fafb; }
-  .bol-embarque label { display: block; font-size: 7px; font-weight: 800; color: #C23B22; text-transform: uppercase; letter-spacing: .5px; }
-  .bol-embarque b { font-size: 11px; color: #1f2937; }
+  .title-area { position: relative; min-height: 390px; padding-top: 5px; }
+  .main-title { text-align: center; font-size: 44px; font-weight: 900; margin: 0; }
+  .subtitle { text-align: center; font-size: 36px; font-weight: 900; margin-top: 14px; }
 
-  /* Resumen */
-  .bol-resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-  .bol-resumen > div { background: #fef3c7; padding: 8px; border-radius: 6px; text-align: center; }
-  .bol-resumen b { display: block; font-size: 18px; color: #C23B22; }
-  .bol-resumen span { font-size: 9px; color: #666; }
+  .logo-box { position: absolute; left: 10px; top: 120px; width: 275px; height: 275px; border: 1px solid #aaa; display: flex; align-items: center; justify-content: center; }
+  .logo-box img { max-width: 90%; max-height: 90%; object-fit: contain; }
 
-  /* Tabla del manifiesto */
-  .bol-tabla { width: 100%; border-collapse: collapse; font-size: 9px; }
-  .bol-tabla th { background: #1f2937; color: #fff; padding: 6px 5px; text-align: left; font-size: 8px; text-transform: uppercase; letter-spacing: .3px; border: 1px solid #1f2937; }
-  .bol-tabla td { padding: 4px 5px; border: 1px solid #ddd; vertical-align: top; }
-  .bol-tabla .mono { font-family: "Courier New", monospace; font-weight: 700; }
-  .bol-tabla .num { text-align: right; font-family: "Courier New", monospace; }
-  .bol-tabla tfoot td { border-top: 2px solid #1f2937; background: #f3f4f6; font-weight: 800; }
+  .company-info { position: absolute; left: 300px; right: 20px; top: 172px; text-align: center; font-size: 31px; line-height: 1.08; font-weight: 500; }
+  .company-name { font-size: 32px; font-weight: 800; }
 
-  /* Anchos de columnas */
-  .bol-tabla .col-n { width: 25px; text-align: center; }
-  .bol-tabla .col-track { width: 90px; }
-  .bol-tabla .col-ci { width: 70px; }
-  .bol-tabla .col-tel { width: 70px; }
-  .bol-tabla .col-dir { width: 120px; }
-  .bol-tabla .col-prov { width: 70px; }
-  .bol-tabla .col-cont { width: 80px; }
-  .bol-tabla .col-num { width: 45px; }
+  .table-wrapper { width: 100%; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  th, td { border: 1px solid #222; text-align: center; vertical-align: middle; padding: 5px; }
+  th { background: #d1d1d1; font-size: 23px; line-height: 1.05; font-weight: 900; }
+  td { font-size: 24px; line-height: 1.1; }
 
-  /* Firmas */
-  .bol-firmas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 30px; }
-  .bol-firma { text-align: center; }
-  .bol-linea { border-top: 1px solid #333; margin-bottom: 4px; height: 30px; }
-  .bol-firma small { font-size: 8px; color: #6b7280; }
+  .col-no { width: 42px; }
+  .col-invoice { width: 250px; }
+  .col-delivery { width: 175px; }
+  .col-shipper { width: 105px; }
+  .col-consignee { width: 145px; }
+  .col-id { width: 160px; }
+  .col-address { width: 160px; }
+  .col-phone { width: 132px; }
+  .col-boxes { width: 75px; }
+  .col-weight { width: 115px; }
+  .col-description { width: 178px; }
+  .col-date { width: 130px; }
+  .col-pallet { width: 115px; }
 
-  /* Footer */
-  .bol-footer { margin-top: 16px; padding-top: 6px; border-top: 2px solid #C23B22; text-align: center; font-size: 8px; color: #6b7280; }
+  .invoice-number { font-size: 29px; font-weight: 900; }
+  .row-number { font-size: 28px; font-weight: 900; }
+  .shipper, .consignee, .address, .description { text-transform: uppercase; }
+
+  tbody tr { height: 80px; }
+
+  .summary { display: flex; justify-content: flex-end; gap: 40px; padding: 15px 25px; font-size: 22px; font-weight: 700; }
 
   @media print {
-    body { background: #fff; }
-    .no-print { display: none !important; }
-    .bol { box-shadow: none; margin: 0; width: 100%; min-height: auto; padding: 8mm; }
-    /* En B/N: logos en blanco sobre negro */
-    .bol-grupo-logos { background: #000; padding: 2px 4px; border-radius: 3px; }
-    .bol-grupo-logos img { background: #000 !important; filter: brightness(0) invert(1) !important; }
-    @page { size: A4 landscape; margin: 8mm; }
+    @page { size: landscape; margin: 5mm; }
+    body { background: white; padding: 0; }
+    .no-print, .manifest-controls { display: none !important; }
+    .manifest { width: 100%; border: 1px solid black; }
   }
 `;

@@ -113,7 +113,7 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
         {/* ENVIO / PESO / BULTO */}
         <div className="shipping-info">
           <div>ENVIO</div>
-          <div>PESO: {pesoLb.toFixed(2)}</div>
+          <div>PESO: {pesoKg.toFixed(2)} KG</div>
           <div>BULTO: {bulto}</div>
         </div>
 

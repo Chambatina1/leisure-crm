@@ -82,72 +82,43 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
 
 const HBL_CSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #e8e8e8; color: #000; font-size: 9px; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 9pt; color: #111; background: #eee; }
+
   .hbl-toolbar { display: flex; gap: 10px; padding: 12px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; }
-  .hbl-toolbar button, .hbl-toolbar a { padding: 9px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; text-decoration: none; background: #C23B22; color: #fff; border: none; font-size: .85rem; }
+  .hbl-toolbar button, .hbl-toolbar a { padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; background: #C23B22; color: #fff; border: none; font-size: 14px; }
   .hbl-toolbar a { background: #374151; }
 
-  /* Página A4 con 3 copias del HBL */
-  .hbl-pagina { width: 210mm; margin: 16px auto; padding: 8mm; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.1); }
+  .hbl-doc { width: 210mm; max-width: 100%; margin: 16px auto; padding: 8mm; background: #fff; }
 
-  /* Cada bloque HBL (1/3 de la hoja) */
-  .hbl-bloque { border: 1px solid #000; padding: 6px 8px; position: relative; }
-  .hbl-copia-tag { position: absolute; top: -8px; right: 8px; background: #C23B22; color: #fff; font-size: 7px; font-weight: 800; padding: 2px 8px; border-radius: 3px; letter-spacing: .5px; }
+  .hbl-table { border-collapse: collapse; width: 100%; margin-bottom: 0; }
+  .hbl-table td { vertical-align: top; }
 
-  /* Línea de corte entre copias */
-  .hbl-corte { text-align: center; color: #999; font-size: 10px; margin: 8px 0; letter-spacing: 2px; border-top: 1px dashed #999; border-bottom: 1px dashed #999; padding: 4px 0; }
+  .hbl-box { border: 1px solid #000; padding: 4px; }
+  .hbl-label { font-size: 7pt; font-weight: bold; color: #333; }
+  .hbl-value { font-size: 9pt; font-weight: bold; }
+  .hbl-center { text-align: center; }
+  .hbl-gray { background-color: #eee; }
 
-  /* Fila superior */
-  .hbl-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-  .hbl-forwarding { flex: 1; }
-  .hbl-forwarding label, .hbl-block-field label, .hbl-dato label, .hbl-foot-box label { font-size: 6px; font-weight: 800; color: #C23B22; text-transform: uppercase; letter-spacing: .3px; }
-  .hbl-agent-name { font-size: 10px; font-weight: 800; margin-top: 1px; }
-  .hbl-grupo-logos { display: flex; align-items: center; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
-  .hbl-grupo-logos img { max-height: 20px; max-width: 60px; width: auto; height: auto; object-fit: contain; background: #fff; border-radius: 2px; padding: 1px 3px; }
+  .hbl-title { font-size: 19pt; font-weight: bold; }
+  .hbl-big-num { font-size: 15pt; font-weight: bold; }
+  .hbl-small { font-size: 7pt; color: #555; }
 
-  .hbl-title-area { text-align: right; }
-  .hbl-title { font-size: 10px; font-weight: 900; letter-spacing: .5px; border-bottom: 2px solid #000; padding-bottom: 2px; }
-  .hbl-num { margin-top: 3px; font-size: 9px; }
-  .hbl-num label { font-size: 8px; color: #C23B22; font-weight: 800; }
-  .hbl-num b { font-size: 11px; font-family: "Courier New", monospace; }
+  .hbl-logos { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hbl-logos img { max-height: 50px; max-width: 120px; object-fit: contain; }
+  .hbl-fake-logo { font-weight: bold; }
+  .hbl-brand { font-size: 18pt; color: #123d7a; }
+  .hbl-intl { font-size: 10pt; color: #234979; }
 
-  /* Bloques de 2 columnas */
-  .hbl-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 4px; }
-  .hbl-block-field { border: 1px solid #000; padding: 4px 6px; }
-  .hbl-block-field label { display: block; margin-bottom: 1px; border-bottom: 1px solid #ddd; padding-bottom: 1px; }
-  .hbl-val { font-size: 10px; font-weight: 700; }
-  .hbl-sub { font-size: 8px; color: #333; line-height: 1.3; margin-top: 1px; }
+  .hbl-company { line-height: 1.4; font-size: 9pt; }
 
-  /* Datos consignatario */
-  .hbl-datos { display: grid; grid-template-columns: auto 2fr 1fr 1fr; gap: 3px; margin-bottom: 4px; }
-  .hbl-dato { border: 1px solid #000; padding: 3px 6px; }
-  .hbl-dato label { margin-right: 3px; }
-  .hbl-dato span { font-size: 9px; }
-
-  /* Tabla */
-  .hbl-tabla { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
-  .hbl-tabla th { background: #1f2937; color: #fff; font-size: 7px; padding: 3px; text-align: left; text-transform: uppercase; border: 1px solid #1f2937; }
-  .hbl-tabla td { border: 1px solid #000; padding: 3px; font-size: 9px; vertical-align: top; }
-  .hbl-tabla .mono { font-family: "Courier New", monospace; font-weight: 700; }
-  .hbl-tabla .num { text-align: right; font-family: "Courier New", monospace; }
-  .col-marks { width: 90px; }
-  .col-pack { width: 40px; text-align: center; }
-  .col-gw { width: 55px; }
-  .col-m3 { width: 50px; }
-
-  /* Casillas inferiores */
-  .hbl-footer-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 5px; }
-  .hbl-foot-box { border: 1px solid #000; padding: 4px; text-align: center; min-height: 28px; display: flex; flex-direction: column; justify-content: center; }
-  .hbl-foot-val { font-size: 9px; font-weight: 700; margin-top: 1px; }
-  .hbl-foot-line { border-top: 1px solid #000; margin-top: 8px; }
+  .hbl-barcode { text-align: center; margin-top: 10px; }
+  .hbl-barcode-canvas { display: inline-block; }
+  .hbl-barcode-canvas canvas { width: 300px !important; height: 40px !important; }
 
   @media print {
-    body { background: #fff; }
-    .no-print { display: none !important; }
-    .hbl-pagina { box-shadow: none; margin: 0; width: 100%; padding: 5mm; }
-    /* En B/N: logos en blanco sobre negro */
-    .hbl-grupo-logos { background: #000; padding: 2px 4px; border-radius: 3px; }
-    .hbl-grupo-logos img { background: #000 !important; filter: brightness(0) invert(1) !important; }
-    @page { size: A4; margin: 5mm; }
+    @page { size: LETTER; margin: 8mm; }
+    body { background: white; padding: 0; }
+    .no-print, .hbl-toolbar { display: none !important; }
+    .hbl-doc { box-shadow: none; margin: 0; width: 100%; padding: 0; }
   }
 `;
