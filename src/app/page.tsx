@@ -218,7 +218,7 @@ export default function HomePage() {
       <footer className="footer-landing">
         {/* Logos del grupo empresarial */}
         <div className="footer-grupo">
-          <div className="footer-grupo-label">VUELA CARGO</div>
+          <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
           <div className="footer-grupo-logos">
             {brands.map((b, i) => (
               <div key={b.nombre} style={{ display: "contents" }}>

@@ -75,7 +75,6 @@ async function main() {
   // ── 5. Brands ──
   const brandsSeed = [
     { clave: "chambatina", nombre: "Chambatina", orden: 0, archivo: "public/logos/chambatina.png" },
-    { clave: "servitravel", nombre: "ServiTravels", orden: 1, archivo: "public/logos/servitravel.png" },
   ];
   for (const b of brandsSeed) {
     const logo = imgToDataUrl(b.archivo);

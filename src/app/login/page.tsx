@@ -54,8 +54,9 @@ export default function LoginPage() {
     <div style={wrap}>
       <div style={card}>
         <div style={logoArea}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/vuela-cargo-logo.svg" alt="Vuela Cargo" style={{ width: 56, height: 56, objectFit: "contain" }} />
           <img src="/logos/chambatina.png" alt="Chambatina" style={{ height: 40, background: "#fff", borderRadius: 6, padding: "3px 8px" }} />
-          <img src="/logos/servitravel.png" alt="ServiTravels" style={{ height: 40, background: "#fff", borderRadius: 6, padding: "3px 8px" }} />
         </div>
         <h1 style={{ fontSize: 22, color: "#C23B22", margin: "16px 0 4px", textAlign: "center" }}>Acceso al sistema</h1>
         <p style={{ textAlign: "center", color: "#6b7280", fontSize: 13, marginBottom: 24 }}>Ingresá tu usuario y contraseña</p>
