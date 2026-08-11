@@ -113,10 +113,10 @@ export default function HomePage() {
 
       {/* Navbar */}
       <nav className="landing-nav">
-        <div className="nav-logo nav-grupo">
-          {brands.map(b => (
-            <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 6, padding: "3px 8px", height: 36, width: "auto", maxWidth: 90, objectFit: "contain" }} />
-          ))}
+        <div className="nav-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/vuela-cargo-logo.svg" alt="Vuela Cargo" style={{ width: 50, height: 50, objectFit: "contain", background: "#fff", borderRadius: 10, padding: 4 }} />
+          <strong style={{ color: "#fff", fontSize: 20, fontWeight: 900, letterSpacing: "-.5px" }}>Vuela Cargo</strong>
         </div>
         <div className="nav-links">
           <a href="#servicios">{t.navServicios}</a>
