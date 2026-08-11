@@ -162,9 +162,14 @@ const ETIQUETA_CSS = `
   .destination { text-align: center; font-size: 69px; line-height: 1.15; font-weight: 900; margin-top: 20px; }
 
   @media print {
-    @page { margin: 0; }
-    body { background: white; padding: 0; }
+    @page { size: 4in 6in; margin: 0; }
+    body { background: white; padding: 0; margin: 0; }
     .no-print { display: none !important; }
-    .label { margin: 0; page-break-after: always; border: 4px solid #111; }
+    .label {
+      margin: 0; page-break-after: always;
+      width: 4in; height: 6in;
+      border: 4px solid #111;
+      overflow: hidden;
+    }
   }
 `;
