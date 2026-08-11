@@ -46,6 +46,7 @@ export default function NuevoPaquetePage() {
   const [consignatarioProvincia, setConsignatarioProvincia] = useState("La Habana");
 
   const [usarConta, setUsarConta] = useState(false);
+  const [generarFactura, setGenerarFactura] = useState(false);
   const [formaPago, setFormaPago] = useState("efectivo");
   const [tarifa, setTarifa] = useState("");
 
@@ -162,7 +163,7 @@ export default function NuevoPaquetePage() {
     }
   }
 
-  if (creado) return <Exito codigo={creado} peso={peso} pesoKg={pesoKg} />;
+  if (creado) return <Exito codigo={creado} peso={peso} pesoKg={pesoKg} generarFactura={generarFactura} />;
 
   return (
     <div style={wrap}>
@@ -434,7 +435,7 @@ function PreviewEtiqueta({ peso, pesoKg, piezas, vol, remitente, destinatario, c
 // ════════════════════════════════════════════════════════════════════════════
 // Pantalla de éxito
 // ════════════════════════════════════════════════════════════════════════════
-function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg: string }) {
+function Exito({ codigo, peso, pesoKg, generarFactura: genFact = false }: { codigo: string; peso: string; pesoKg: string; generarFactura?: boolean }) {
   return (
     <div style={wrap}>
       <div style={cardOk}>
@@ -467,6 +468,18 @@ function Exito({ codigo, peso, pesoKg }: { codigo: string; peso: string; pesoKg:
             </div>
             <div style={docArrow}>→</div>
           </a>
+
+          {/* Factura (solo si se marcó) */}
+          {genFact && (
+            <a href={`/factura/${codigo}`} target="_blank" rel="noopener" style={docCard}>
+              <div style={docIcon}>FAC</div>
+              <div style={docInfo}>
+                <strong>Factura</strong>
+                <small>Factura del envío · PDF imprimible</small>
+              </div>
+              <div style={docArrow}>→</div>
+            </a>
+          )}
 
           {/* Manifiesto */}
           <a href="/bol" target="_blank" rel="noopener" style={docCard}>
