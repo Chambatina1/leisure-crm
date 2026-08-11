@@ -1,20 +1,22 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// etiqueta-content — Etiqueta térmica 4×6.
-// Disposición estilo referencia (ikomsoft):
-//   - LOGO arriba izquierda + QR arriba derecha
-//   - TRACKING (código) centrado grande
-//   - Lateral derecho: EMBARC, CONSIGNATARIO, CARNET, DIRECCION
-//   - Centro: MUNICIPIO/ISLA en letra gigante mayúscula
-//   - Barcode Code128 abajo centrado
+// etiqueta-content — Etiqueta térmica 4×6 estilo solvecargo.
+//
+// Campos (orden exacto):
+//   1. LOGO izquierda + QR derecha (arriba)
+//   2. GUÍA/HAWB centrado grande
+//   3. Lateral derecho: EMBARC, CONSIGNATARIO, CARNET, DIRECCION
+//   4. DESCRIPCION del producto
+//   5. ENVIO + PESO (kg) + BULTO (extremo derecho)
+//   6. PROVINCIA/ISLA gigante centrada (mayúscula cerrada)
+//   7. TEL al costado
+//   8. Barcode Code128 abajo centrado
 // ════════════════════════════════════════════════════════════════════════════
 
 interface EtiquetaData {
   codigo: string;
   remitente: string;
-  remitenteCarnet?: string | null;
-  remitenteTel?: string | null;
   destinatario: string;
   consignatarioCarnet?: string | null;
   consignatarioTel?: string | null;
@@ -26,7 +28,6 @@ interface EtiquetaData {
   piezas: number;
   contenido: string;
   creado: string | Date;
-  agenciaNombre?: string;
   hawb?: string | null;
 }
 
@@ -34,9 +35,9 @@ const upper = (s?: string | null) => (s || "").toUpperCase();
 
 export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; brands?: { nombre: string; logo: string }[] }) {
   const cod = p.codigo;
-  const fecha = new Date(p.creado).toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const guia = p.hawb || cod;
   const pesoKg = p.pesoKg ?? (Number(p.peso) * 0.453592);
-  const hawb = p.hawb || cod;
+  const bulto = `${p.piezas} / ${p.piezas}`;
 
   return (
     <>
@@ -44,12 +45,12 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
         <button onClick={() => window.print()}>IMPRIMIR ETIQUETA</button>
         <a href={`/hbl/${cod}`} target="_blank" className="etq-link">VER HBL</a>
         <a href="/bol" target="_blank" className="etq-link">MANIFIESTO</a>
-        <a href="/nuevo-paquete" className="etq-link">NUEVA ETIQUETA</a>
+        <a href="/nuevo-paquete" className="etq-link">NUEVA</a>
         <a href="/" className="etq-link">INICIO</a>
       </div>
 
       <div className="etq">
-        {/* ── FILA 1: LOGO izquierda + QR derecha ── */}
+        {/* ── 1. LOGO izquierda + QR derecha ── */}
         <div className="etq-top">
           <div className="etq-logos">
             {brands.map(b => (
@@ -63,78 +64,49 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
           </div>
         </div>
 
-        {/* ── FILA 2: TRACKING centrado grande ── */}
-        <div className="etq-tracking">
-          <div className="etq-tracking-num">{hawb}</div>
-        </div>
+        {/* ── 2. GUÍA centrado grande ── */}
+        <div className="etq-guia">{guia}</div>
 
-        {/* ── FILA 3: DOS COLUMNAS — peso/fecha izq + datos lateral der ── */}
-        <div className="etq-main">
-          {/* Columna izquierda: peso, piezas, fecha */}
-          <div className="etq-izq">
-            <div className="etq-dato-box">
-              <small>PESO LB</small>
-              <b>{Number(p.peso).toFixed(1)}</b>
-            </div>
-            <div className="etq-dato-box">
-              <small>PESO KG</small>
-              <b>{pesoKg.toFixed(2)}</b>
-            </div>
-            <div className="etq-dato-box">
-              <small>PIEZAS</small>
-              <b>{p.piezas}</b>
-            </div>
-            <div className="etq-dato-box">
-              <small>FECHA</small>
-              <b style={{ fontSize: 12 }}>{fecha}</b>
-            </div>
-          </div>
-
-          {/* Columna derecha: EMBARC, CONSIGNATARIO, CARNET, DIRECCION, DESCRIPCION */}
-          <div className="etq-der">
+        {/* ── 3. Cuerpo principal: datos lateral derecho ── */}
+        <div className="etq-cuerpo">
+          <div className="etq-campos">
             <div className="etq-campo">
               <label>EMBARC:</label>
-              <div className="etq-campo-val">{upper(p.remitente)}</div>
+              <div className="etq-val">{upper(p.remitente)}</div>
             </div>
             <div className="etq-campo">
               <label>CONSIGNATARIO:</label>
-              <div className="etq-campo-val">{upper(p.destinatario)}</div>
+              <div className="etq-val">{upper(p.destinatario)}</div>
             </div>
             <div className="etq-campo">
               <label>CARNET:</label>
-              <div className="etq-campo-val">{upper(p.consignatarioCarnet) || "—"}</div>
+              <div className="etq-val">{upper(p.consignatarioCarnet) || "—"}</div>
             </div>
             <div className="etq-campo">
               <label>DIRECCION:</label>
-              <div className="etq-campo-val">{upper(p.consignatarioCalle)}</div>
+              <div className="etq-val">{upper(p.consignatarioCalle)}</div>
             </div>
             <div className="etq-campo">
               <label>DESCRIPCION:</label>
-              <div className="etq-campo-val">{upper(p.contenido)}</div>
-            </div>
-            <div className="etq-campo etq-campo-inline">
-              <label>ENVIO:</label>
-              <b>MARITIMO</b>
-              <label style={{ marginLeft: 12 }}>PESO:</label>
-              <b>{pesoKg.toFixed(2)} KG</b>
+              <div className="etq-val">{upper(p.contenido)}</div>
             </div>
           </div>
         </div>
 
-        {/* ── FILA 4: MUNICIPIO/ISLA — letra GIGANTE centrada + TEL derecha ── */}
-        <div className="etq-dest-row">
-          <div className="etq-destino">
-            {upper(p.consignatarioMunicipio) || "—"}
-          </div>
-          {p.consignatarioTel && (
-            <div className="etq-dest-tel">
-              <small>TEL:</small>
-              <b>{p.consignatarioTel}</b>
-            </div>
-          )}
+        {/* ── 5. ENVIO + PESO + BULTO (extremo derecho) ── */}
+        <div className="etq-extra">
+          <div className="etq-extra-item"><label>ENVIO:</label><b>MARITIMO</b></div>
+          <div className="etq-extra-item"><label>PESO:</label><b>{pesoKg.toFixed(2)} KG</b></div>
+          <div className="etq-extra-item"><label>BULTO:</label><b>{bulto}</b></div>
+          <div className="etq-extra-item etq-tel-item"><label>TEL:</label><b>{p.consignatarioTel || "—"}</b></div>
         </div>
 
-        {/* ── FILA 5: Barcode Code128 abajo centrado ── */}
+        {/* ── 6. PROVINCIA/ISLA gigante centrada ── */}
+        <div className="etq-provincia">
+          {upper(p.consignatarioProvincia) || "CUBA"}
+        </div>
+
+        {/* ── 8. Barcode Code128 abajo ── */}
         <div className="etq-barcode-area">
           <div className="etq-barcode-bars">
             <Barcode128 code={cod} />
@@ -146,7 +118,7 @@ export default function EtiquetaContent({ p, brands = [] }: { p: EtiquetaData; b
   );
 }
 
-// Barcode Code128 real — escaneable por lectores físicos
+// Barcode Code128 real
 import { useEffect, useRef } from "react";
 function Barcode128({ code }: { code: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -155,11 +127,10 @@ function Barcode128({ code }: { code: string }) {
     try {
       const JsBarcode = require("jsbarcode");
       JsBarcode(canvasRef.current, code, {
-        format: "CODE128",
-        width: 2, height: 50, displayValue: false, margin: 0,
+        format: "CODE128", width: 2, height: 50, displayValue: false, margin: 0,
         background: "#ffffff", lineColor: "#000000",
       });
-    } catch (e) { console.error("jsbarcode error", e); }
+    } catch (e) { console.error("jsbarcode", e); }
   }, [code]);
   return <canvas ref={canvasRef} style={{ width: "100%", height: 50 }} />;
 }

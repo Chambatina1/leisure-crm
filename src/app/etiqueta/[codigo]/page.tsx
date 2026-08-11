@@ -101,7 +101,7 @@ const ETIQUETA_CSS = `
   .etq-toolbar { display: flex; gap: 10px; padding: 14px; justify-content: center; background: #fff; border-bottom: 1px solid #ccc; flex-wrap: wrap; }
   .etq-toolbar button, .etq-toolbar .etq-link {
     padding: 10px 18px; border-radius: 6px; font-weight: 800; cursor: pointer; text-decoration: none;
-    background: #C23B22; color: #fff; border: none; font-size: .85rem; letter-spacing: .5px;
+    background: #C23B22; color: #fff; border: none; font-size: .85rem;
   }
   .etq-toolbar .etq-link { background: #374151; }
 
@@ -110,48 +110,44 @@ const ETIQUETA_CSS = `
     width: 384px; margin: 16px auto; padding: 10px;
     background: #fff; border: 2px solid #000;
     display: flex; flex-direction: column; gap: 6px;
-    font-size: 11px; color: #000; font-family: "Arial Narrow", Arial, sans-serif;
+    font-size: 11px; color: #000;
   }
 
-  /* Fila 1: Logo izq + QR der */
+  /* 1. Logo izq + QR der */
   .etq-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .etq-logos { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-  .etq-logo { max-height: 36px; max-width: 90px; width: auto; height: auto; object-fit: contain; background: #f9fafb; border-radius: 4px; padding: 2px 5px; }
+  .etq-logos { display: flex; align-items: center; gap: 4px; }
+  .etq-logo { max-height: 36px; max-width: 90px; object-fit: contain; background: #f9fafb; border-radius: 4px; padding: 2px 5px; }
   .etq-qr img { border: 1px solid #000; }
 
-  /* Fila 2: Tracking centrado */
-  .etq-tracking { text-align: center; padding: 4px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; }
-  .etq-tracking-num { font-size: 22px; font-weight: 900; letter-spacing: 2px; font-family: "Courier New", monospace; }
-
-  /* Fila 3: Dos columnas */
-  .etq-main { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
-
-  /* Columna izquierda: peso/piezas/fecha */
-  .etq-izq { display: flex; flex-direction: column; gap: 4px; }
-  .etq-dato-box { border: 1.5px solid #000; padding: 4px 8px; text-align: center; min-width: 70px; }
-  .etq-dato-box small { font-size: 7px; font-weight: 800; color: #C23B22; display: block; text-transform: uppercase; }
-  .etq-dato-box b { font-size: 15px; font-weight: 900; }
-
-  /* Columna derecha: EMBARC, CONSIGNATARIO, CARNET, DIRECCION, DESCRIPCION */
-  .etq-der { display: flex; flex-direction: column; gap: 3px; }
-  .etq-campo { border-bottom: 1px solid #ddd; padding: 2px 0; }
-  .etq-campo label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; }
-  .etq-campo-val { font-size: 13px; font-weight: 800; color: #000; line-height: 1.2; }
-  .etq-campo-inline { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-  .etq-campo-inline b { font-size: 12px; font-weight: 800; }
-
-  /* Fila 4: MUNICIPIO gigante + TEL al lado */
-  .etq-dest-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .etq-destino {
-    flex: 1; text-align: center; font-size: 26px; font-weight: 900; color: #C23B22;
-    letter-spacing: 0; line-height: 1; text-transform: uppercase;
-    padding: 6px 4px; background: #fff5f5; border: 2px solid #C23B22; border-radius: 4px;
+  /* 2. Guía centrado */
+  .etq-guia {
+    text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 2px;
+    font-family: "Courier New", monospace; padding: 6px 0;
+    border-top: 2px solid #000; border-bottom: 2px solid #000;
   }
-  .etq-dest-tel { border: 1.5px solid #000; padding: 4px 8px; text-align: center; }
-  .etq-dest-tel small { font-size: 7px; font-weight: 800; color: #C23B22; display: block; }
-  .etq-dest-tel b { font-size: 13px; font-weight: 800; }
 
-  /* Fila 5: Barcode abajo */
+  /* 3. Cuerpo - campos del lateral */
+  .etq-cuerpo { padding: 2px 0; }
+  .etq-campos { display: flex; flex-direction: column; gap: 4px; }
+  .etq-campo { display: flex; align-items: baseline; gap: 6px; border-bottom: 1px solid #eee; padding: 2px 0; }
+  .etq-campo label { font-size: 8px; font-weight: 800; color: #C23B22; text-transform: uppercase; min-width: 85px; }
+  .etq-val { font-size: 13px; font-weight: 800; color: #000; line-height: 1.3; }
+
+  /* 5. ENVIO + PESO + BULTO + TEL (fila inferior) */
+  .etq-extra { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; padding: 4px 0; }
+  .etq-extra-item { display: flex; align-items: center; gap: 3px; border: 1px solid #999; border-radius: 4px; padding: 3px 6px; }
+  .etq-extra-item label { font-size: 7px; font-weight: 800; color: #C23B22; text-transform: uppercase; }
+  .etq-extra-item b { font-size: 12px; font-weight: 800; color: #000; }
+
+  /* 6. PROVINCIA/ISLA gigante centrada */
+  .etq-provincia {
+    text-align: center; font-size: 26px; font-weight: 900; color: #C23B22;
+    letter-spacing: 0; line-height: 1.1; text-transform: uppercase;
+    padding: 8px; margin: 4px 0; background: #fff5f5;
+    border: 2.5px solid #C23B22; border-radius: 4px;
+  }
+
+  /* 8. Barcode abajo */
   .etq-barcode-area { text-align: center; padding: 4px 0 2px; }
   .etq-barcode-bars { height: 48px; overflow: hidden; }
   .etq-barcode-bars canvas { height: 48px !important; width: 100% !important; }
@@ -160,12 +156,8 @@ const ETIQUETA_CSS = `
   @media print {
     body { background: #fff; margin: 0; padding: 0; }
     .no-print { display: none !important; }
-    .etq {
-      border: none; margin: 0; padding: 5px;
-      width: 4in; height: 6in; overflow: hidden; box-sizing: border-box;
-    }
-    .etq-grupo { background: #000; padding: 3px 6px; border-radius: 3px; }
-    .etq-grupo img, .etq-logo { background: #000 !important; filter: brightness(0) invert(1) !important; }
+    .etq { border: none; margin: 0; padding: 5px; width: 4in; height: 6in; overflow: hidden; box-sizing: border-box; }
+    .etq-logo { background: #000 !important; filter: brightness(0) invert(1) !important; }
     @page { size: 4in 6in; margin: 0; }
   }
 `;
