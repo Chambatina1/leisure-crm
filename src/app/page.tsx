@@ -55,6 +55,14 @@ export default function HomePage() {
       </header>
 
       <main>
+        {/* VIDEO DE FONDO */}
+        <div className="v-video-bg">
+          <video autoPlay muted loop playsInline>
+            <source src="https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4" type="video/mp4" />
+          </video>
+          <div className="v-video-overlay" />
+        </div>
+
         {/* HERO + RASTREO */}
         <section className="v-hero" id="inicio">
           <div className="v-hero-container">
@@ -168,20 +176,27 @@ const VUELA_CSS = `
 html{scroll-behavior:smooth;}
 body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fff;color:var(--dark);}
 a{text-decoration:none;color:inherit;}
-.v-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.v-header{position:sticky;top:0;z-index:1000;background:rgba(18,33,42,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
 .v-navbar{max-width:1240px;margin:auto;height:78px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
 .v-brand{display:flex;align-items:center;gap:14px;}
 .v-brand img{width:58px;height:58px;object-fit:contain;}
-.v-brand-text{font-size:20px;font-weight:900;letter-spacing:-.5px;}
+.v-brand-text{font-size:20px;font-weight:900;letter-spacing:-.5px;color:#fff;}
 .v-nav-links{display:flex;align-items:center;gap:28px;}
-.v-nav-links a{font-size:14px;font-weight:700;color:#34434b;}
+.v-nav-links a{font-size:14px;font-weight:700;color:rgba(255,255,255,.85);}
 .v-nav-links a:hover{color:var(--primary);}
 .v-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:10px;font-weight:800;border:0;cursor:pointer;transition:.2s;font-size:14px;text-decoration:none;}
 .v-btn-primary{background:var(--primary);color:#fff;}
 .v-btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px);}
 .v-btn-outline{border:1px solid var(--border);background:#fff;color:var(--dark);}
 .v-btn-outline:hover{border-color:var(--primary);color:var(--primary);}
-.v-hero{min-height:650px;background:radial-gradient(circle at 80% 20%,rgba(21,157,172,.16),transparent 35%),linear-gradient(180deg,#fff 0%,#f6fafb 100%);}
+.v-video-bg{position:fixed;top:0;left:0;width:100%;height:100vh;z-index:-1;overflow:hidden;}
+.v-video-bg video{width:100%;height:100%;object-fit:cover;}
+.v-video-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,33,42,.55) 0%,rgba(18,33,42,.75) 100%);}
+.v-hero{min-height:650px;background:transparent;}
+.v-hero-title{color:#fff !important;}
+.v-hero-title span{color:#159dac !important;}
+.v-hero-desc{color:rgba(255,255,255,.85) !important;}
+.v-hero-badge{background:rgba(21,157,172,.3) !important;color:#fff !important;}
 .v-hero-container{max-width:1240px;min-height:650px;margin:auto;padding:70px 24px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:60px;}
 .v-hero-badge{display:inline-flex;padding:8px 14px;border-radius:30px;background:#e7f7f8;color:var(--primary-dark);font-size:13px;font-weight:800;margin-bottom:22px;}
 .v-hero-title{font-size:62px;line-height:1.02;letter-spacing:-2.5px;max-width:670px;}
