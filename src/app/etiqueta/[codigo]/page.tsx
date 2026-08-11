@@ -162,14 +162,36 @@ const ETIQUETA_CSS = `
   .destination { text-align: center; font-size: 69px; line-height: 1.15; font-weight: 900; margin-top: 20px; }
 
   @media print {
-    @page { size: 4in 6in; margin: 0; }
-    body { background: white; padding: 0; margin: 0; }
+    html, body {
+      width: 4in;
+      height: 6in;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+      overflow: hidden;
+    }
+    @page {
+      size: 4in 6in;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
     .no-print { display: none !important; }
     .label {
-      margin: 0; page-break-after: always;
-      width: 4in; height: 6in;
-      border: 4px solid #111;
-      overflow: hidden;
+      margin: 0 !important;
+      padding: 5px !important;
+      width: 4in !important;
+      height: 6in !important;
+      max-width: 4in !important;
+      max-height: 6in !important;
+      border: 2px solid #111 !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+      page-break-after: always;
+      page-break-inside: avoid;
+    }
+    .label * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
   }
 `;
