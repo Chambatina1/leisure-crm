@@ -96,67 +96,50 @@ export default async function EtiquetaPage({ params }: { params: Promise<{ codig
 
 const ETIQUETA_CSS = `
   *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{margin:0;padding:0;width:100%;background:#fff;font-family:Arial,Helvetica,sans-serif;}
+  html,body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:#000;}
 
-  /* ETIQUETA EXACTA 4 x 6 PULGADAS */
-  .label{
-    width:4in;height:6in;margin:0;padding:0.12in;
-    overflow:hidden;background:#fff;color:#000;border:none;
-  }
+  .label{width:4in;height:6in;margin:0;padding:0.16in;background:#fff;overflow:hidden;position:relative;}
+  .label-border{width:100%;height:100%;border:1.5px solid #000;padding:0.10in;position:relative;overflow:hidden;}
 
-  /* CABECERA */
-  .header{height:1.05in;position:relative;}
-  .logo{position:absolute;left:0.12in;top:0.05in;width:0.85in;height:0.85in;object-fit:contain;}
-  .qr{position:absolute;right:0.05in;top:0.02in;width:0.95in;height:0.95in;}
-  .qr img{width:100%;height:100%;object-fit:contain;}
+  .header{height:0.56in;display:flex;align-items:flex-start;justify-content:space-between;}
+  .brand{font-size:0.21in;font-weight:900;letter-spacing:-0.01in;padding-top:0.02in;}
+  .logo-small{width:0.58in;height:0.58in;border:1.5px solid #000;border-radius:2px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.13in;line-height:0.90;text-align:center;}
 
-  /* NÚMERO GUÍA */
-  .guide{width:100%;text-align:center;font-size:0.38in;line-height:1;font-weight:900;white-space:nowrap;margin:0.03in 0 0.08in 0;}
+  .line{border-top:1px solid #000;width:100%;}
 
-  /* FILAS */
-  .row{display:flex;width:100%;margin-bottom:0.06in;font-size:0.20in;line-height:1.05;}
-  .label-title{width:1.55in;font-weight:900;flex-shrink:0;}
-  .label-value{flex:1;font-weight:700;overflow-wrap:anywhere;}
+  .caption{font-size:0.105in;font-weight:700;line-height:1.05;}
+  .value{font-size:0.12in;line-height:1.05;margin-top:0.015in;}
+  .value-bold{font-size:0.125in;font-weight:900;}
 
-  /* CONSIGNATARIO */
-  .section-title{font-size:0.20in;font-weight:900;margin:0.06in 0 0.04in;}
-  .consignee{font-size:0.23in;line-height:1.05;font-weight:900;margin-bottom:0.07in;}
+  .from{height:0.58in;display:grid;grid-template-columns:1.55fr 1fr;gap:0.08in;padding:0.05in 0;}
+  .shipping-destination{padding:0.05in 0;}
+  .destination-name{font-size:0.10in;line-height:1.12;margin-top:0.025in;}
+  .shipping-type{padding:0.05in 0;}
+  .receiver{display:grid;grid-template-columns:1.62fr 1fr;gap:0.08in;padding:0.045in 0;}
+  .receiver-name{font-size:0.12in;font-weight:900;margin-top:0.02in;}
+  .receiver-address{font-size:0.10in;line-height:1.1;margin-top:0.02in;}
 
-  /* DIRECCIÓN */
-  .address{font-size:0.18in;line-height:1.05;font-weight:700;margin-bottom:0.07in;}
+  .code-area{display:grid;grid-template-columns:1.30fr 0.95fr;gap:0.05in;min-height:1.35in;padding-top:0.05in;}
+  .shipping-code{font-size:0.17in;font-weight:900;margin-top:0.02in;}
+  .dpa{display:flex;justify-content:space-between;margin-top:0.02in;font-size:0.10in;}
+  .detail-block{margin-bottom:0.045in;}
+  .contents{font-size:0.115in;font-weight:900;margin-top:0.02in;}
+  .weight-size{display:grid;grid-template-columns:1fr 1.4fr;gap:0.04in;}
+  .value-items{display:grid;grid-template-columns:1fr 1.4fr;gap:0.04in;margin-top:0.04in;}
 
-  /* MUNICIPIO */
-  .municipality{width:100%;text-align:center;font-size:0.25in;font-weight:900;border-top:2px solid #000;border-bottom:2px solid #000;padding:0.05in 0;margin:0.05in 0;}
+  .qr-side{display:flex;justify-content:flex-end;align-items:flex-start;}
 
-  /* PROVINCIA */
-  .province{width:100%;text-align:center;font-size:0.34in;line-height:1;font-weight:900;margin:0.06in 0;}
+  .barcode-area{position:absolute;left:0.18in;right:0.18in;bottom:0.18in;text-align:center;}
+  .barcode-area canvas{width:3.25in !important;height:0.43in !important;}
 
-  /* PRODUCTO */
-  .product{width:100%;text-align:center;font-size:0.18in;line-height:1.05;font-weight:900;margin:0.07in 0;}
+  @media screen{body{background:#ddd;display:flex;justify-content:center;padding:30px;}.label{box-shadow:0 3px 12px rgba(0,0,0,.25);}}
 
-  /* PESO / BULTO */
-  .shipping{display:flex;justify-content:space-between;align-items:center;width:100%;font-size:0.19in;font-weight:900;margin-top:0.05in;}
-
-  /* BARCODE */
-  .barcode-container{text-align:center;width:100%;margin-top:0.10in;}
-  .barcode-bars{display:flex;justify-content:center;}
-  .barcode-bars canvas{width:3.25in !important;height:0.48in !important;}
-  .barcode-number{font-size:0.17in;font-weight:900;margin-top:0.02in;}
-
-  /* DESTINO FINAL */
-  .destination{width:100%;text-align:center;font-size:0.31in;line-height:1;font-weight:900;margin-top:0.08in;}
-
-  /* IMPRESIÓN */
   @media print{
     @page{size:4in 6in;margin:0;}
-    html,body{width:4in;height:6in;margin:0 !important;padding:0 !important;overflow:hidden !important;background:#fff !important;}
+    html,body{width:4in !important;height:6in !important;margin:0 !important;padding:0 !important;overflow:hidden !important;background:#fff !important;}
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .no-print{display:none !important;}
-    .label{
-      width:4in !important;height:6in !important;margin:0 !important;
-      page-break-before:avoid;page-break-after:avoid;page-break-inside:avoid;
-      break-before:avoid;break-after:avoid;break-inside:avoid;
-      overflow:hidden !important;
-    }
+    .label{width:4in !important;height:6in !important;margin:0 !important;padding:0.16in !important;overflow:hidden !important;page-break-before:avoid !important;page-break-after:avoid !important;page-break-inside:avoid !important;break-before:avoid !important;break-after:avoid !important;break-inside:avoid !important;}
     img,svg,canvas{max-width:100% !important;}
   }
 `;
