@@ -14,8 +14,8 @@ export default function AgenciasPage() {
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.json()).then(d => {
       if (d.usuario) {
-        if (d.usuario.rol === "admin") router.push("/admin");
-        else if (d.usuario.agenciaId) router.push(`/portal/${d.usuario.agenciaId}`);
+        if (d.usuario.agenciaId) router.push(`/portal/${d.usuario.agenciaId}`);
+        else router.push("/portal");
       }
     }).catch(() => {});
   }, [router]);
