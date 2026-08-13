@@ -101,8 +101,9 @@ const ETIQUETA_CSS = `
   .label{width:4in;height:6in;padding:0.12in;background:#fff;color:#000;overflow:hidden;position:relative;}
 
   /* LOGO */
-  .label-logo{width:100%;height:1.0in;display:flex;justify-content:center;align-items:center;margin-bottom:0.06in;}
-  .label-logo img{max-width:1.0in;max-height:1.0in;width:auto;height:auto;object-fit:contain;}
+  .label-logo{width:100%;height:1.0in;display:flex;justify-content:center;align-items:center;gap:0.12in;margin-bottom:0.06in;}
+  .logo-main{width:1.0in;height:1.0in;object-fit:contain;}
+  .logo-small-ch{width:0.45in;height:0.45in;object-fit:contain;}
 
   /* NUMERO DE GUIA */
   .guide{text-align:center;font-size:0.32in;font-weight:900;margin-bottom:0.08in;}
