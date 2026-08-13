@@ -55,6 +55,14 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: SOLVED_API_URL
+        value: https://www.solved-vuelacargo.com/api/chambatina/v1
+      - key: SOLVED_API_KEY
+        value: 6Nzx8CYjunLh7WcDCG82XA2ktXz97X
+      - key: SOLVED_ENTERPRISE_PROD
+        value: vuelacargo
+      - key: SOLVED_ENTERPRISE_TEST
+        value: vuelacargotest
     buildFilter:
       paths:
         - src/**
