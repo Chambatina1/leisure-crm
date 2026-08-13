@@ -57,7 +57,7 @@ export default function BOLContent({
             <div className="logo-box">
               {brands.length > 0 ? (
                 brands.map(b => (
-                  <img key={b.nombre} src={b.logo} alt={b.nombre} />
+                  <img key={b.nombre} src={b.logo} alt={b.nombre} style={{ maxHeight: 80, maxWidth: 80, objectFit: "contain" }} />
                 ))
               ) : (
                 <strong>LOGO</strong>
