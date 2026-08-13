@@ -34,9 +34,9 @@ export default function NuevoPaquetePage() {
   const [notas, setNotas] = useState("");
 
   const [remitente, setRemitente] = useState("");
-  const [remitenteTel, setRemitenteTel] = useState("");
-  const [remitenteCarnet, setRemitenteCarnet] = useState("");
-  const [remitenteDir, setRemitenteDir] = useState("");
+  const [remitenteApellidos, setRemitenteApellidos] = useState("");
+  const [remitenteNacimiento, setRemitenteNacimiento] = useState("");
+  const [remitenteNacionalidad, setRemitenteNacionalidad] = useState("Cuba");
   const [destinatario, setDestinatario] = useState("");
   const [consignatarioCarnet, setConsignatarioCarnet] = useState("");
   const [consignatarioTel, setConsignatarioTel] = useState("");
@@ -104,7 +104,7 @@ export default function NuevoPaquetePage() {
 
     const payload: Record<string, unknown> = {
       agenciaId: agIdActual, peso, piezas, categoria, contenido: contenido || "Miscelánea", notas,
-      remitente, remitenteTel, remitenteCarnet,
+      remitente: `${remitente} ${remitenteApellidos}`.trim(), remitenteNacimiento, remitenteNacionalidad,
       destinatario, consignatarioCarnet, consignatarioTel,
       consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
       destino: consignatarioProvincia,
@@ -251,14 +251,31 @@ export default function NuevoPaquetePage() {
       {paso === 2 && (
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={card}>
-            <div style={sectionHeader}>Remitente <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién envía)</span></div>
-            <label style={lbl}>Nombre *</label>
-            <BuscadorCliente valor={remitente} onChange={setRemitente} clientes={clientes}
-              placeholder="Ana Pérez"
-              onSeleccionar={cl => { setRemitente(cl.nombre); setRemitenteTel(cl.telefono || ""); setRemitenteDir(cl.direccion || ""); }} />
+            <div style={sectionHeader}>Embarcador <span style={{ color: "#9ca3af", fontWeight: 500, fontSize: 14 }}>(quién envía)</span></div>
             <div style={grid2}>
-              <Field label="Carnet / Pasaporte" value={remitenteCarnet} onChange={setRemitenteCarnet} />
-              <Field label="Teléfono" value={remitenteTel} onChange={setRemitenteTel} />
+              <div>
+                <label style={lbl}>Nombre *</label>
+                <input value={remitente} onChange={e => setRemitente(e.target.value)} placeholder="Alexis" required style={inp} />
+              </div>
+              <div>
+                <label style={lbl}>Apellidos *</label>
+                <input value={remitenteApellidos} onChange={e => setRemitenteApellidos(e.target.value)} placeholder="Valdes Elis" required style={inp} />
+              </div>
+            </div>
+            <div style={grid2}>
+              <div>
+                <label style={lbl}>Fecha de nacimiento</label>
+                <input type="date" value={remitenteNacimiento} onChange={e => setRemitenteNacimiento(e.target.value)} style={inp} />
+              </div>
+              <div>
+                <label style={lbl}>Nacionalidad</label>
+                <select value={remitenteNacionalidad} onChange={e => setRemitenteNacionalidad(e.target.value)} style={inp}>
+                  <option value="Cuba">Cuba</option>
+                  <option value="Estados Unidos">Estados Unidos</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
             </div>
           </div>
 
