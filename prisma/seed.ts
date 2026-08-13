@@ -71,6 +71,7 @@ async function main() {
   // ── 4. Config ──
   await prisma.config.create({ data: { key: "tarifaPorLb", value: "4.50" } });
   await prisma.config.create({ data: { key: "moneda", value: "USD" } });
+  await prisma.config.create({ data: { key: "contadorPaquetes", value: "0" } });
 
   // ── 5. Brands ──
   const brandsSeed = [
