@@ -79,7 +79,12 @@ export default function NuevoPaquetePage() {
 
   // ── Validación por paso ──
   const paso1Ok = pesoNum > 0 && piezas !== "";
-  const paso2Ok = remitente.trim() !== "" && destinatario.trim() !== "";
+  const paso2Ok = remitente.trim() !== "" 
+    && destinatario.trim().split(" ").length >= 3  // nombre + 2 apellidos
+    && consignatarioCarnet.trim().length === 11    // 11 números
+    && /^[0-9]+$/.test(consignatarioCarnet.trim())  // solo números
+    && consignatarioTel.trim() !== ""               // teléfono obligatorio
+    && consignatarioCalle.trim() !== "";            // dirección obligatoria
 
   async function guardar() {
     setError(""); setGuardando(true);
@@ -264,11 +269,11 @@ export default function NuevoPaquetePage() {
               placeholder="José Gómez"
               onSeleccionar={cl => { setDestinatario(cl.nombre); setConsignatarioTel(cl.telefono || ""); setConsignatarioCalle(cl.direccion || ""); }} />
             <div style={grid2}>
-              <Field label="Carnet de identidad" value={consignatarioCarnet} onChange={setConsignatarioCarnet} />
-              <Field label="Teléfono" value={consignatarioTel} onChange={setConsignatarioTel} />
+              <div><Field label="Carnet de identidad (11 números) *" value={consignatarioCarnet} onChange={(v) => setConsignatarioCarnet(v.replace(/[^0-9]/g, "").slice(0, 11))} type="text" placeholder="62062304929" /><small style={{ color: consignatarioCarnet.length === 11 ? "#1f6b3a" : "#dc2626", fontSize: 11 }}>{consignatarioCarnet.length}/11 números</small></div>
+              <Field label="Teléfono *" value={consignatarioTel} onChange={setConsignatarioTel} placeholder="5300000000" />
             </div>
             <div>
-              <label style={lbl}>DIRECCIÓN (calle, número, entre calles, reparto)</label>
+              <label style={lbl}>DIRECCIÓN (calle, número, entre calles, reparto) *</label>
               <textarea value={consignatarioCalle} onChange={e => setConsignatarioCalle(e.target.value)}
                 placeholder="Ej: Calle Loma No. 62, e/ Aspuru y Linea, Poblado Camarioca"
                 style={{ ...inp, minHeight: 70, resize: "vertical", fontFamily: "inherit" }} />
