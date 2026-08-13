@@ -56,14 +56,14 @@ export default function HblContent({ p, brands = [] }: { p: HblData; brands?: { 
                   </div>
                 ) : (
                   <div className="hbl-fake-logo">
-                    <div className="hbl-brand">VUELA CARGO</div>
+                    <div className="hbl-brand">CHAMBATINA</div>
                     <div className="hbl-intl">INTERNATIONAL</div>
                   </div>
                 )}
                 <br />
                 Envíos, exportación y logística<br />
                 +1 727-598-6802<br />
-                info@vuela-cargo.com
+                info@chambatina.com
               </td>
               <td className="hbl-box hbl-center" style={{ width: "45%" }}>
                 <div className="hbl-title">HOUSE BILL OF LADING</div>
@@ -198,14 +198,14 @@ export default function HblContent({ p, brands = [] }: { p: HblData; brands?: { 
             <tr>
               <td className="hbl-box" style={{ width: "60%" }}>
                 <span className="hbl-label">CARRIER / FORWARDING AGENT</span><br /><br />
-                <b>VUELA CARGO</b><br />
-                Operado por Vuela Cargo<br /><br />
+                <b>CHAMBATINA</b><br />
+                Operado por Chambatina<br /><br />
                 Received the goods described above in apparent good order and condition except as otherwise noted.
               </td>
               <td className="hbl-box hbl-center" style={{ width: "40%" }}>
                 <span className="hbl-label">AUTHORIZED SIGNATURE</span><br /><br /><br /><br />
                 ______________________________<br />
-                Vuela Cargo<br /><br />
+                Chambatina<br /><br />
                 Date: {fecha}
               </td>
             </tr>

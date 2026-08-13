@@ -4,7 +4,7 @@ import { getSession, jsonResponse, errorResponse } from "@/lib/auth";
 import { esAdmin } from "@/lib/permisos";
 
 // ════════════════════════════════════════════════════════════════════════════
-// /api/admin/brands — gestión de brands/logos del vuela cargo.
+// /api/admin/brands — gestión de brands/logos del chambatina.
 // Todas las rutas requieren admin.
 //
 // GET    → lista TODOS los brands (incluye inactivos)

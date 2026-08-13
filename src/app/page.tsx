@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 
 // ════════════════════════════════════════════════════════════════════════════
-// Landing pública bilingue (EN/ES) — Vuela Cargo
-// Datos del grupo empresarial
+// Landing pública bilingue (EN/ES) — Chambatina
+// Datos del chambatina
 // Fotos reales por servicio (sin emojis).
 // ════════════════════════════════════════════════════════════════════════════
 type Lang = "en" | "es";
@@ -77,7 +77,7 @@ const SERVICIOS = [
   { img: "https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=800", color: "#2563eb", tKey: "s4t", dKey: "s4d", href: "/servicios/autos" },
 ] as const;
 
-// Datos del grupo empresarial
+// Datos del chambatina
 const CONTACTO = {
   tel: "+1 727-598-6802",
   telHref: "tel:+17275986802",
@@ -115,8 +115,8 @@ export default function HomePage() {
       <nav className="landing-nav">
         <div className="nav-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/vuela-cargo-logo.svg" alt="Vuela Cargo" style={{ width: 50, height: 50, objectFit: "contain", background: "#fff", borderRadius: 10, padding: 4 }} />
-          <strong style={{ color: "#fff", fontSize: 20, fontWeight: 900, letterSpacing: "-.5px" }}>Vuela Cargo</strong>
+          <img src="/images/chambatina-logo.svg" alt="Chambatina" style={{ width: 50, height: 50, objectFit: "contain", background: "#fff", borderRadius: 10, padding: 4 }} />
+          <strong style={{ color: "#fff", fontSize: 20, fontWeight: 900, letterSpacing: "-.5px" }}>Chambatina</strong>
         </div>
         <div className="nav-links">
           <a href="#servicios">{t.navServicios}</a>
@@ -216,9 +216,9 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="footer-landing">
-        {/* Logos del grupo empresarial */}
+        {/* Logos del chambatina */}
         <div className="footer-grupo">
-          <div className="footer-grupo-label">GRUPO EMPRESARIAL</div>
+          <div className="footer-grupo-label">CHAMBATINA</div>
           <div className="footer-grupo-logos">
             {brands.map((b, i) => (
               <div key={b.nombre} style={{ display: "contents" }}>
@@ -230,8 +230,8 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        <div className="footer-brand"><strong>Vuela Cargo</strong> · {t.footBrand}</div>
-        <small>© {new Date().getFullYear()} Vuela Cargo. {t.footRights}</small>
+        <div className="footer-brand"><strong>Chambatina</strong> · {t.footBrand}</div>
+        <small>© {new Date().getFullYear()} Chambatina. {t.footRights}</small>
         <a className="footer-agencias" href="/login">Acceso al sistema</a>
       </footer>
     </main>

@@ -8,7 +8,7 @@ import FotoPasaporte from "../_components/foto-pasaporte";
 
 const IMG = "https://upload.wikimedia.org/wikipedia/commons/a/a1/Current_cover_Cuban_passport.JPG";
 
-export const metadata = { title: "Trámites de pasaporte · Vuela Cargo" };
+export const metadata = { title: "Trámites de pasaporte · Chambatina" };
 
 // Precios referenciales del trámite (en USD). Editables.
 const COSTOS = [

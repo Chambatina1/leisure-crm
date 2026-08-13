@@ -6,7 +6,7 @@ import { FotoHeader } from "../_components/foto-header";
 
 const IMG = "https://images.pexels.com/photos/616404/pexels-photo-616404.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
-export const metadata = { title: "Envíos de paquetes · Vuela Cargo" };
+export const metadata = { title: "Envíos de paquetes · Chambatina" };
 
 // Tarifas y precios reales (en USD). Editables desde aquí.
 const TARIFA_POR_LB = 4.5;            // tarifa estándar por libra

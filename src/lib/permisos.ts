@@ -1,5 +1,5 @@
 // ════════════════════════════════════════════════════════════════════════════
-// Vuela Cargo — Permisos y aislamiento por agencia (SERVIDOR)
+// Chambatina — Permisos y aislamiento por agencia (SERVIDOR)
 // ════════════════════════════════════════════════════════════════════════════
 // Reglas de negocio (aislamiento estricto):
 //   • admin (matriz)  → ve TODAS las agencias y el consolidado. Único que crea

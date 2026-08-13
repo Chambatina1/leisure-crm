@@ -66,9 +66,9 @@ export default function BOLContent({
 
             {/* EMPRESA */}
             <div className="company-info">
-              <div className="company-name">VUELA CARGO</div>
+              <div className="company-name">CHAMBATINA</div>
               <div>Envíos, exportación y logística</div>
-              <div>+1 727-598-6802 · info@vuela-cargo.com</div>
+              <div>+1 727-598-6802 · info@chambatina.com</div>
               <div>Fecha: {fecha}</div>
             </div>
           </section>

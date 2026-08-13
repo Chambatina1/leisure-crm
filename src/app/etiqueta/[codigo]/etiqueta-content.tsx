@@ -1,7 +1,7 @@
 "use client";
 
 // ════════════════════════════════════════════════════════════════════════════
-// etiqueta-content — Etiqueta térmica 4×6 Vuela Cargo.
+// etiqueta-content — Etiqueta térmica 4×6 Chambatina.
 // Template profesional con borde, secciones y barcode absoluto abajo.
 // Todas las medidas en pulgadas (in).
 // ════════════════════════════════════════════════════════════════════════════
@@ -48,8 +48,9 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData; brands?: any[]
 
           {/* CABECERA */}
           <div className="header">
-            <div className="brand">VUELA CARGO</div>
-            <div className="logo-small">VUELA<br />CARGO</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logos/chambatina.png" alt="Chambatina" className="etq-brand-logo" />
+            <div className="brand">CHAMBATINA</div>
           </div>
 
           {/* REMITENTE */}
@@ -70,7 +71,7 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData; brands?: any[]
           <div className="shipping-destination">
             <div className="caption">DESTINO DEL ENVÍO / SHIPPING DESTINATION</div>
             <div className="destination-name">
-              Vuela Cargo, Centro de Distribución<br />
+              Chambatina, Centro de Distribución<br />
               Ciudad Verde, Km 3½, Carretera y Línea del Ferrocarril,<br />
               Cotorro, La Habana, Cuba
             </div>

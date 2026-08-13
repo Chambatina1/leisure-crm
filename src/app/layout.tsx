@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vuela Cargo · CRM",
-  description: "Sistema CRM de paquetería, agencias y logística del Vuela Cargo.",
+  title: "Chambatina · CRM",
+  description: "Sistema CRM de paquetería, agencias y logística del Chambatina.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

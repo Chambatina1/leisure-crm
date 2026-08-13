@@ -44,7 +44,7 @@ export default function FacturaContent({ p }: { p: FacturaData }) {
           <div className="fac-logo">
             {p.agenciaLogo && <img src={p.agenciaLogo} alt="logo" />}
             <div className="fac-empresa">
-              <strong>{upper(p.agenciaNombre) || "VUELA CARGO"}</strong>
+              <strong>{upper(p.agenciaNombre) || "CHAMBATINA"}</strong>
               <small>Envíos, exportación y logística<br />{p.agenciaTel || "+1 727-598-6802"}</small>
             </div>
           </div>

@@ -58,7 +58,7 @@ export default async function RastreoPage({ params }: { params: Promise<{ codigo
         <div style={{ maxWidth: 500, margin: "0 auto", padding: "20px 16px 40px" }}>
           {/* Header */}
           <div style={{ textAlign: "center", marginBottom: 20 }}>
-            <h1 style={{ color: "#C23B22", fontSize: 20, margin: 0 }}>VUELA CARGO</h1>
+            <h1 style={{ color: "#C23B22", fontSize: 20, margin: 0 }}>CHAMBATINA</h1>
             <small style={{ color: "#6b7280" }}>Rastreo de envíos</small>
           </div>
 
@@ -113,7 +113,7 @@ export default async function RastreoPage({ params }: { params: Promise<{ codigo
 
           {/* Footer */}
           <div style={{ textAlign: "center", marginTop: 20, color: "#9ca3af", fontSize: 12 }}>
-            Vuela Cargo · Envíos, exportación y logística
+            Chambatina · Envíos, exportación y logística
           </div>
         </div>
       </body>

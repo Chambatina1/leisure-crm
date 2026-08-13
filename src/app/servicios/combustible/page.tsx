@@ -6,7 +6,7 @@ import { FotoHeader } from "../_components/foto-header";
 
 const IMG = "https://images.pexels.com/photos/5804986/pexels-photo-5804986.jpeg?auto=compress&cs=tinysrgb&w=1200";
 
-export const metadata = { title: "Exportación de combustible · Vuela Cargo" };
+export const metadata = { title: "Exportación de combustible · Chambatina" };
 
 // Precios referenciales (USD), basados en plataformas de envío a Cuba.
 const COMBUSTIBLES = [

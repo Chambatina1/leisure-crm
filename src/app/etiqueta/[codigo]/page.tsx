@@ -103,6 +103,7 @@ const ETIQUETA_CSS = `
 
   .header{height:0.56in;display:flex;align-items:flex-start;justify-content:space-between;}
   .brand{font-size:0.21in;font-weight:900;letter-spacing:-0.01in;padding-top:0.02in;}
+  .etq-brand-logo{width:0.75in;height:0.75in;object-fit:contain;border:1.5px solid #000;border-radius:3px;padding:2px;}
   .logo-small{width:0.58in;height:0.58in;border:1.5px solid #000;border-radius:2px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.13in;line-height:0.90;text-align:center;}
 
   .line{border-top:1px solid #000;width:100%;}

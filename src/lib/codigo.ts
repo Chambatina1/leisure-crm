@@ -1,6 +1,6 @@
 // ════════════════════════════════════════════════════════════════════════════
 // Generación ATÓMICA de código de paquete: VC + 10 dígitos
-// (Vuela Cargo). Contador global en la tabla Config.
+// (Chambatina). Contador global en la tabla Config.
 // Garantiza que NUNCA se repita entre agencias ni simultáneamente.
 // ════════════════════════════════════════════════════════════════════════════
 import { db } from "./db";

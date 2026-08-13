@@ -12,7 +12,7 @@ function imgToDataUrl(path: string): string {
 }
 
 async function main() {
-  console.log("Seed Vuela Cargo...");
+  console.log("Seed Chambatina...");
 
   // ════════════════════════════════════════════════════════════════════════════
   // PROTECCIÓN DE PRODUCCIÓN:
@@ -40,7 +40,7 @@ async function main() {
   // ── 1. Agencias ──
   const matriz = await prisma.agencia.create({
     data: {
-      nombre: "Vuela Cargo — Matriz",
+      nombre: "Chambatina — Matriz",
       tipo: "matriz",
       direccion: "Miami, FL, USA",
       ciudad: "Miami", pais: "USA", telefono: "+1 305 000 0000",

@@ -375,7 +375,7 @@ async function leerImagen(file: File, maxDim: number = 400): Promise<string> {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-// BrandsTab — gestión de logos/marcas del vuela cargo.
+// BrandsTab — gestión de logos/marcas del chambatina.
 // Subir logo nuevo, activar/desactivar, reordenar (↑↓), editar, eliminar.
 // ════════════════════════════════════════════════════════════════════════════
 function BrandsTab() {
@@ -453,7 +453,7 @@ function BrandsTab() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2 style={{ margin: 0, color: "#1f2937", fontSize: 18 }}>Marcas del vuela cargo</h2>
+        <h2 style={{ margin: 0, color: "#1f2937", fontSize: 18 }}>Marcas del chambatina</h2>
         <button onClick={() => setModal({ clave: "", nombre: "", logo: "", orden: brands.length, activo: true })} style={btnPrim}>
           + Nueva marca
         </button>
