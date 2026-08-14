@@ -29,9 +29,15 @@ export default function PortalAgenciaPage({ params }: { params: Promise<{ agenci
           const a = (data.agencias || []).find((x: any) => x.id === agenciaId);
           setAgencia(a);
         }).catch(() => {});
-        // Cargar stats
-        fetch("/api/paquetes").then(r => r.json()).then(data => {
-          const paquetes = data.paquetes || [];
+        // Cargar stats - SOLO de la agencia del usuario logueado
+        fetch("/api/paquetes").then(r => {
+          if (!r.ok) { setStats({ total: 0, enTransito: 0, entregados: 0, pesoTotal: 0 }); setCargando(false); return []; }
+          return r.json();
+        }).then(data => {
+          const todos = data?.paquetes || [];
+          // FILTRAR solo los paquetes de ESTA agencia (por si acaso)
+          const agId = d.usuario?.agenciaId;
+          const paquetes = agId ? todos.filter((p:any) => p.agenciaId === agId) : todos;
           setStats({
             total: paquetes.length,
             enTransito: paquetes.filter((p:any) => p.estado === "en_transito").length,
@@ -39,7 +45,7 @@ export default function PortalAgenciaPage({ params }: { params: Promise<{ agenci
             pesoTotal: paquetes.reduce((s:number, p:any) => s + (Number(p.peso) || 0), 0),
           });
           setCargando(false);
-        }).catch(() => setCargando(false));
+        }).catch(() => { setStats({ total: 0, enTransito: 0, entregados: 0, pesoTotal: 0 }); setCargando(false); });
       });
     }).catch(() => { setSinSesion(true); setCargando(false); });
   }, [params]);
