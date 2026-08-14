@@ -31,6 +31,7 @@ export default function NuevoPaquetePage() {
   const [largo, setLargo] = useState("");
   const [ancho, setAncho] = useState("");
   const [contenido, setContenido] = useState("");
+  const [tipoEnvio, setTipoEnvio] = useState("mail");
   const [notas, setNotas] = useState("");
 
   const [remitente, setRemitente] = useState("");
@@ -103,7 +104,7 @@ export default function NuevoPaquetePage() {
     } catch {}
 
     const payload: Record<string, unknown> = {
-      agenciaId: agIdActual, peso, piezas, categoria, contenido: contenido || "Miscelánea", notas,
+      agenciaId: agIdActual, peso, piezas, categoria, typecorrespond: tipoEnvio, contenido: contenido || "Miscelánea", notas,
       remitente: `${remitente} ${remitenteApellidos}`.trim(), remitenteNacimiento, remitenteNacionalidad,
       destinatario, consignatarioCarnet, consignatarioTel,
       consignatarioCalle, consignatarioEntre, consignatarioMunicipio, consignatarioProvincia,
@@ -214,7 +215,15 @@ export default function NuevoPaquetePage() {
           </div>
 
           <div style={grid2}>
-            <Field label="Piezas" value={piezas} onChange={setPiezas} type="number" />
+            <div>
+            <label style={lbl}>Tipo de envío *</label>
+            <select value={tipoEnvio} onChange={e => setTipoEnvio(e.target.value)} style={inp}>
+              <option value="mail">Marítimo</option>
+              <option value="cc">Correo Aéreo</option>
+              <option value="av">Aerovaradero</option>
+            </select>
+          </div>
+          <Field label="Piezas" value={piezas} onChange={setPiezas} type="number" />
             <SelectField label="Categoría" value={categoria} onChange={(v) => {
               setCategoria(v);
               if (v === "Miscelánea") setContenido("Miscelánea");
