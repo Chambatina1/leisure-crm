@@ -118,7 +118,7 @@ export default function NuevoPaquetePage() {
     for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
       setGuardandoMsg(intento === 1 ? "Generando…" : `El servidor está despertando… reintento ${intento}/${MAX_INTENTOS}`);
       try {
-        const res = await fetch("/api/paquetes", {
+        const res = await fetch("/api/solved/shipping/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
