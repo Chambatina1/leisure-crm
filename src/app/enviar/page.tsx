@@ -43,6 +43,7 @@ export default function EnviarPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          agenciaUrl: new URLSearchParams(window.location.search).get("ag") || "",
           typecorrespond: tipoEnvio,
           peso, piezas, contenido,
           remitente: `${remitente} ${remitenteApellidos}`.trim(),

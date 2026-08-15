@@ -14,8 +14,20 @@ export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
 
-    // Usar la primera agencia activa (matriz)
-    const agencia = await db.agencia.findFirst({ where: { activa: true }, orderBy: { creado: "asc" } });
+    // Buscar la agencia específica del link (no mezclar datos)
+    const agUrl = body.agenciaUrl || "";
+    let agencia;
+    if (agUrl) {
+      agencia = await db.agencia.findFirst({
+        where: { OR: [{ id: agUrl }, { nombre: { contains: agUrl } }] }
+      });
+    }
+    if (!agencia) {
+      agencia = await db.agencia.findFirst({ where: { tipo: "matriz" } });
+    }
+    if (!agencia) {
+      agencia = await db.agencia.findFirst({ where: { activa: true }, orderBy: { creado: "asc" } });
+    }
     if (!agencia) return errorResponse("No hay agencia configurada", 500);
 
     const tipoEnvio = body.typecorrespond || "mail";
