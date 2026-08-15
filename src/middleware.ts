@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
-const PUBLIC_API = ["/api/auth/login", "/api/auth/logout", "/api/health", "/api/db-check", "/api/migrate", "/api/brands", "/api/categorias"];
+const PUBLIC_API = ["/api/auth/login", "/api/auth/logout", "/api/health", "/api/db-check", "/api/migrate", "/api/brands", "", "/api/categorias", "/api/solved/public-create"];
 
 function isPublicApi(pathname: string): boolean {
   if (PUBLIC_API.includes(pathname)) return true;
@@ -19,7 +19,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/_next") || pathname.startsWith("/favicon")) return NextResponse.next();
-  if (pathname === "/" || pathname === "/login" || pathname === "/agencias" || pathname === "/portal") return NextResponse.next();
+  if (pathname === "/" || pathname === "/login" || pathname === "/agencias" || pathname === "/portal" || pathname === "/enviar") return NextResponse.next();
   if (pathname.startsWith("/etiqueta/") || pathname === "/bol" || pathname.startsWith("/r/")) return NextResponse.next();
   if (pathname.startsWith("/servicios/")) return NextResponse.next();
   if (pathname.startsWith("/api/") && isPublicApi(pathname)) return NextResponse.next();
