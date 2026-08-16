@@ -40,97 +40,132 @@ export default function AlmacenPage() {
   function deshacerUltimo() { setMarcados(prev => prev.slice(0, -1)); }
   function limpiar() { setMarcados([]); }
 
-  // AUTO-DETECCIÓN: analiza la imagen y detecta bultos automáticamente
+  // AUTO-DETECCIÓN MEJORADA: especializada en CAJAS
+  // Detecta cajas por color (cartón) + forma rectangular + tamaño
   function autoDetectar() {
     if (!foto || !imgRef.current) return;
     const img = imgRef.current.querySelector("img");
     if (!img) return;
 
     const canvas = document.createElement("canvas");
-    const maxW = 800;
+    const maxW = 900;
     const scale = Math.min(1, maxW / img.naturalWidth);
-    canvas.width = img.naturalWidth * scale;
-    canvas.height = img.naturalHeight * scale;
+    canvas.width = Math.floor(img.naturalWidth * scale);
+    canvas.height = Math.floor(img.naturalHeight * scale);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = data.data;
     const w = canvas.width, h = canvas.height;
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const pixels = imageData.data;
 
-    // 1. Detectar bordes (diferencia de color con vecinos)
-    const edges = new Uint8Array(w * h);
-    for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        const i = (y * w + x) * 4;
-        const gx = Math.abs(pixels[i] - pixels[i + 4]) + Math.abs(pixels[i + 1] - pixels[i + 5]) + Math.abs(pixels[i + 2] - pixels[i + 6]);
-        const gi = ((y + 1) * w + x) * 4;
-        const gy = Math.abs(pixels[i] - pixels[gi]) + Math.abs(pixels[i + 1] - pixels[gi + 1]) + Math.abs(pixels[i + 2] - pixels[gi + 2]);
-        edges[y * w + x] = (gx + gy > 120) ? 1 : 0;
+    // ═══ PASO 1: Detectar píxeles que parecen CAJA ═══
+    // Cajas de cartón: marrón, beige, tan, kraft
+    // También detectar bordes fuertes (cajas apiladas)
+    const isBoxPixel = new Uint8Array(w * h);
+    
+    for (let i = 0, p = 0; i < pixels.length; i += 4, p++) {
+      const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+      
+      // Cartón: r > g > b, tonos cálidos
+      const isCardboard = (
+        r > 100 && r < 230 &&
+        g > 70 && g < 200 &&
+        b > 40 && b < 160 &&
+        r > g && g > b &&
+        (r - b) > 30 && (r - b) < 130
+      );
+      
+      // Cajas de colores comunes en almacenes (azul, blanco, gris claro)
+      const isLightBox = (
+        r > 180 && g > 180 && b > 180 &&  // blanco/gris claro
+        Math.abs(r - g) < 30 && Math.abs(g - b) < 30
+      );
+      
+      if (isCardboard || isLightBox) {
+        isBoxPixel[p] = 1;
       }
     }
 
-    // 2. Encontrar regiones conectadas (flood fill)
+    // ═══ PASO 2: Encontrar regiones conectadas de cajas ═══
     const visited = new Uint8Array(w * h);
-    const blobs: { x: number; y: number; size: number }[] = [];
+    const candidates: { x: number; y: number; size: number; w: number; h: number; fill: number }[] = [];
     const stack: number[] = [];
+    const minArea = w * h * 0.0005;   // mínimo 0.05% de la imagen
+    const maxArea = w * h * 0.15;     // máximo 15% de la imagen
 
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        const idx = y * w + x;
-        if (visited[idx] || edges[idx]) continue;
+    for (let start = 0; start < w * h; start++) {
+      if (visited[start] || !isBoxPixel[start]) continue;
+      
+      stack.length = 0;
+      stack.push(start);
+      visited[start] = 1;
+      let count = 0, minX = w, maxX = 0, minY = h, maxY = 0;
+      
+      while (stack.length > 0) {
+        const cur = stack.pop()!;
+        const cy = Math.floor(cur / w);
+        const cx = cur % w;
+        count++;
+        if (cx < minX) minX = cx;
+        if (cx > maxX) maxX = cx;
+        if (cy < minY) minY = cy;
+        if (cy > maxY) maxY = cy;
         
-        stack.length = 0;
-        stack.push(idx);
-        visited[idx] = 1;
-        let count = 0, sumX = 0, sumY = 0;
-        
-        while (stack.length > 0) {
-          const cur = stack.pop()!;
-          const cy = Math.floor(cur / w);
-          const cx = cur % w;
-          count++;
-          sumX += cx;
-          sumY += cy;
-          
-          // Vecinos
-          const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
-          for (const [dx, dy] of dirs) {
-            const nx = cx + dx, ny = cy + dy;
-            if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
-            const nidx = ny * w + nx;
-            if (!visited[nidx] && !edges[nidx]) {
-              visited[nidx] = 1;
-              stack.push(nidx);
-            }
+        const dirs = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]];
+        for (const [dx, dy] of dirs) {
+          const nx = cx + dx, ny = cy + dy;
+          if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+          const nidx = ny * w + nx;
+          if (!visited[nidx] && isBoxPixel[nidx]) {
+            visited[nidx] = 1;
+            stack.push(nidx);
           }
         }
-
-        // Filtrar: solo regiones de tamaño mediano (posibles bultos)
-        const minSize = (w * h) * 0.0008;  // mínimo 0.08% de la imagen
-        const maxSize = (w * h) * 0.08;     // máximo 8% de la imagen
-        if (count > minSize && count < maxSize) {
-          blobs.push({ x: (sumX / count / w) * 100, y: (sumY / count / h) * 100, size: count });
-        }
+      }
+      
+      // ═══ PASO 3: Filtrar por forma de CAJA ═══
+      if (count < minArea || count > maxArea) continue;
+      
+      const bw = maxX - minX + 1;
+      const bh = maxY - minY + 1;
+      const bboxArea = bw * bh;
+      const fillRatio = count / bboxArea;  // qué tan llena está la bounding box
+      
+      // Cajas son rectangulares: fill ratio alto (> 0.5)
+      // Aspect ratio: entre 0.3 y 3 (no muy alargadas ni muy cuadradas)
+      const aspectRatio = bw / bh;
+      
+      if (fillRatio > 0.45 && aspectRatio > 0.25 && aspectRatio < 4.0) {
+        candidates.push({
+          x: ((minX + maxX) / 2 / w) * 100,
+          y: ((minY + maxY) / 2 / h) * 100,
+          size: count,
+          w: bw, h: bh,
+          fill: fillRatio,
+        });
       }
     }
 
-    // 3. Filtrar blobs que se solapan mucho (mantener los más grandes)
-    blobs.sort((a, b) => b.size - a.size);
-    const filtrados: typeof blobs = [];
-    for (const b of blobs) {
-      const demasiadoCerca = filtrados.some(f => 
-        Math.abs(f.x - b.x) < 4 && Math.abs(f.y - b.y) < 4
-      );
-      if (!demasiadoCerca) filtrados.push(b);
+    // ═══ PASO 4: Eliminar detecciones que se solapan ═══
+    candidates.sort((a, b) => b.size - a.size);
+    const finalBoxes: typeof candidates = [];
+    
+    for (const c of candidates) {
+      const overlaps = finalBoxes.some(f => {
+        const dx = Math.abs(f.x - c.x);
+        const dy = Math.abs(f.y - c.y);
+        return dx < 3.5 && dy < 3.5; // dentro de 3.5% de distancia
+      });
+      if (!overlaps) finalBoxes.push(c);
     }
 
-    // 4. Marcar los detectados (máximo 200 para no saturar)
-    const detectados = filtrados.slice(0, 200);
-    setMarcados(detectados.map(b => ({ x: b.x, y: b.y })));
+    // ═══ PASO 5: Limitar y marcar ═══
+    const result = finalBoxes.slice(0, 300);
+    setMarcados(result.map(b => ({ x: b.x, y: b.y })));
 
-    return detectados.length;
+    return result.length;
   }
 
   function exportarReporte() {
