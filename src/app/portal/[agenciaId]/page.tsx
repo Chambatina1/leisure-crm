@@ -128,6 +128,7 @@ export default function PortalAgenciaPage({ params }: { params: Promise<{ agenci
             <a href="/nuevo-paquete" style={quickBtn}>Nueva etiqueta</a>
             <a href="/bol" target="_blank" style={quickBtn}>Manifiesto</a>
             <a href="/envios" style={quickBtn}>Mis envíos</a>
+            <a href="/almacen" style={quickBtn}>Contar almacén</a>
           </div>
         </section>
 

@@ -28,6 +28,7 @@ export default function AdminPage() {
           <h1 style={{ color: "#C23B22", fontSize: 24, margin: 0 }}>🛡️ Administración de la plataforma</h1>
           <p style={{ color: "#6b7280", margin: "4px 0 0", fontSize: 13 }}>Control, soporte y supervisión de todas las agencias</p>
         </div>
+        <a href="/almacen" style={{ ...btn, background: "#1f6b3a", color: "#fff" }}>Contar almacén</a>
         <a href="/" style={{ ...btn, background: "#6b7280", color: "#fff" }}>← Volver</a>
       </div>
 
