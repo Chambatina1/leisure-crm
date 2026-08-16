@@ -40,6 +40,99 @@ export default function AlmacenPage() {
   function deshacerUltimo() { setMarcados(prev => prev.slice(0, -1)); }
   function limpiar() { setMarcados([]); }
 
+  // AUTO-DETECCIÓN: analiza la imagen y detecta bultos automáticamente
+  function autoDetectar() {
+    if (!foto || !imgRef.current) return;
+    const img = imgRef.current.querySelector("img");
+    if (!img) return;
+
+    const canvas = document.createElement("canvas");
+    const maxW = 800;
+    const scale = Math.min(1, maxW / img.naturalWidth);
+    canvas.width = img.naturalWidth * scale;
+    canvas.height = img.naturalHeight * scale;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = data.data;
+    const w = canvas.width, h = canvas.height;
+
+    // 1. Detectar bordes (diferencia de color con vecinos)
+    const edges = new Uint8Array(w * h);
+    for (let y = 1; y < h - 1; y++) {
+      for (let x = 1; x < w - 1; x++) {
+        const i = (y * w + x) * 4;
+        const gx = Math.abs(pixels[i] - pixels[i + 4]) + Math.abs(pixels[i + 1] - pixels[i + 5]) + Math.abs(pixels[i + 2] - pixels[i + 6]);
+        const gi = ((y + 1) * w + x) * 4;
+        const gy = Math.abs(pixels[i] - pixels[gi]) + Math.abs(pixels[i + 1] - pixels[gi + 1]) + Math.abs(pixels[i + 2] - pixels[gi + 2]);
+        edges[y * w + x] = (gx + gy > 120) ? 1 : 0;
+      }
+    }
+
+    // 2. Encontrar regiones conectadas (flood fill)
+    const visited = new Uint8Array(w * h);
+    const blobs: { x: number; y: number; size: number }[] = [];
+    const stack: number[] = [];
+
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = y * w + x;
+        if (visited[idx] || edges[idx]) continue;
+        
+        stack.length = 0;
+        stack.push(idx);
+        visited[idx] = 1;
+        let count = 0, sumX = 0, sumY = 0;
+        
+        while (stack.length > 0) {
+          const cur = stack.pop()!;
+          const cy = Math.floor(cur / w);
+          const cx = cur % w;
+          count++;
+          sumX += cx;
+          sumY += cy;
+          
+          // Vecinos
+          const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+          for (const [dx, dy] of dirs) {
+            const nx = cx + dx, ny = cy + dy;
+            if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+            const nidx = ny * w + nx;
+            if (!visited[nidx] && !edges[nidx]) {
+              visited[nidx] = 1;
+              stack.push(nidx);
+            }
+          }
+        }
+
+        // Filtrar: solo regiones de tamaño mediano (posibles bultos)
+        const minSize = (w * h) * 0.0008;  // mínimo 0.08% de la imagen
+        const maxSize = (w * h) * 0.08;     // máximo 8% de la imagen
+        if (count > minSize && count < maxSize) {
+          blobs.push({ x: (sumX / count / w) * 100, y: (sumY / count / h) * 100, size: count });
+        }
+      }
+    }
+
+    // 3. Filtrar blobs que se solapan mucho (mantener los más grandes)
+    blobs.sort((a, b) => b.size - a.size);
+    const filtrados: typeof blobs = [];
+    for (const b of blobs) {
+      const demasiadoCerca = filtrados.some(f => 
+        Math.abs(f.x - b.x) < 4 && Math.abs(f.y - b.y) < 4
+      );
+      if (!demasiadoCerca) filtrados.push(b);
+    }
+
+    // 4. Marcar los detectados (máximo 200 para no saturar)
+    const detectados = filtrados.slice(0, 200);
+    setMarcados(detectados.map(b => ({ x: b.x, y: b.y })));
+
+    return detectados.length;
+  }
+
   function exportarReporte() {
     const texto = `REPORTE DE ALMACÉN
 Fecha: ${new Date().toLocaleString()}
@@ -127,12 +220,13 @@ Peso total: ${pesoTotalLb.toFixed(1)} lb / ${pesoTotalKg.toFixed(2)} kg`;
 
           {/* Botones finales */}
           <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button onClick={() => autoDetectar()} style={{ ...btn, background: "#2563eb", fontSize: 15, padding: "14px 24px" }}>🔍 Auto-detectar bultos</button>
             <button onClick={() => { setFoto(null); setMarcados([]); }} style={{ ...btn, background: "#374151" }}>📷 Nueva foto</button>
             <button onClick={exportarReporte} disabled={total === 0} style={{ ...btn, background: "#1f6b3a", opacity: total ? 1 : 0.5 }}>📄 Exportar reporte</button>
           </div>
 
           <p style={{ textAlign: "center", color: "#9ca3af", fontSize: 12, marginTop: 12 }}>
-            Tocá cada bulto en la foto para marcarlo. El número aparece encima.
+            Tocá '🔍 Auto-detectar' para conteo automático, o toca cada bulto manualmente.
           </p>
         </>
       )}
