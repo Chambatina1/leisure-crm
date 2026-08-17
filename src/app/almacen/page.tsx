@@ -44,16 +44,44 @@ export default function AlmacenPage() {
 
   // AUTO-DETECCIÓN MEJORADA: especializada en CAJAS
   // Detecta cajas por color (cartón) + forma rectangular + tamaño
+  // Comprimir imagen antes de enviar a la IA (max 1024px, JPEG 80%)
+  function comprimirImagen(dataUrl: string): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1024;
+        let { width, height } = img;
+        if (width > height && width > maxDim) {
+          height = Math.round(height * maxDim / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round(width * maxDim / height);
+          height = maxDim;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { resolve(dataUrl); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
   // Contar con IA (OpenAI GPT-4 Vision)
   async function contarConIA() {
     if (!foto || analizando) return;
     setAnalizando(true);
     setIaResultado(null);
     try {
+      // Comprimir la imagen antes de enviar (fotos del celular son muy grandes)
+      const fotoComprimida = await comprimirImagen(foto);
       const res = await fetch("/api/almacen/contar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imagen: foto, pesoProm: pesoNum }),
+        body: JSON.stringify({ imagen: fotoComprimida, pesoProm: pesoNum }),
       });
       const d = await res.json();
       if (!res.ok) { alert("Error: " + (d.detalle || d.error)); setAnalizando(false); return; }
