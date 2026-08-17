@@ -12,6 +12,8 @@ interface Marcado { x: number; y: number }
 export default function AlmacenPage() {
   const [foto, setFoto] = useState<string | null>(null);
   const [marcados, setMarcados] = useState<Marcado[]>([]);
+  const [analizando, setAnalizando] = useState(false);
+  const [iaResultado, setIaResultado] = useState<null | { total: number; confianza: string; descripcion: string }>(null);
   const [pesoProm, setPesoProm] = useState("25");
   const fileRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -42,6 +44,36 @@ export default function AlmacenPage() {
 
   // AUTO-DETECCIÓN MEJORADA: especializada en CAJAS
   // Detecta cajas por color (cartón) + forma rectangular + tamaño
+  // Contar con IA (OpenAI GPT-4 Vision)
+  async function contarConIA() {
+    if (!foto || analizando) return;
+    setAnalizando(true);
+    setIaResultado(null);
+    try {
+      const res = await fetch("/api/almacen/contar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imagen: foto, pesoProm: pesoNum }),
+      });
+      const d = await res.json();
+      if (!res.ok) { alert("Error: " + (d.detalle || d.error)); setAnalizando(false); return; }
+      setIaResultado({
+        total: d.total || 0,
+        confianza: d.confianza || "media",
+        descripcion: d.descripcion || "",
+      });
+      // Actualizar el contador con el total de la IA
+      const totalIA = d.total || 0;
+      setMarcados(Array.from({ length: Math.min(totalIA, 300) }, (_, i) => ({
+        x: 50 + (Math.random() - 0.5) * 80,
+        y: 30 + (i / Math.max(totalIA, 1)) * 60,
+      })));
+    } catch (e: any) {
+      alert("No se pudo analizar: " + e.message);
+    }
+    setAnalizando(false);
+  }
+
   function autoDetectar() {
     if (!foto || !imgRef.current) return;
     const img = imgRef.current.querySelector("img");
@@ -215,6 +247,15 @@ Peso total: ${pesoTotalLb.toFixed(1)} lb / ${pesoTotalKg.toFixed(2)} kg`;
               <div style={{ fontSize: 28, fontWeight: 900, color: "#1f6b3a" }}>{pesoTotalKg.toFixed(1)}</div>
               <div style={{ fontSize: 10, color: "#6b7280" }}>TOTAL KG</div>
             </div>
+            {iaResultado && (
+              <div style={{ ...statBox, borderLeft: "4px solid #10a37f", background: "#f0fdf9" }}>
+                <div style={{ fontSize: 12, color: "#065f46" }}>
+                  <b>IA:</b> {iaResultado.total} cajas<br />
+                  <small>Confianza: {iaResultado.confianza}</small><br />
+                  <small>{iaResultado.descripcion}</small>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Foto con marcas */}
@@ -255,7 +296,9 @@ Peso total: ${pesoTotalLb.toFixed(1)} lb / ${pesoTotalKg.toFixed(2)} kg`;
 
           {/* Botones finales */}
           <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <button onClick={() => autoDetectar()} style={{ ...btn, background: "#2563eb", fontSize: 15, padding: "14px 24px" }}>🔍 Auto-detectar bultos</button>
+            <button onClick={contarConIA} disabled={analizando} style={{ ...btn, background: "#10a37f", fontSize: 15, padding: "14px 24px", opacity: analizando ? 0.6 : 1 }}>
+            {analizando ? "🤖 Analizando con IA..." : "🤖 Contar con IA"}
+          </button>
             <button onClick={() => { setFoto(null); setMarcados([]); }} style={{ ...btn, background: "#374151" }}>📷 Nueva foto</button>
             <button onClick={exportarReporte} disabled={total === 0} style={{ ...btn, background: "#1f6b3a", opacity: total ? 1 : 0.5 }}>📄 Exportar reporte</button>
           </div>
