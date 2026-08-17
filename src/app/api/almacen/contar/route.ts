@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         messages: [{
           role: "user",
           content: [
-            { type: "text", text: "Analiza esta foto de almacen. Cuenta TODAS las cajas, bultos, paquetes y sacos visibles (incluyendo las apiladas). Devuelve SOLO un JSON: {\"total\": numero, \"confianza\": \"alta|media|baja\", \"descripcion\": \"breve\", \"tipo\": \"carton|plastico|mixto\"}" },
+            { type: "text", text: "Analiza esta foto de almacen. Detecta TODAS las cajas, bultos y paquetes visibles. Para CADA caja detectada devuelve sus coordenadas como porcentaje de la imagen (0-100). Formato JSON estricto: {\"total\": numero, \"confianza\": \"alta|media|baja\", \"descripcion\": \"breve\", \"cajas\": [{\"x\": centro_x_pct, \"y\": centro_y_pct, \"w\": ancho_pct, \"h\": alto_pct}]}" },
             { type: "image_url", image_url: { url: imagenBase64 } },
           ],
         }],
@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
       confianza: resultado.confianza || "media",
       descripcion: resultado.descripcion || "",
       tipo: resultado.tipo || "",
+      cajas: resultado.cajas || [],
     });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "Error" }, { status: 500 });

@@ -7,7 +7,7 @@ import { useState, useRef } from "react";
 // cuenta automática → peso promedio → total calculado.
 // ════════════════════════════════════════════════════════════════════════════
 
-interface Marcado { x: number; y: number }
+interface Marcado { x: number; y: number; w?: number; h?: number }
 
 export default function AlmacenPage() {
   const [foto, setFoto] = useState<string | null>(null);
@@ -62,12 +62,19 @@ export default function AlmacenPage() {
         confianza: d.confianza || "media",
         descripcion: d.descripcion || "",
       });
-      // Actualizar el contador con el total de la IA
-      const totalIA = d.total || 0;
-      setMarcados(Array.from({ length: Math.min(totalIA, 300) }, (_, i) => ({
-        x: 50 + (Math.random() - 0.5) * 80,
-        y: 30 + (i / Math.max(totalIA, 1)) * 60,
-      })));
+      // Si la IA devolvió coordenadas, usarlas para dibujar los recuadros
+      if (d.cajas && Array.isArray(d.cajas) && d.cajas.length > 0) {
+        setMarcados(d.cajas.map((caja: any) => ({
+          x: caja.x || 50,
+          y: caja.y || 50,
+          w: caja.w || 8,
+          h: caja.h || 8,
+        })));
+      } else {
+        // Fallback: solo actualizar el número
+        const totalIA = d.total || 0;
+        setMarcados([]);
+      }
     } catch (e: any) {
       alert("No se pudo analizar: " + e.message);
     }
@@ -271,7 +278,24 @@ Peso total: ${pesoTotalLb.toFixed(1)} lb / ${pesoTotalKg.toFixed(2)} kg`;
             </div>
 
             {/* Marcas */}
-            {marcados.map((m, i) => (
+            {marcados.map((m, i) => m.w ? (
+              <div key={i} style={{
+                position: "absolute",
+                left: `${m.x - (m.w || 8) / 2}%`, top: `${m.y - (m.h || 8) / 2}%`,
+                width: `${m.w || 8}%`, height: `${m.h || 8}%`,
+                border: "2.5px solid #C23B22",
+                borderRadius: 3,
+                background: "rgba(194,59,34,.12)",
+                pointerEvents: "none", zIndex: 5,
+                display: "flex", alignItems: "flex-start", justifyContent: "flex-end",
+              }}>
+                <span style={{
+                  background: "#C23B22", color: "#fff",
+                  fontSize: 9, fontWeight: 800, padding: "1px 5px",
+                  borderRadius: 2, margin: -1,
+                }}>{i + 1}</span>
+              </div>
+            ) : (
               <div key={i} style={{
                 position: "absolute", left: `${m.x}%`, top: `${m.y}%`,
                 transform: "translate(-50%, -50%)",
