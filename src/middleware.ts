@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
-const PUBLIC_API = ["/api/auth/login", "/api/auth/logout", "/api/health", "/api/db-check", "/api/migrate", "/api/brands", "", "/api/categorias", "/api/solved/public-create"];
+const PUBLIC_API = ["/api/auth/login", "/api/auth/logout", "/api/health", "/api/db-check", "/api/migrate", "/api/brands", "", "/api/categorias", "/api/solved/public-create", "/api/debug-env"];
 
 function isPublicApi(pathname: string): boolean {
   if (PUBLIC_API.includes(pathname)) return true;
