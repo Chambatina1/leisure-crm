@@ -56,7 +56,7 @@ export default function AgenciasPage() {
           background: "rgba(255,255,255,.95)", borderRadius: 20, padding: 32,
           maxWidth: 380, width: "100%", boxShadow: "0 10px 40px rgba(0,0,0,.3)",
         }}>
-          <h1 style={{ color: "#C23B22", fontSize: 22, textAlign: "center", margin: "0 0 4px" }}>VUELACARGO</h1>
+          <h1 style={{ color: "#C23B22", fontSize: 22, textAlign: "center", margin: "0 0 4px" }}>CHAMBATINA</h1>
           <p style={{ textAlign: "center", color: "#6b7280", fontSize: 13, marginBottom: 24 }}>Portal de Agencias</p>
 
           <form onSubmit={login} style={{ display: "flex", flexDirection: "column", gap: 14 }}>

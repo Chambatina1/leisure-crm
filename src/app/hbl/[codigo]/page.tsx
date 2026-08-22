@@ -26,8 +26,8 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
     <div class="copy-tag">${copyNum}</div>
     <div class="hbl-header">
       <div class="company">
-        <img src="/logos/chambatina.png" class="vuelacargo-logo" alt="VuelaCargo">
-        <div class="company-name">VUELACARGO</div>
+        <img src="/logos/chambatina.png" class="chambatina-logo" alt="Chambatina">
+        <div class="company-name">CHAMBATINA</div>
       </div>
       <div class="document-title">COMBINED TRANSPORT<br>BILL OF LADING</div>
     </div>
@@ -55,7 +55,7 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
         </td>
         <td colspan="3" class="box">
           <div class="lbl">FORWARDING AGENT</div>
-          <div class="val">VUELACARGO</div>
+          <div class="val">CHAMBATINA</div>
           <div class="small">MIAMI, FL, USA</div>
         </td>
       </tr>
@@ -80,7 +80,7 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
         </td>
         <td colspan="2" class="box">
           <div class="lbl">FOR DELIVERY APPLY TO</div>
-          <div class="val">VUELACARGO</div>
+          <div class="val">CHAMBATINA</div>
         </td>
         <td colspan="2" class="box">
           <div class="lbl">PRE-CARRIAGE BY</div>
@@ -160,7 +160,7 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
           <div class="val">${fecha}</div>
         </td>
         <td class="box" colspan="2">
-          <div class="lbl">SIGNED AS AGENT FOR THE CARRIER: VUELACARGO</div>
+          <div class="lbl">SIGNED AS AGENT FOR THE CARRIER: CHAMBATINA</div>
           <div class="sig-line">__________________________</div>
         </td>
       </tr>
@@ -185,7 +185,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000;background:
 .hbl-page{width:297mm;min-height:210mm;margin:0 auto;background:#fff;overflow:hidden;}
 .hbl-header{display:grid;grid-template-columns:55% 45%;min-height:70px;border-bottom:1px solid #000;}
 .company{padding:4px 6px;display:flex;align-items:center;gap:8px;}
-.vuelacargo-logo{width:80px;max-height:50px;object-fit:contain;}
+.chambatina-logo{width:80px;max-height:50px;object-fit:contain;}
 .company-name{font-size:18px;font-weight:900;}
 .document-title{border-left:1px solid #000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:10px;text-align:center;}
 .hbl-table{width:100%;border-collapse:collapse;}

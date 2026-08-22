@@ -43,10 +43,10 @@ export default function EtiquetaContent({ p }: { p: EtiquetaData; brands?: any[]
 
       <div className="label">
 
-        {/* LOGO: Vuela Cargo GRANDE + Chambatina pequeño */}
+        {/* LOGO: Chambatina GRANDE + Chambatina pequeño */}
         <div className="label-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/vuela-cargo-logo.svg" alt="Vuela Cargo" className="logo-main" />
+          <img src="/images/chambatina-logo.svg" alt="Chambatina" className="logo-main" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logos/chambatina.png" alt="Chambatina" className="logo-small-ch" />
         </div>
