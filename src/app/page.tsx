@@ -128,6 +128,7 @@ export default function HomePage() {
             <button className={lang === "es" ? "active" : ""} onClick={() => setLang("es")}>ES</button>
           </div>
           <a className="btn-agencias" href="/nuevo-paquete">{t.navEtiqueta}</a>
+          <a className="btn-agencias2" href="/combustible" style={{ background: "#e0a106", color: "#fff" }}>⚡ Venta Combustible</a>
           <a className="btn-agencias2" href="/envios">Mis envíos</a>
           <a className="btn-agencias2" href="/login">Acceso</a>
         </div>
@@ -141,6 +142,7 @@ export default function HomePage() {
           <p className="hero-sub">{t.sub}</p>
           <div className="hero-cta">
             <a href="/nuevo-paquete" className="btn-primary">{t.ctaEtiqueta}</a>
+            <a href="/combustible" className="btn-outline" style={{ background: "#e0a106", color: "#fff", borderColor: "#e0a106" }}>⚡ Vender Combustible</a>
             <a href="/bol" className="btn-outline">Bill of Lading</a>
           </div>
         </div>
