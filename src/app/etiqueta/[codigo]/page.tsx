@@ -89,7 +89,7 @@ img,canvas,svg{max-width:100% !important;}
 <div class="label-frame">
 
   <div class="header">
-    <div class="brand">CHAMBATINA</div>
+    
     <img class="agency-logo" src="/logos/chambatina.png" alt="Chambatina">
   </div>
 
@@ -108,7 +108,7 @@ img,canvas,svg{max-width:100% !important;}
 
   <div class="section border-bottom">
     <div class="shipping-destination-title">DESTINO DEL ENVIO/SHIPPING DESTINATION</div>
-    <div class="shipping-destination">Chambatina, Centro de Distribucion, Miami, FL, USA</div>
+    <div class="shipping-destination">Destino de entrega según consignatario</div>
   </div>
 
   <div class="section border-bottom">

@@ -115,7 +115,7 @@ export default function HomePage() {
       <nav className="landing-nav">
         <div className="nav-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logos/chambatina.png" alt="Chambatina" style={{ width: 50, height: 50, objectFit: "contain", background: "#fff", borderRadius: 10, padding: 4 }} />
+          
           <strong style={{ color: "#fff", fontSize: 20, fontWeight: 900, letterSpacing: "-.5px" }}>Chambatina</strong>
         </div>
         <div className="nav-links">
@@ -216,20 +216,6 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="footer-landing">
-        {/* Logos del chambatina */}
-        <div className="footer-grupo">
-          <div className="footer-grupo-label">CHAMBATINA</div>
-          <div className="footer-grupo-logos">
-            {brands.map((b, i) => (
-              <div key={b.nombre} style={{ display: "contents" }}>
-                {i > 0 && <div className="footer-grupo-divider"></div>}
-                <div className="footer-grupo-logo">
-                  <img src={b.logo} alt={b.nombre} style={{ background: "#fff", borderRadius: 8, padding: "4px 10px", maxHeight: 56, maxWidth: 140, objectFit: "contain" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
         <div className="footer-brand"><strong>Chambatina</strong> · {t.footBrand}</div>
         <small>© {new Date().getFullYear()} Chambatina. {t.footRights}</small>
         <a className="footer-agencias" href="/login">Acceso al sistema</a>

@@ -26,7 +26,7 @@ export default async function HblPage({ params }: { params: Promise<{ codigo: st
     <div class="copy-tag">${copyNum}</div>
     <div class="hbl-header">
       <div class="company">
-        <img src="/logos/chambatina.png" class="chambatina-logo" alt="Chambatina">
+        
         <div class="company-name">CHAMBATINA</div>
       </div>
       <div class="document-title">COMBINED TRANSPORT<br>BILL OF LADING</div>

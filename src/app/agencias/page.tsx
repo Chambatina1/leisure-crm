@@ -50,7 +50,7 @@ export default function AgenciasPage() {
       {/* Contenido */}
       <div style={{ position: "relative", zIndex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 16 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logos/chambatina.png" alt="Chambatina" style={{ width: 60, height: 60, objectFit: "contain", marginBottom: 16 }} />
+        
 
         <div style={{
           background: "rgba(255,255,255,.95)", borderRadius: 20, padding: 32,

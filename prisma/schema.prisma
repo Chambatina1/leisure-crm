@@ -75,6 +75,7 @@ model Cliente {
   agencia   Agencia @relation(fields: [agenciaId], references: [id])
   paquetes  Paquete[]
 
+
   @@index([agenciaId])
 }
 
@@ -223,4 +224,25 @@ model Brand {
   orden  Int      @default(0)   // posición (0=izquierda, 1=centro, 2=derecha)
   activo Boolean  @default(true)
   creado DateTime @default(now())
+}
+
+// ─── Ventas de combustible ───────────────────────────────────────────────────
+// Cada venta genera un ticket con QR único y número consecutivo.
+model VentaCombustible {
+  id          String   @id @default(cuid())
+  ticket      String   @unique  // TICKET-000001 (consecutivo)
+  tipo        String             // gasolina | diesel | petroleo
+  litros      Float
+  precioLitro Float
+  total       Float
+  cliente     String   @default("Consumidor Final")
+  clienteCarnet String?
+  vehiculo    String?  // matrícula/placa
+  agenciaId   String
+  creado      DateTime @default(now())
+
+
+
+  @@index([agenciaId])
+  @@index([creado])
 }
