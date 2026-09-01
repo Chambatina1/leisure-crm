@@ -1,24 +1,12 @@
 {
-  "name": "Chambatina - Envíos Internacionales",
-  "short_name": "Chambatina",
-  "description": "Tu empresa de logística confiable. Envíos, rastreo y sistemas solares.",
+  "name": "Leisure Exporting LLC",
+  "short_name": "Leisure",
+  "description": "Envíos, paquetería y servicios de Leisure Exporting LLC",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#18181b",
-  "theme_color": "#f59e0b",
-  "orientation": "portrait-primary",
+  "background_color": "#071a46",
+  "theme_color": "#071a46",
   "icons": [
-    {
-      "src": "/logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml" }
   ]
 }
