@@ -2,7 +2,7 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://rastreador_db_user:E89uVwg0xGMOLwEGQPRbjWpwHLXXHxE9@dpg-d7hoferbc2fs73dk6q1g-a.oregon-postgres.render.com/rastreador_db',
+  connectionString: process.env.DATABASE_URL || '',
   ssl: { rejectUnauthorized: false }
 });
 
