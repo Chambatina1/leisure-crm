@@ -47,8 +47,8 @@ model ChatMessage {
 
 model Config {
   id    Int    @id @default(autoincrement())
-  clave String @unique
-  valor String
+  clave String @unique @default("")
+  valor String @default("")
 }
 
 // ===== NEW MODELS =====
