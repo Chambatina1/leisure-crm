@@ -164,7 +164,7 @@ export function AparienciaPanel() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Layout className="h-7 w-7 text-amber-500" />
+            <Layout className="h-7 w-7 text-blue-600" />
             Apariencia
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -174,7 +174,7 @@ export function AparienciaPanel() {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className={`bg-amber-500 hover:bg-amber-600 text-white font-semibold min-w-[140px] ${
+          className={`bg-[#123d83] hover:bg-[#071a46] text-white font-semibold min-w-[140px] ${
             saved ? '!bg-green-500 hover:!bg-green-500' : ''
           }`}
         >
@@ -201,8 +201,8 @@ export function AparienciaPanel() {
       <Card className="border-0 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
-              <ImageIcon className="h-5 w-5 text-amber-600" />
+            <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+              <ImageIcon className="h-5 w-5 text-[#123d83]" />
             </div>
             Imágenes del Sitio
           </CardTitle>
@@ -323,8 +323,8 @@ export function AparienciaPanel() {
       <Card className="border-0 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="w-9 h-9 rounded-lg bg-orange-100 flex items-center justify-center">
-              <Code2 className="h-5 w-5 text-orange-600" />
+            <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+              <Code2 className="h-5 w-5 text-blue-600" />
             </div>
             Personalización con Código
           </CardTitle>
@@ -337,19 +337,19 @@ export function AparienciaPanel() {
             <TabsList className="bg-zinc-100 p-1 w-full sm:w-auto">
               <TabsTrigger
                 value="css"
-                className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-xs"
+                className="data-[state=active]:bg-[#123d83] data-[state=active]:text-white text-xs"
               >
                 CSS
               </TabsTrigger>
               <TabsTrigger
                 value="html"
-                className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-xs"
+                className="data-[state=active]:bg-[#123d83] data-[state=active]:text-white text-xs"
               >
                 HTML
               </TabsTrigger>
               <TabsTrigger
                 value="js"
-                className="data-[state=active]:bg-amber-500 data-[state=active]:text-white text-xs"
+                className="data-[state=active]:bg-[#123d83] data-[state=active]:text-white text-xs"
               >
                 JavaScript
               </TabsTrigger>
@@ -412,7 +412,7 @@ export function AparienciaPanel() {
                   rows={10}
                   className="font-mono text-xs bg-zinc-900 text-yellow-400 border-zinc-700 resize-y"
                 />
-                <p className="text-xs text-amber-600 flex items-center gap-1">
+                <p className="text-xs text-[#123d83] flex items-center gap-1">
                   <RefreshCw className="h-3 w-3" />
                   El JavaScript se ejecutará después de cargar la página
                 </p>
@@ -426,8 +426,8 @@ export function AparienciaPanel() {
       <Card className="border-0 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
-              <Palette className="h-5 w-5 text-amber-600" />
+            <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
+              <Palette className="h-5 w-5 text-[#123d83]" />
             </div>
             Colores del Tema
           </CardTitle>
@@ -616,7 +616,7 @@ export function AparienciaPanel() {
           onClick={handleSave}
           disabled={saving}
           size="lg"
-          className={`bg-amber-500 hover:bg-amber-600 text-white font-semibold min-w-[160px] ${
+          className={`bg-[#123d83] hover:bg-[#071a46] text-white font-semibold min-w-[160px] ${
             saved ? '!bg-green-500 hover:!bg-green-500' : ''
           }`}
         >

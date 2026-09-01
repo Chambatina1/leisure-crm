@@ -174,7 +174,7 @@ export function UsersPanel() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Users className="h-7 w-7 text-amber-500" />
+            <Users className="h-7 w-7 text-blue-600" />
             Usuarios
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -195,9 +195,9 @@ export function UsersPanel() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 sm:p-4 bg-amber-50 rounded-xl">
+          <CardContent className="p-3 sm:p-4 bg-blue-50 rounded-xl">
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-amber-500" />
+              <Users className="h-4 w-4 text-blue-600" />
               <p className="text-xl sm:text-2xl font-bold">{totalUsers}</p>
             </div>
             <p className="text-xs text-muted-foreground">Total Usuarios</p>
@@ -213,9 +213,9 @@ export function UsersPanel() {
           </CardContent>
         </Card>
         <Card className="border-0 shadow-sm col-span-2 sm:col-span-1">
-          <CardContent className="p-3 sm:p-4 bg-orange-50 rounded-xl">
+          <CardContent className="p-3 sm:p-4 bg-blue-50 rounded-xl">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-orange-500" />
+              <Calendar className="h-4 w-4 text-blue-600" />
               <p className="text-xl sm:text-2xl font-bold">{newThisMonth}</p>
             </div>
             <p className="text-xs text-muted-foreground">Nuevos este mes</p>
@@ -295,8 +295,8 @@ export function UsersPanel() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                                <span className="text-xs font-bold text-amber-600">
+                              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-[#123d83]">
                                   {user.nombre.charAt(0).toUpperCase()}
                                 </span>
                               </div>
@@ -342,7 +342,7 @@ export function UsersPanel() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0 text-zinc-500 hover:text-amber-600"
+                                className="h-8 w-8 p-0 text-zinc-500 hover:text-[#123d83]"
                                 onClick={() => setSelectedUser(user)}
                               >
                                 <Eye className="h-4 w-4" />
@@ -387,7 +387,7 @@ export function UsersPanel() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserCircle className="h-5 w-5 text-amber-500" />
+              <UserCircle className="h-5 w-5 text-blue-600" />
               Detalle del Usuario
             </DialogTitle>
             <DialogDescription>
@@ -399,8 +399,8 @@ export function UsersPanel() {
             <div className="space-y-4 mt-2">
               {/* Avatar */}
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-lg font-bold text-amber-600">
+                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span className="text-lg font-bold text-[#123d83]">
                     {selectedUser.nombre.charAt(0).toUpperCase()}
                   </span>
                 </div>

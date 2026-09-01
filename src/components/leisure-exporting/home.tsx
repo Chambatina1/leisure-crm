@@ -90,8 +90,8 @@ export function Home() {
           />
         </div>
         <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-orange-400 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-400 rounded-full blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
           <motion.div
@@ -99,13 +99,13 @@ export function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-orange-50 border border-orange-100 shadow-lg shadow-orange-500/5 mb-6 overflow-hidden">
-              <Image src="/logo.png" alt="Leisure Exporting" width={96} height={96} className="object-contain" />
+            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-blue-50 border border-blue-100 shadow-lg shadow-blue-500/5 mb-6 overflow-hidden">
+              <Image src="/icon.svg" alt="Leisure Exporting" width={96} height={96} className="object-contain" />
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-zinc-900 tracking-tight mb-4">
               LEISURE EXPORTING
             </h1>
-            <p className="text-lg sm:text-xl text-orange-600 font-semibold tracking-wide mb-2">
+            <p className="text-lg sm:text-xl text-blue-600 font-semibold tracking-wide mb-2">
               Envíos Internacionales & Sistemas Solares
             </p>
             <p className="text-zinc-500 max-w-2xl mx-auto text-sm sm:text-base mb-8">
@@ -116,7 +116,7 @@ export function Home() {
               <Button
                 size="lg"
                 onClick={() => goToNuevoPedido()}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-8 shadow-lg shadow-orange-500/20"
+                className="bg-blue-500 hover:bg-[#071a46] text-white font-semibold px-8 shadow-lg shadow-orange-500/20"
               >
                 <Package className="h-5 w-5 mr-2" />
                 Hacer un Envío
@@ -125,7 +125,7 @@ export function Home() {
                 size="lg"
                 variant="outline"
                 onClick={() => setCurrentView('rastreador')}
-                className="border-orange-200 text-orange-700 hover:bg-orange-50 px-8"
+                className="border-blue-200 text-blue-700 hover:bg-blue-50 px-8"
               >
                 <Search className="h-5 w-5 mr-2" />
                 Rastrear Paquete
@@ -142,7 +142,7 @@ export function Home() {
               >
                 <button
                   onClick={() => setShowRegisterDialog(true)}
-                  className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-orange-600 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-blue-600 transition-colors"
                 >
                   <UserCircle className="h-4 w-4" />
                   ¿Primera vez? Regístrate para un mejor servicio
@@ -176,8 +176,8 @@ export function Home() {
               onClick={() => setCurrentView('tienda')}
             >
               <CardHeader className="pb-3">
-                <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center mb-2">
-                  <Truck className="h-6 w-6 text-orange-500" />
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
+                  <Truck className="h-6 w-6 text-blue-600" />
                 </div>
                 <CardTitle className="text-lg text-zinc-900">Envíos Internacionales</CardTitle>
                 <CardDescription className="text-sm text-zinc-500">
@@ -185,7 +185,7 @@ export function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex items-center text-orange-600 text-sm font-medium">
+                <div className="flex items-center text-blue-600 text-sm font-medium">
                   Ver precios <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
               </CardContent>
@@ -198,8 +198,8 @@ export function Home() {
               onClick={() => setCurrentView('tienda')}
             >
               <CardHeader className="pb-3">
-                <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center mb-2">
-                  <Sun className="h-6 w-6 text-amber-500" />
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
+                  <Sun className="h-6 w-6 text-blue-600" />
                 </div>
                 <CardTitle className="text-lg text-zinc-900">Sistemas Solares</CardTitle>
                 <CardDescription className="text-sm text-zinc-500">
@@ -207,7 +207,7 @@ export function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="flex items-center text-amber-600 text-sm font-medium">
+                <div className="flex items-center text-[#123d83] text-sm font-medium">
                   Más información <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
               </CardContent>
@@ -246,7 +246,7 @@ export function Home() {
           transition={{ duration: 0.4, delay: 0.2 }}
         >
           <Card className="border border-zinc-100 shadow-md overflow-hidden bg-white">
-            <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-6 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-amber-500 p-6 text-white">
               <div className="flex items-center gap-3">
                 <Calculator className="h-6 w-6" />
                 <div>
@@ -262,13 +262,13 @@ export function Home() {
                     Peso (libras)
                   </label>
                   <div className="relative">
-                    <Weight className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400" />
+                    <Weight className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
                     <Input
                       type="number"
                       placeholder="Ej: 10"
                       value={calcPeso}
                       onChange={(e) => setCalcPeso(e.target.value)}
-                      className="pl-10 border-orange-200 focus:border-orange-400"
+                      className="pl-10 border-blue-200 focus:border-orange-400"
                       min="0"
                     />
                   </div>
@@ -289,8 +289,8 @@ export function Home() {
                         size="sm"
                         onClick={() => setCalcTipo(opt.value)}
                         className={calcTipo === opt.value
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0'
-                          : 'border-orange-200 text-orange-700 hover:bg-orange-50'
+                          ? 'bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0'
+                          : 'border-blue-200 text-blue-700 hover:bg-blue-50'
                         }
                       >
                         {opt.label}
@@ -304,10 +304,10 @@ export function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-orange-50 border border-orange-200 rounded-lg p-4"
+                  className="bg-blue-50 border border-blue-200 rounded-lg p-4"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="h-5 w-5 text-orange-600" />
+                    <DollarSign className="h-5 w-5 text-blue-600" />
                     <span className="font-semibold text-orange-900">Resultado del Cálculo</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
@@ -327,7 +327,7 @@ export function Home() {
                     )}
                     <div className="col-span-2 sm:col-span-1">
                       <span className="text-zinc-500">Total:</span>
-                      <p className="text-xl font-bold text-orange-600">${calcResult.total.toFixed(2)}</p>
+                      <p className="text-xl font-bold text-blue-600">${calcResult.total.toFixed(2)}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -349,7 +349,7 @@ export function Home() {
             onClick={() => setCurrentView('chat')}
           >
             <CardContent className="p-6 sm:p-8 flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/10">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/10">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">
@@ -358,7 +358,7 @@ export function Home() {
                   Pregúntame sobre precios, rastreo, horarios o cualquier duda. Estoy entrenado para ayudarte con todo lo de Leisure Exporting.
                 </p>
               </div>
-              <ChevronRight className="h-6 w-6 text-orange-400 shrink-0" />
+              <ChevronRight className="h-6 w-6 text-blue-400 shrink-0" />
             </CardContent>
           </Card>
         </motion.div>
@@ -374,14 +374,14 @@ export function Home() {
           <Card className="border border-zinc-100 shadow-md bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-zinc-900">
-                <MapPin className="h-5 w-5 text-orange-500" />
+                <MapPin className="h-5 w-5 text-blue-600" />
                 Información de Contacto
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-orange-400 mt-0.5 shrink-0" />
+                  <MapPin className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-medium text-sm">Oficina</p>
                     <p className="text-sm text-zinc-500">{config.direccion}</p>
@@ -391,25 +391,25 @@ export function Home() {
               </div>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-orange-400 mt-0.5 shrink-0" />
+                  <Phone className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-medium text-sm">Teléfonos</p>
                     {config.telefono1 && (
                       <p className="text-sm text-zinc-500">
                         {config.nombre_contacto1 ? `${config.nombre_contacto1}: ` : ''}
-                        <a href={`tel:${config.telefono1.replace(/\D/g, '')}`} className="text-orange-600 hover:underline">{config.telefono1}</a>
+                        <a href={`tel:${config.telefono1.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono1}</a>
                       </p>
                     )}
                     {config.telefono2 && (
                       <p className="text-sm text-zinc-500">
                         {config.nombre_contacto2 ? `${config.nombre_contacto2}: ` : ''}
-                        <a href={`tel:${config.telefono2.replace(/\D/g, '')}`} className="text-orange-600 hover:underline">{config.telefono2}</a>
+                        <a href={`tel:${config.telefono2.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono2}</a>
                       </p>
                     )}
                     {config.telefono3 && (
                       <p className="text-sm text-zinc-500">
                         {config.nombre_contacto3 ? `${config.nombre_contacto3}: ` : ''}
-                        <a href={`tel:${config.telefono3.replace(/\D/g, '')}`} className="text-orange-600 hover:underline">{config.telefono3}</a>
+                        <a href={`tel:${config.telefono3.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono3}</a>
                       </p>
                     )}
                     {config.whatsapp && (
@@ -419,7 +419,7 @@ export function Home() {
                     )}
                     {config.email && (
                       <p className="text-sm text-zinc-500 mt-1">
-                        Email: <a href={`mailto:${config.email}`} className="text-orange-600 hover:underline">{config.email}</a>
+                        Email: <a href={`mailto:${config.email}`} className="text-blue-600 hover:underline">{config.email}</a>
                       </p>
                     )}
                   </div>

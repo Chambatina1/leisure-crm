@@ -61,12 +61,12 @@ interface TrackingEntry {
 
 // Predefined states with icons and colors for quick selection
 const ESTADOS_PREDEFINIDOS = [
-  { value: 'EN AGENCIA', label: 'En Agencia', color: 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200', icon: Building2 },
+  { value: 'EN AGENCIA', label: 'En Agencia', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-amber-200', icon: Building2 },
   { value: 'EN TRANSITO', label: 'En Tránsito', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200', icon: Truck },
   { value: 'EN ADUANA', label: 'En Aduana', color: 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200', icon: ShieldCheck },
   { value: 'EN DISTRIBUCION', label: 'En Distribución', color: 'bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200', icon: MapPin },
   { value: 'ENTREGADO', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200', icon: FileCheck },
-  { value: 'PENDIENTE DESGRUPE', label: 'Pend. Desgrupe', color: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200', icon: Clock },
+  { value: 'PENDIENTE DESGRUPE', label: 'Pend. Desgrupe', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-orange-200', icon: Clock },
 ];
 
 export function TrackingUpload() {
@@ -214,9 +214,9 @@ export function TrackingUpload() {
     if (e.includes('ENTREGADO')) return 'bg-emerald-100 text-emerald-700';
     if (e.includes('TRANSITO') || e.includes('TRÁNSITO')) return 'bg-blue-100 text-blue-700';
     if (e.includes('ADUANA')) return 'bg-purple-100 text-purple-700';
-    if (e.includes('PENDIENTE') || e.includes('DESGRUPE')) return 'bg-amber-100 text-amber-700';
+    if (e.includes('PENDIENTE') || e.includes('DESGRUPE')) return 'bg-blue-100 text-blue-700';
     if (e.includes('DISTRIBUCION')) return 'bg-cyan-100 text-cyan-700';
-    if (e.includes('EMBARCADO')) return 'bg-orange-100 text-orange-700';
+    if (e.includes('EMBARCADO')) return 'bg-blue-100 text-blue-700';
     return 'bg-zinc-100 text-zinc-700';
   };
 
@@ -229,7 +229,7 @@ export function TrackingUpload() {
     >
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 flex items-center gap-2">
-          <Database className="h-7 w-7 text-orange-500" />
+          <Database className="h-7 w-7 text-blue-600" />
           Gestión de Tracking
         </h1>
         <p className="text-zinc-500 mt-1">Carga datos TSV o edita manualmente el estado de cada CPK</p>
@@ -255,7 +255,7 @@ export function TrackingUpload() {
             <Button
               onClick={handleUpload}
               disabled={uploading || !tsvData.trim()}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+              className="bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -295,12 +295,12 @@ export function TrackingUpload() {
       {/* Filter */}
       {entries.length > 0 && (
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
           <Input
             placeholder="Filtrar por CPK, nombre, estado o carnet..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="pl-10 border-orange-200 focus:border-orange-400"
+            className="pl-10 border-blue-200 focus:border-orange-400"
           />
         </div>
       )}
@@ -318,7 +318,7 @@ export function TrackingUpload() {
             <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
               <Table>
                 <TableHeader className="sticky top-0 bg-white z-10">
-                  <TableRow className="bg-gradient-to-r from-orange-50 to-amber-50">
+                  <TableRow className="bg-gradient-to-r from-blue-50 to-amber-50">
                     <TableHead className="w-8">#</TableHead>
                     <TableHead>CPK</TableHead>
                     <TableHead>Estado</TableHead>
@@ -330,9 +330,9 @@ export function TrackingUpload() {
                 </TableHeader>
                 <TableBody>
                   {filteredEntries.map((entry, idx) => (
-                    <TableRow key={entry.id} className="hover:bg-orange-50/50 group">
+                    <TableRow key={entry.id} className="hover:bg-blue-50/50 group">
                       <TableCell className="text-xs text-zinc-400">{idx + 1}</TableCell>
-                      <TableCell className="font-mono text-sm font-medium text-orange-700">
+                      <TableCell className="font-mono text-sm font-medium text-blue-700">
                         {entry.cpk}
                       </TableCell>
                       <TableCell>
@@ -354,7 +354,7 @@ export function TrackingUpload() {
                           variant="ghost"
                           size="sm"
                           onClick={() => openEditDialog(entry)}
-                          className="h-8 w-8 p-0 text-zinc-400 hover:text-orange-600 hover:bg-orange-50 opacity-70 group-hover:opacity-100 transition-opacity"
+                          className="h-8 w-8 p-0 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 opacity-70 group-hover:opacity-100 transition-opacity"
                           title="Editar estado"
                         >
                           <Pencil className="h-4 w-4" />
@@ -367,7 +367,7 @@ export function TrackingUpload() {
             </div>
           ) : entries.length === 0 ? (
             <div className="p-8 text-center">
-              <Package className="h-12 w-12 text-orange-200 mx-auto mb-3" />
+              <Package className="h-12 w-12 text-blue-200 mx-auto mb-3" />
               <p className="text-zinc-500 text-sm">No hay datos de tracking cargados</p>
               <p className="text-zinc-400 text-xs mt-1">
                 Pega los datos TSV arriba para comenzar
@@ -375,7 +375,7 @@ export function TrackingUpload() {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <AlertCircle className="h-12 w-12 text-orange-200 mx-auto mb-3" />
+              <AlertCircle className="h-12 w-12 text-blue-200 mx-auto mb-3" />
               <p className="text-zinc-500 text-sm">No hay resultados para el filtro</p>
             </div>
           )}
@@ -387,7 +387,7 @@ export function TrackingUpload() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Pencil className="h-5 w-5 text-orange-500" />
+              <Pencil className="h-5 w-5 text-blue-600" />
               Editar CPK {editEntry?.cpk}
             </DialogTitle>
             <DialogDescription>
@@ -410,7 +410,7 @@ export function TrackingUpload() {
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200 ${
                         isSelected
                           ? estado.color + ' ring-2 ring-orange-400 shadow-sm'
-                          : 'bg-white text-zinc-600 border-zinc-200 hover:border-orange-300 hover:bg-orange-50'
+                          : 'bg-white text-zinc-600 border-zinc-200 hover:border-orange-300 hover:bg-blue-50'
                       }`}
                     >
                       <Icon className="h-4 w-4 shrink-0" />
@@ -425,7 +425,7 @@ export function TrackingUpload() {
                   placeholder="O escribe un estado personalizado..."
                   value={editEstado}
                   onChange={(e) => setEditEstado(e.target.value)}
-                  className="border-orange-200 focus:border-orange-400"
+                  className="border-blue-200 focus:border-orange-400"
                 />
               </div>
             </div>
@@ -483,7 +483,7 @@ export function TrackingUpload() {
             <Button
               onClick={handleSaveEdit}
               disabled={saving || !editEstado.trim()}
-              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white gap-1"
+              className="bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white gap-1"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -116,7 +116,7 @@ export function ChatIA() {
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-amber-500" />
+            <Sparkles className="h-6 w-6 text-blue-600" />
             Chat Asistente
           </h1>
           <p className="text-zinc-500 text-sm mt-0.5">Tu asistente virtual de Leisure Exporting</p>
@@ -133,8 +133,8 @@ export function ChatIA() {
         <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center mb-4">
-                <MessageCircle className="h-8 w-8 text-amber-500" />
+              <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
+                <MessageCircle className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-lg font-semibold text-zinc-700 mb-2">¡Hola! 👋</h3>
               <p className="text-sm text-zinc-400 max-w-sm mb-6">
@@ -146,7 +146,7 @@ export function ChatIA() {
                     key={q}
                     variant="outline"
                     size="sm"
-                    className="text-xs h-auto py-2 px-3 text-zinc-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+                    className="text-xs h-auto py-2 px-3 text-zinc-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                     onClick={() => sendMessage(q)}
                   >
                     {q}
@@ -170,13 +170,13 @@ export function ChatIA() {
                   className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                     msg.role === 'user'
                       ? 'bg-zinc-200'
-                      : 'bg-amber-100'
+                      : 'bg-blue-100'
                   }`}
                 >
                   {msg.role === 'user' ? (
                     <span className="text-xs font-bold text-zinc-600">Tú</span>
                   ) : (
-                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <Sparkles className="h-4 w-4 text-[#123d83]" />
                   )}
                 </div>
 
@@ -200,8 +200,8 @@ export function ChatIA() {
               animate={{ opacity: 1 }}
               className="flex gap-3 mb-4"
             >
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                <Sparkles className="h-4 w-4 text-amber-600" />
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                <Sparkles className="h-4 w-4 text-[#123d83]" />
               </div>
               <div className="bg-zinc-100 rounded-2xl rounded-tl-sm px-4 py-3">
                 <div className="flex gap-1">
@@ -235,7 +235,7 @@ export function ChatIA() {
             <Button
               type="submit"
               disabled={loading || !input.trim()}
-              className="bg-amber-500 hover:bg-amber-600 text-white px-4"
+              className="bg-[#123d83] hover:bg-[#071a46] text-white px-4"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

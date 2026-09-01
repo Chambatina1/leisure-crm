@@ -54,8 +54,8 @@ export function LoginDialog() {
     <Dialog open={showLoginDialog} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center sm:text-center items-center">
-          <div className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-amber-500 flex items-center justify-center overflow-hidden shadow-lg shadow-amber-500/20">
-            <Image src="/logo.png" alt="Leisure Exporting" width={64} height={64} className="object-contain" />
+          <div className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-[#123d83] flex items-center justify-center overflow-hidden shadow-lg shadow-amber-500/20">
+            <Image src="/icon.svg" alt="Leisure Exporting" width={64} height={64} className="object-contain" />
           </div>
           <DialogTitle className="text-xl">Acceso Administrativo</DialogTitle>
           <DialogDescription>
@@ -90,7 +90,7 @@ export function LoginDialog() {
           <Button
             type="submit"
             disabled={loading || !password.trim()}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium"
+            className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-medium"
           >
             {loading ? (
               <>

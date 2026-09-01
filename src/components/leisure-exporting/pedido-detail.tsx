@@ -30,10 +30,10 @@ import {
 import { toast } from 'sonner';
 
 const ESTADOS = [
-  { value: 'pendiente', label: 'Pendiente', color: 'bg-amber-100 text-amber-700' },
+  { value: 'pendiente', label: 'Pendiente', color: 'bg-blue-100 text-blue-700' },
   { value: 'en_proceso', label: 'En Proceso', color: 'bg-blue-100 text-blue-700' },
   { value: 'en_transito', label: 'En Tránsito', color: 'bg-purple-100 text-purple-700' },
-  { value: 'en_aduana', label: 'En Aduana', color: 'bg-orange-100 text-orange-700' },
+  { value: 'en_aduana', label: 'En Aduana', color: 'bg-blue-100 text-blue-700' },
   { value: 'entregado', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700' },
   { value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-red-700' },
 ];
@@ -193,7 +193,7 @@ export function PedidoDetail() {
       <Card className="border-0 shadow-md mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <User className="h-4 w-4 text-amber-500" />
+            <User className="h-4 w-4 text-blue-600" />
             Datos del Comprador
           </CardTitle>
         </CardHeader>
@@ -219,7 +219,7 @@ export function PedidoDetail() {
       <Card className="border-0 shadow-md mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-amber-500" />
+            <MapPin className="h-4 w-4 text-blue-600" />
             Datos del Destinatario
           </CardTitle>
         </CardHeader>
@@ -249,7 +249,7 @@ export function PedidoDetail() {
       <Card className="border-0 shadow-md mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Package className="h-4 w-4 text-amber-500" />
+            <Package className="h-4 w-4 text-blue-600" />
             Detalles del Envío
           </CardTitle>
         </CardHeader>

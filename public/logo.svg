@@ -1,21 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 120" width="380" height="120">
-  <g fill="#ffffff">
-    <g>
+  <g>
+    <g fill="#071a46">
       <rect x="40" y="26" width="9" height="20" rx="1.5"/>
       <rect x="60" y="26" width="9" height="20" rx="1.5"/>
       <rect x="34" y="46" width="58" height="20" rx="2"/>
-      <rect x="36" y="50" width="13" height="12" fill="#071a46"/>
-      <rect x="51" y="50" width="13" height="12" fill="#071a46"/>
-      <rect x="66" y="50" width="13" height="12" fill="#071a46"/>
-      <rect x="81" y="50" width="9" height="12" fill="#071a46"/>
+      <rect x="36" y="50" width="13" height="12" fill="#ffffff"/>
+      <rect x="51" y="50" width="13" height="12" fill="#ffffff"/>
+      <rect x="66" y="50" width="13" height="12" fill="#ffffff"/>
+      <rect x="81" y="50" width="9" height="12" fill="#ffffff"/>
       <path d="M20 70 H106 L96 94 a6 6 0 0 1 -6 4 H36 a6 6 0 0 1 -6 -4 Z"/>
     </g>
-    <g fill="#65b32e">
-      <text x="140" y="50" fontSize="32" fontFamily="Arial, sans-serif" fontWeight="900">LEISURE</text>
-    </g>
-    <g fill="#ffffff">
-      <text x="140" y="76" fontSize="21" fontFamily="Arial, sans-serif" fontWeight="700" letterSpacing="1.2">EXPORTING</text>
-      <text x="140" y="100" fontSize="16" fontFamily="Arial, sans-serif" fontWeight="400" letterSpacing="2.5" fill="#8ea9d8">L L C</text>
-    </g>
+    <text x="140" y="50" fontSize="32" fontFamily="Arial, sans-serif" fontWeight="900" fill="#071a46">LEISURE</text>
+    <text x="140" y="76" fontSize="21" fontFamily="Arial, sans-serif" fontWeight="700" letterSpacing="1.2" fill="#123d83">EXPORTING</text>
+    <text x="140" y="100" fontSize="16" fontFamily="Arial, sans-serif" fontWeight="400" letterSpacing="2.5" fill="#55b949">L L C</text>
   </g>
 </svg>

@@ -56,10 +56,10 @@ import {
 import { toast } from 'sonner';
 
 const ESTADOS = [
-  { value: 'pendiente', label: 'Pendiente', color: 'bg-amber-100 text-amber-700', icon: Clock },
+  { value: 'pendiente', label: 'Pendiente', color: 'bg-blue-100 text-blue-700', icon: Clock },
   { value: 'en_proceso', label: 'En Proceso', color: 'bg-blue-100 text-blue-700', icon: ClipboardList },
   { value: 'en_transito', label: 'En Tránsito', color: 'bg-purple-100 text-purple-700', icon: Truck },
-  { value: 'en_aduana', label: 'En Aduana', color: 'bg-orange-100 text-orange-700', icon: Archive },
+  { value: 'en_aduana', label: 'En Aduana', color: 'bg-blue-100 text-blue-700', icon: Archive },
   { value: 'entregado', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
   { value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-red-700', icon: XCircle },
 ];
@@ -171,7 +171,7 @@ export function PedidosList() {
           <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Pedidos</h1>
           <p className="text-zinc-500 mt-1">Gestión de envíos y paquetes</p>
         </div>
-        <Button onClick={goToNuevoPedido} className="bg-amber-500 hover:bg-amber-600 text-white">
+        <Button onClick={goToNuevoPedido} className="bg-[#123d83] hover:bg-[#071a46] text-white">
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Pedido
         </Button>

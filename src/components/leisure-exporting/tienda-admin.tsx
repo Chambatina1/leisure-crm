@@ -39,7 +39,7 @@ const CATEGORIAS = [
 ];
 
 const CATEGORIA_COLORS: Record<string, string> = {
-  envios: 'bg-amber-100 text-amber-700', bicicletas: 'bg-orange-100 text-orange-700',
+  envios: 'bg-blue-100 text-blue-700', bicicletas: 'bg-blue-100 text-blue-700',
   cajas: 'bg-blue-100 text-blue-700', solar: 'bg-yellow-100 text-yellow-700',
   tiktok: 'bg-pink-100 text-pink-700', general: 'bg-zinc-100 text-zinc-700',
 };
@@ -195,18 +195,18 @@ export function TiendaAdmin() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2"><Store className="h-7 w-7 text-amber-500" />Tienda</h2>
+          <h2 className="text-2xl font-bold flex items-center gap-2"><Store className="h-7 w-7 text-blue-600" />Tienda</h2>
           <p className="text-sm text-muted-foreground">Gestiona los productos y servicios de la tienda</p>
         </div>
-        <Button onClick={openCreate} className="bg-amber-500 hover:bg-amber-600 text-white font-semibold"><Plus className="h-4 w-4 mr-2" />Nuevo Producto</Button>
+        <Button onClick={openCreate} className="bg-[#123d83] hover:bg-[#071a46] text-white font-semibold"><Plus className="h-4 w-4 mr-2" />Nuevo Producto</Button>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total Productos', value: products.length, bg: 'bg-amber-50' },
+          { label: 'Total Productos', value: products.length, bg: 'bg-blue-50' },
           { label: 'Activos', value: products.filter((p) => p.activo).length, bg: 'bg-emerald-50' },
           { label: 'Inactivos', value: products.filter((p) => !p.activo).length, bg: 'bg-zinc-50' },
-          { label: 'Con Link de Compra', value: products.filter((p) => p.tiktokUrl).length, bg: 'bg-amber-50' },
+          { label: 'Con Link de Compra', value: products.filter((p) => p.tiktokUrl).length, bg: 'bg-blue-50' },
         ].map((stat) => (
           <Card key={stat.label} className="border-0 shadow-sm">
             <CardContent className={`p-3 sm:p-4 ${stat.bg} rounded-xl`}>
@@ -219,9 +219,9 @@ export function TiendaAdmin() {
 
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-xs text-muted-foreground font-medium">Filtrar:</span>
-        <Button size="sm" variant={filterCat === 'all' ? 'default' : 'outline'} className={filterCat === 'all' ? 'bg-amber-500 hover:bg-amber-600 text-white text-xs' : 'text-xs'} onClick={() => setFilterCat('all')}>Todos</Button>
+        <Button size="sm" variant={filterCat === 'all' ? 'default' : 'outline'} className={filterCat === 'all' ? 'bg-[#123d83] hover:bg-[#071a46] text-white text-xs' : 'text-xs'} onClick={() => setFilterCat('all')}>Todos</Button>
         {CATEGORIAS.map((cat) => (
-          <Button key={cat.value} size="sm" variant={filterCat === cat.value ? 'default' : 'outline'} className={filterCat === cat.value ? 'bg-amber-500 hover:bg-amber-600 text-white text-xs' : 'text-xs'} onClick={() => setFilterCat(cat.value)}>{cat.label}</Button>
+          <Button key={cat.value} size="sm" variant={filterCat === cat.value ? 'default' : 'outline'} className={filterCat === cat.value ? 'bg-[#123d83] hover:bg-[#071a46] text-white text-xs' : 'text-xs'} onClick={() => setFilterCat(cat.value)}>{cat.label}</Button>
         ))}
       </div>
 
@@ -255,7 +255,7 @@ export function TiendaAdmin() {
                             {product.imagenUrl ? (
                               <div className="w-8 h-8 rounded-lg overflow-hidden bg-zinc-100 shrink-0"><img src={product.imagenUrl} alt={product.nombre} className="w-full h-full object-cover" /></div>
                             ) : (
-                              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0"><ImageIcon className="h-4 w-4 text-amber-400" /></div>
+                              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0"><ImageIcon className="h-4 w-4 text-blue-400" /></div>
                             )}
                             <div>
                               <p className="text-sm font-medium">{product.nombre}</p>
@@ -267,13 +267,13 @@ export function TiendaAdmin() {
                         <TableCell className="hidden md:table-cell text-sm font-medium">${product.precio.toFixed(2)}</TableCell>
                         <TableCell className="hidden lg:table-cell">
                           {product.tiktokUrl ? (
-                            <a href={product.tiktokUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-amber-600 hover:text-amber-700"><ExternalLink className="h-3 w-3" />Ver Link</a>
+                            <a href={product.tiktokUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#123d83] hover:text-blue-700"><ExternalLink className="h-3 w-3" />Ver Link</a>
                           ) : <span className="text-xs text-zinc-300">—</span>}
                         </TableCell>
                         <TableCell><Switch checked={product.activo} onCheckedChange={() => toggleActive(product)} /></TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-zinc-500 hover:text-amber-600" onClick={() => openEdit(product)}><Pencil className="h-4 w-4" /></Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-zinc-500 hover:text-[#123d83]" onClick={() => openEdit(product)}><Pencil className="h-4 w-4" /></Button>
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-zinc-500 hover:text-red-600" onClick={() => setDeleteId(product.id)}><Trash2 className="h-4 w-4" /></Button>
                           </div>
                         </TableCell>
@@ -316,16 +316,16 @@ export function TiendaAdmin() {
                 </div>
               )}
               {!form.imagenUrl && (
-                <div className="relative border-2 border-dashed border-zinc-200 hover:border-amber-400 rounded-lg p-6 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-amber-50/30"
+                <div className="relative border-2 border-dashed border-zinc-200 hover:border-amber-400 rounded-lg p-6 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-blue-50/30"
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onDrop={async (e) => { e.preventDefault(); e.stopPropagation(); const file = e.dataTransfer.files[0]; if (file) await handleImageUpload(file); }}>
                   <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); e.target.value = ''; }} />
                   {uploadingImage ? (
-                    <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 text-amber-500 animate-spin" /><p className="text-xs text-zinc-500">Subiendo imagen...</p></div>
+                    <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 text-blue-600 animate-spin" /><p className="text-xs text-zinc-500">Subiendo imagen...</p></div>
                   ) : (
                     <div className="flex flex-col items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center"><Upload className="h-5 w-5 text-amber-600" /></div>
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"><Upload className="h-5 w-5 text-[#123d83]" /></div>
                       <div><p className="text-sm font-medium text-zinc-700">Haz clic o arrastra una imagen</p><p className="text-xs text-zinc-400 mt-0.5">JPG, PNG, GIF o WebP (máx. 4MB)</p></div>
                     </div>
                   )}
@@ -338,7 +338,7 @@ export function TiendaAdmin() {
           </div>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={saving}>Cancelar</Button>
-            <Button onClick={handleSave} disabled={saving || !form.nombre.trim()} className="bg-amber-500 hover:bg-amber-600 text-white font-medium">
+            <Button onClick={handleSave} disabled={saving || !form.nombre.trim()} className="bg-[#123d83] hover:bg-[#071a46] text-white font-medium">
               {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Guardando...</> : <><Save className="h-4 w-4 mr-2" />{editingId ? 'Actualizar' : 'Crear'}</>}
             </Button>
           </div>

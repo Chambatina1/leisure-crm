@@ -173,7 +173,7 @@ export function PedidoForm() {
           </p>
         </div>
         {selectedProduct && !isEdit && (
-          <Badge className="bg-amber-100 text-amber-700 border border-amber-200 shrink-0">
+          <Badge className="bg-blue-100 text-blue-700 border border-blue-200 shrink-0">
             <ShoppingCart className="h-3 w-3 mr-1" />
             Comprando: {selectedProduct.nombre}
           </Badge>
@@ -187,17 +187,17 @@ export function PedidoForm() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+          <Card className="bg-gradient-to-r from-blue-50 to-blue-50 border border-blue-200">
             <CardContent className="p-4 flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
-                <ShoppingCart className="h-5 w-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
+                <ShoppingCart className="h-5 w-5 text-[#123d83]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-amber-900 text-sm">{selectedProduct.nombre}</p>
-                <p className="text-amber-700 text-sm font-bold">${selectedProduct.precio.toFixed(2)}</p>
+                <p className="font-semibold text-[#071a46] text-sm">{selectedProduct.nombre}</p>
+                <p className="text-blue-700 text-sm font-bold">${selectedProduct.precio.toFixed(2)}</p>
                 <div className="flex items-start gap-1.5 mt-2">
-                  <MapPin className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
-                  <p className="text-xs text-amber-600 leading-relaxed">
+                  <MapPin className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
+                  <p className="text-xs text-[#123d83] leading-relaxed">
                     Enviar equipo a: {LEISURE_ADDRESS}
                   </p>
                 </div>
@@ -212,8 +212,8 @@ export function PedidoForm() {
           {/* Datos del Comprador */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                <span className="text-sm font-bold text-amber-600">1</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span className="text-sm font-bold text-[#123d83]">1</span>
               </div>
               Datos del Comprador
             </h2>
@@ -260,8 +260,8 @@ export function PedidoForm() {
           {/* Datos del Destinatario */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                <span className="text-sm font-bold text-amber-600">2</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span className="text-sm font-bold text-[#123d83]">2</span>
               </div>
               Datos del Destinatario
             </h2>
@@ -316,8 +316,8 @@ export function PedidoForm() {
           {/* Producto */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-zinc-900 mb-4 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
-                <span className="text-sm font-bold text-amber-600">3</span>
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span className="text-sm font-bold text-[#123d83]">3</span>
               </div>
               Detalles del Envío
             </h2>
@@ -343,7 +343,7 @@ export function PedidoForm() {
                   rows={3}
                 />
                 {selectedProduct && !isEdit && (
-                  <p className="text-xs text-amber-600 mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-[#123d83] mt-1.5 flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     La dirección de Leisure Exporting se incluye automáticamente como nota de envío
                   </p>
@@ -356,7 +356,7 @@ export function PedidoForm() {
             <Button
               onClick={handleSubmit}
               disabled={saving}
-              className="bg-amber-500 hover:bg-amber-600 text-white flex-1 sm:flex-none"
+              className="bg-[#123d83] hover:bg-[#071a46] text-white flex-1 sm:flex-none"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

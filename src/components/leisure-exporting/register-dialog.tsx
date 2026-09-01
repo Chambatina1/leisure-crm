@@ -112,10 +112,10 @@ export function RegisterDialog() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-amber-500 flex items-center justify-center overflow-hidden shadow-lg shadow-amber-500/20"
+            className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-[#123d83] flex items-center justify-center overflow-hidden shadow-lg shadow-amber-500/20"
           >
             <Image
-              src="/logo.png"
+              src="/icon.svg"
               alt="Leisure Exporting"
               width={64}
               height={64}
@@ -233,7 +233,7 @@ export function RegisterDialog() {
           <Button
             type="submit"
             disabled={loading || !form.nombre.trim() || !form.email.trim() || !form.telefono.trim()}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium mt-2"
+            className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-medium mt-2"
           >
             {loading ? (
               <>

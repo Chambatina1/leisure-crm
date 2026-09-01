@@ -14,8 +14,8 @@ interface Product { id: number; nombre: string; descripcion: string | null; prec
 interface GroupedProducts { [category: string]: Product[]; }
 
 const CATEGORY_CONFIG: Record<string, { label: string; icon: typeof Truck; color: string; bgColor: string }> = {
-  envios: { label: 'Envíos', icon: Truck, color: 'text-amber-600', bgColor: 'bg-amber-100' },
-  bicicletas: { label: 'Bicicletas', icon: Bike, color: 'text-orange-600', bgColor: 'bg-orange-100' },
+  envios: { label: 'Envíos', icon: Truck, color: 'text-[#123d83]', bgColor: 'bg-blue-100' },
+  bicicletas: { label: 'Bicicletas', icon: Bike, color: 'text-blue-600', bgColor: 'bg-blue-100' },
   cajas: { label: 'Cajas', icon: Box, color: 'text-blue-600', bgColor: 'bg-blue-100' },
   solar: { label: 'Solar', icon: Sun, color: 'text-yellow-600', bgColor: 'bg-yellow-100' },
   tiktok: { label: 'TikTok', icon: Zap, color: 'text-pink-600', bgColor: 'bg-pink-100' },
@@ -89,7 +89,7 @@ export function Tienda() {
         <TabsList className="bg-zinc-100 p-1 flex-wrap h-auto gap-1">
           {tabConfigs.map(({ value, config }) => {
             const Icon = config.icon;
-            return <TabsTrigger key={value} value={value} className="gap-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-white"><Icon className="h-4 w-4" />{config.label}</TabsTrigger>;
+            return <TabsTrigger key={value} value={value} className="gap-1.5 data-[state=active]:bg-[#123d83] data-[state=active]:text-white"><Icon className="h-4 w-4" />{config.label}</TabsTrigger>;
           })}
         </TabsList>
         {tabConfigs.map(({ value }) => {
@@ -125,7 +125,7 @@ export function Tienda() {
                             Ver Link del Equipo
                           </a>
                         )}
-                        <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white text-sm" onClick={() => handleComprar(product)}>
+                        <Button className="w-full bg-[#123d83] hover:bg-[#071a46] text-white text-sm" onClick={() => handleComprar(product)}>
                           <ShoppingCart className="h-4 w-4 mr-1.5" />
                           {product.tiktokUrl ? 'Llenar Ficha de Compra' : 'Comprar'}
                         </Button>

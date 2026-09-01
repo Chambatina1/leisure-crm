@@ -121,7 +121,7 @@ export function ConfigPanel() {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className={`bg-amber-500 hover:bg-amber-600 text-black font-semibold min-w-[140px] ${
+          className={`bg-[#123d83] hover:bg-[#071a46] text-black font-semibold min-w-[140px] ${
             saved ? '!bg-green-500 hover:!bg-green-500' : ''
           }`}
         >
@@ -139,7 +139,7 @@ export function ConfigPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Building2 className="h-5 w-5 text-amber-500" />
+            <Building2 className="h-5 w-5 text-blue-600" />
             Información del Negocio
           </CardTitle>
           <CardDescription>Nombre, dirección y datos generales</CardDescription>
@@ -192,7 +192,7 @@ export function ConfigPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Phone className="h-5 w-5 text-amber-500" />
+            <Phone className="h-5 w-5 text-blue-600" />
             Teléfonos de Contacto
           </CardTitle>
           <CardDescription>Puedes agregar hasta 3 números</CardDescription>
@@ -229,7 +229,7 @@ export function ConfigPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Globe className="h-5 w-5 text-amber-500" />
+            <Globe className="h-5 w-5 text-blue-600" />
             Redes Sociales y Mensajería
           </CardTitle>
           <CardDescription>WhatsApp, Instagram, Facebook</CardDescription>

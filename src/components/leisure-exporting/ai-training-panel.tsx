@@ -92,10 +92,10 @@ const CATEGORIAS = [
 const CATEGORIA_COLORS: Record<string, string> = {
   precios: 'bg-emerald-100 text-emerald-700',
   tracking: 'bg-blue-100 text-blue-700',
-  contacto: 'bg-amber-100 text-amber-700',
+  contacto: 'bg-blue-100 text-blue-700',
   general: 'bg-zinc-100 text-zinc-700',
   solar: 'bg-yellow-100 text-yellow-700',
-  bicicletas: 'bg-orange-100 text-orange-700',
+  bicicletas: 'bg-blue-100 text-blue-700',
   cajas: 'bg-purple-100 text-purple-700',
   tiktok: 'bg-pink-100 text-pink-700',
   promociones: 'bg-red-100 text-red-700',
@@ -352,7 +352,7 @@ export function AITrainingPanel() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Brain className="h-7 w-7 text-amber-500" />
+            <Brain className="h-7 w-7 text-blue-600" />
             Entrenamiento IA
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -386,7 +386,7 @@ export function AITrainingPanel() {
           </Button>
           <Button
             onClick={openCreate}
-            className="bg-amber-500 hover:bg-amber-600 text-white font-semibold"
+            className="bg-[#123d83] hover:bg-[#071a46] text-white font-semibold"
           >
             <Plus className="h-4 w-4 mr-1.5" />
             Nueva Entrada
@@ -397,9 +397,9 @@ export function AITrainingPanel() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 sm:p-4 bg-amber-50 rounded-xl">
+          <CardContent className="p-3 sm:p-4 bg-blue-50 rounded-xl">
             <div className="flex items-center gap-2">
-              <Database className="h-4 w-4 text-amber-500" />
+              <Database className="h-4 w-4 text-blue-600" />
               <p className="text-xl sm:text-2xl font-bold">{totalEntries}</p>
             </div>
             <p className="text-xs text-muted-foreground">Total Entradas</p>
@@ -415,9 +415,9 @@ export function AITrainingPanel() {
           </CardContent>
         </Card>
         <Card className="border-0 shadow-sm">
-          <CardContent className="p-3 sm:p-4 bg-orange-50 rounded-xl">
+          <CardContent className="p-3 sm:p-4 bg-blue-50 rounded-xl">
             <div className="flex items-center gap-2">
-              <Lightbulb className="h-4 w-4 text-orange-500" />
+              <Lightbulb className="h-4 w-4 text-blue-600" />
               <p className="text-xl sm:text-2xl font-bold">
                 {entriesPerCategory.length}
               </p>
@@ -446,7 +446,7 @@ export function AITrainingPanel() {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-blue-500 flex items-center justify-center">
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -487,7 +487,7 @@ export function AITrainingPanel() {
                   <Button
                     onClick={handleTestAI}
                     disabled={testLoading || !testQuestion.trim()}
-                    className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                    className="bg-gradient-to-r from-blue-500 to-blue-500 hover:from-amber-600 hover:to-orange-600 text-white"
                   >
                     {testLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -503,8 +503,8 @@ export function AITrainingPanel() {
                     className="bg-zinc-50 rounded-xl p-4 border"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Bot className="h-4 w-4 text-amber-500" />
-                      <span className="text-xs font-semibold text-amber-600">
+                      <Bot className="h-4 w-4 text-blue-600" />
+                      <span className="text-xs font-semibold text-[#123d83]">
                         Respuesta IA
                       </span>
                     </div>
@@ -609,7 +609,7 @@ export function AITrainingPanel() {
                         <TableCell>
                           <div>
                             <button
-                              className="text-sm font-medium text-left hover:text-amber-600 transition-colors"
+                              className="text-sm font-medium text-left hover:text-[#123d83] transition-colors"
                               onClick={() =>
                                 setExpandedId(
                                   expandedId === entry.id ? null : entry.id
@@ -675,7 +675,7 @@ export function AITrainingPanel() {
                             variant="secondary"
                             className={`text-xs ${
                               entry.prioridad >= 5
-                                ? 'bg-amber-100 text-amber-700'
+                                ? 'bg-blue-100 text-blue-700'
                                 : 'bg-zinc-100 text-zinc-500'
                             }`}
                           >
@@ -693,7 +693,7 @@ export function AITrainingPanel() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-8 w-8 p-0 text-zinc-500 hover:text-amber-600"
+                              className="h-8 w-8 p-0 text-zinc-500 hover:text-[#123d83]"
                               onClick={() => openEdit(entry)}
                             >
                               <Pencil className="h-4 w-4" />
@@ -723,7 +723,7 @@ export function AITrainingPanel() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <Tag className="h-4 w-4 text-amber-500" />
+              <Tag className="h-4 w-4 text-blue-600" />
               Entradas por Categoría
             </CardTitle>
           </CardHeader>
@@ -843,7 +843,7 @@ export function AITrainingPanel() {
               disabled={
                 saving || !form.pregunta.trim() || !form.respuesta.trim()
               }
-              className="bg-amber-500 hover:bg-amber-600 text-white font-medium"
+              className="bg-[#123d83] hover:bg-[#071a46] text-white font-medium"
             >
               {saving ? (
                 <>

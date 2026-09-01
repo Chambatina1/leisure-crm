@@ -55,12 +55,12 @@ function PublicNavbar() {
               onClick={() => handleNav('home')}
               className="flex items-center gap-3 hover:opacity-90 transition-opacity"
             >
-              <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center overflow-hidden">
-                <Image src="/logo.png" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center overflow-hidden">
+                <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-zinc-900 tracking-wide">LEISURE EXPORTING</h1>
-                <p className="text-[10px] text-orange-500 font-medium tracking-widest uppercase -mt-0.5">
+                <p className="text-[10px] text-blue-600 font-medium tracking-widest uppercase -mt-0.5">
                   Envíos Internacionales
                 </p>
               </div>
@@ -77,7 +77,7 @@ function PublicNavbar() {
                     onClick={() => handleNav(item.view)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       active
-                        ? 'bg-orange-50 text-orange-700'
+                        ? 'bg-blue-50 text-blue-700'
                         : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
                     }`}
                   >
@@ -91,7 +91,7 @@ function PublicNavbar() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowRegisterDialog(true)}
-                  className="ml-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                  className="ml-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 >
                   <UserPlus className="h-4 w-4 mr-1" />
                   Registrarse
@@ -123,12 +123,12 @@ function PublicNavbar() {
                 <div className="flex flex-col h-full">
                   <div className="p-4 border-b border-zinc-100">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center overflow-hidden">
-                        <Image src="/logo.png" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+                      <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center overflow-hidden">
+                        <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
                       </div>
                       <div>
                         <h2 className="text-lg font-bold text-zinc-900">LEISURE EXPORTING</h2>
-                        <p className="text-[10px] text-orange-500 font-medium tracking-widest uppercase">
+                        <p className="text-[10px] text-blue-600 font-medium tracking-widest uppercase">
                           Envíos Internacionales
                         </p>
                       </div>
@@ -144,7 +144,7 @@ function PublicNavbar() {
                           onClick={() => handleNav(item.view)}
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                             active
-                              ? 'bg-orange-50 text-orange-700'
+                              ? 'bg-blue-50 text-blue-700'
                               : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
                           }`}
                         >
@@ -158,7 +158,7 @@ function PublicNavbar() {
                     {!currentUser && (
                       <button
                         onClick={() => { setShowRegisterDialog(true); setSheetOpen(false); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-orange-600 hover:bg-orange-50 transition-all duration-200"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-blue-600 hover:bg-blue-50 transition-all duration-200"
                       >
                         <UserPlus className="h-5 w-5" />
                         Registrarse
@@ -191,7 +191,7 @@ function PublicNavbar() {
                 onClick={() => handleNav(item.view)}
                 className={`flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium transition-all duration-200 min-w-[56px] ${
                   active
-                    ? 'text-orange-600'
+                    ? 'text-blue-600'
                     : 'text-zinc-400 hover:text-zinc-600'
                 }`}
               >
@@ -243,18 +243,18 @@ function AdminNavbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-orange-800 via-orange-700 to-amber-700 shadow-lg">
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-[#071a46] via-[#123d83] to-[#123d83] shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo + Admin Badge */}
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center overflow-hidden">
-                <Image src="/logo.png" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+                <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold text-white tracking-wide">LEISURE EXPORTING</h1>
-                  <span className="text-[10px] bg-white/20 text-amber-100 px-2 py-0.5 rounded font-semibold tracking-wide">
+                  <span className="text-[10px] bg-white/20 text-blue-100 px-2 py-0.5 rounded font-semibold tracking-wide">
                     ADMIN
                   </span>
                 </div>
@@ -308,18 +308,18 @@ function AdminNavbar() {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72 bg-gradient-to-b from-orange-800 to-orange-900 border-orange-700 p-0">
+              <SheetContent side="right" className="w-72 bg-gradient-to-b from-[#071a46] to-[#071a46] border-[#123d83] p-0">
                 <SheetTitle className="sr-only">Menú de administración</SheetTitle>
                 <div className="flex flex-col h-full">
                   <div className="p-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
-                        <Image src="/logo.png" alt="Leisure Exporting" width={32} height={32} className="object-contain" />
+                        <Image src="/icon.svg" alt="Leisure Exporting" width={32} height={32} className="object-contain" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h2 className="text-base font-bold text-white">Admin Panel</h2>
-                          <span className="text-[9px] bg-white/20 text-amber-100 px-1.5 py-0.5 rounded font-semibold">
+                          <span className="text-[9px] bg-white/20 text-blue-100 px-1.5 py-0.5 rounded font-semibold">
                             ADMIN
                           </span>
                         </div>
@@ -370,7 +370,7 @@ function AdminNavbar() {
       </header>
 
       {/* Mobile Admin Bottom Tab Bar - Show first 5 nav items */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-orange-800 to-amber-700 border-t border-orange-600/30 safe-area-bottom">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-[#071a46] to-[#123d83] border-t border-[#123d83]/30 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1 overflow-x-auto">
           {adminNavItems.slice(0, 5).map((item) => {
             const Icon = item.icon;

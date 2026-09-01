@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 const ESTADOS = [
-  { value: 'pendiente', label: 'Pendiente', color: 'bg-amber-100 text-amber-700' },
+  { value: 'pendiente', label: 'Pendiente', color: 'bg-blue-100 text-blue-700' },
   { value: 'en_proceso', label: 'En Proceso', color: 'bg-blue-100 text-blue-700' },
   { value: 'en_transito', label: 'En Tránsito', color: 'bg-purple-100 text-purple-700' },
   { value: 'entregado', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700' },
@@ -86,8 +86,8 @@ export function AdminDashboard() {
           title: 'Pendientes',
           value: stats.pedidos.pendientes + stats.pedidos.enProceso,
           icon: Clock,
-          color: 'bg-amber-100',
-          iconColor: 'text-amber-600',
+          color: 'bg-blue-100',
+          iconColor: 'text-[#123d83]',
         },
         {
           title: 'En Tránsito',
@@ -115,7 +115,7 @@ export function AdminDashboard() {
     >
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 flex items-center gap-2">
-          <BarChart3 className="h-7 w-7 text-amber-500" />
+          <BarChart3 className="h-7 w-7 text-blue-600" />
           Dashboard
         </h1>
         <p className="text-zinc-500 mt-1">Resumen general del sistema</p>
@@ -157,8 +157,8 @@ export function AdminDashboard() {
         >
           <CardContent className="p-4 sm:p-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <ClipboardList className="h-5 w-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <ClipboardList className="h-5 w-5 text-[#123d83]" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Gestión de Pedidos</p>
@@ -202,7 +202,7 @@ export function AdminDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-amber-600 text-xs"
+              className="text-[#123d83] text-xs"
               onClick={() => setAdminView('pedidos')}
             >
               Ver todos <ArrowRight className="h-3 w-3 ml-1" />
