@@ -113,14 +113,14 @@ export function Rastreador() {
                 placeholder="Número CPK, carnet de identidad..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10 border-blue-200 focus:border-orange-400"
+                className="pl-10 border-blue-200 focus:border-[#123d83]"
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
             <Button
               onClick={handleSearch}
               disabled={loading}
-              className="bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6"
+              className="bg-gradient-to-r from-blue-500 to-[#55b949] hover:from-[#071a46] hover:to-[#348f39] text-white px-6"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4 mr-2" />}
               Buscar
@@ -133,7 +133,7 @@ export function Rastreador() {
               <button
                 key={hint.label}
                 onClick={() => { setSearchInput(hint.example); }}
-                className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 hover:bg-orange-200 transition-colors"
+                className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
               >
                 {hint.label}: {hint.example}
               </button>
@@ -173,7 +173,7 @@ export function Rastreador() {
             const currentStage = getStageForEstado(result.etapaInfo?.estado || result.estado);
             return (
               <Card key={result.id} className="border-0 shadow-md overflow-hidden">
-                <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-amber-50">
+                <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-blue-50">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -245,7 +245,7 @@ export function Rastreador() {
                                   isCompleted
                                     ? 'bg-emerald-100'
                                     : isCurrent
-                                    ? 'bg-blue-100 ring-2 ring-orange-400'
+                                    ? 'bg-blue-100 ring-2 ring-blue-400'
                                     : 'bg-zinc-100'
                                 }`}
                               >

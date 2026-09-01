@@ -112,7 +112,7 @@ export function RegisterDialog() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-[#123d83] flex items-center justify-center overflow-hidden shadow-lg shadow-amber-500/20"
+            className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-[#123d83] flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/20"
           >
             <Image
               src="/icon.svg"

@@ -116,7 +116,7 @@ export function Home() {
               <Button
                 size="lg"
                 onClick={() => goToNuevoPedido()}
-                className="bg-blue-500 hover:bg-[#071a46] text-white font-semibold px-8 shadow-lg shadow-orange-500/20"
+                className="bg-blue-500 hover:bg-[#071a46] text-white font-semibold px-8 shadow-lg shadow-blue-500/20"
               >
                 <Package className="h-5 w-5 mr-2" />
                 Hacer un Envío
@@ -246,12 +246,12 @@ export function Home() {
           transition={{ duration: 0.4, delay: 0.2 }}
         >
           <Card className="border border-zinc-100 shadow-md overflow-hidden bg-white">
-            <div className="bg-gradient-to-r from-blue-500 to-amber-500 p-6 text-white">
+            <div className="bg-gradient-to-r from-blue-500 to-[#55b949] p-6 text-white">
               <div className="flex items-center gap-3">
                 <Calculator className="h-6 w-6" />
                 <div>
                   <h2 className="text-xl font-bold">Calculadora de Envío</h2>
-                  <p className="text-orange-100 text-sm">Calcula el costo de tu envío al instante</p>
+                  <p className="text-blue-100 text-sm">Calcula el costo de tu envío al instante</p>
                 </div>
               </div>
             </div>
@@ -268,7 +268,7 @@ export function Home() {
                       placeholder="Ej: 10"
                       value={calcPeso}
                       onChange={(e) => setCalcPeso(e.target.value)}
-                      className="pl-10 border-blue-200 focus:border-orange-400"
+                      className="pl-10 border-blue-200 focus:border-[#123d83]"
                       min="0"
                     />
                   </div>
@@ -289,7 +289,7 @@ export function Home() {
                         size="sm"
                         onClick={() => setCalcTipo(opt.value)}
                         className={calcTipo === opt.value
-                          ? 'bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white border-0'
+                          ? 'bg-gradient-to-r from-blue-500 to-[#55b949] hover:from-[#071a46] hover:to-[#348f39] text-white border-0'
                           : 'border-blue-200 text-blue-700 hover:bg-blue-50'
                         }
                       >
@@ -308,7 +308,7 @@ export function Home() {
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <DollarSign className="h-5 w-5 text-blue-600" />
-                    <span className="font-semibold text-orange-900">Resultado del Cálculo</span>
+                    <span className="font-semibold text-[#071a46]">Resultado del Cálculo</span>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                     <div>
@@ -349,7 +349,7 @@ export function Home() {
             onClick={() => setCurrentView('chat')}
           >
             <CardContent className="p-6 sm:p-8 flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/10">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-[#55b949] flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">
                 <Sparkles className="h-8 w-8 text-white" />
               </div>
               <div className="flex-1">

@@ -316,7 +316,7 @@ export function TiendaAdmin() {
                 </div>
               )}
               {!form.imagenUrl && (
-                <div className="relative border-2 border-dashed border-zinc-200 hover:border-amber-400 rounded-lg p-6 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-blue-50/30"
+                <div className="relative border-2 border-dashed border-zinc-200 hover:border-blue-400 rounded-lg p-6 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-blue-50/30"
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onDrop={async (e) => { e.preventDefault(); e.stopPropagation(); const file = e.dataTransfer.files[0]; if (file) await handleImageUpload(file); }}>

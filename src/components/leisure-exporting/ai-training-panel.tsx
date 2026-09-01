@@ -446,7 +446,7 @@ export function AITrainingPanel() {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-blue-500 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center">
                 <Bot className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -487,7 +487,7 @@ export function AITrainingPanel() {
                   <Button
                     onClick={handleTestAI}
                     disabled={testLoading || !testQuestion.trim()}
-                    className="bg-gradient-to-r from-blue-500 to-blue-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                    className="bg-gradient-to-r from-blue-500 to-blue-500 hover:from-blue-600 hover:to-[#071a46] text-white"
                   >
                     {testLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

@@ -61,12 +61,12 @@ interface TrackingEntry {
 
 // Predefined states with icons and colors for quick selection
 const ESTADOS_PREDEFINIDOS = [
-  { value: 'EN AGENCIA', label: 'En Agencia', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-amber-200', icon: Building2 },
+  { value: 'EN AGENCIA', label: 'En Agencia', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200', icon: Building2 },
   { value: 'EN TRANSITO', label: 'En Tránsito', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200', icon: Truck },
   { value: 'EN ADUANA', label: 'En Aduana', color: 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200', icon: ShieldCheck },
   { value: 'EN DISTRIBUCION', label: 'En Distribución', color: 'bg-cyan-100 text-cyan-700 border-cyan-200 hover:bg-cyan-200', icon: MapPin },
   { value: 'ENTREGADO', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200', icon: FileCheck },
-  { value: 'PENDIENTE DESGRUPE', label: 'Pend. Desgrupe', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-orange-200', icon: Clock },
+  { value: 'PENDIENTE DESGRUPE', label: 'Pend. Desgrupe', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200', icon: Clock },
 ];
 
 export function TrackingUpload() {
@@ -255,7 +255,7 @@ export function TrackingUpload() {
             <Button
               onClick={handleUpload}
               disabled={uploading || !tsvData.trim()}
-              className="bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+              className="bg-gradient-to-r from-blue-500 to-[#55b949] hover:from-[#071a46] hover:to-[#348f39] text-white"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -300,7 +300,7 @@ export function TrackingUpload() {
             placeholder="Filtrar por CPK, nombre, estado o carnet..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="pl-10 border-blue-200 focus:border-orange-400"
+            className="pl-10 border-blue-200 focus:border-[#123d83]"
           />
         </div>
       )}
@@ -318,7 +318,7 @@ export function TrackingUpload() {
             <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
               <Table>
                 <TableHeader className="sticky top-0 bg-white z-10">
-                  <TableRow className="bg-gradient-to-r from-blue-50 to-amber-50">
+                  <TableRow className="bg-gradient-to-r from-blue-50 to-blue-50">
                     <TableHead className="w-8">#</TableHead>
                     <TableHead>CPK</TableHead>
                     <TableHead>Estado</TableHead>
@@ -409,8 +409,8 @@ export function TrackingUpload() {
                       onClick={() => setEditEstado(estado.value)}
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200 ${
                         isSelected
-                          ? estado.color + ' ring-2 ring-orange-400 shadow-sm'
-                          : 'bg-white text-zinc-600 border-zinc-200 hover:border-orange-300 hover:bg-blue-50'
+                          ? estado.color + ' ring-2 ring-blue-400 shadow-sm'
+                          : 'bg-white text-zinc-600 border-zinc-200 hover:border-blue-300 hover:bg-blue-50'
                       }`}
                     >
                       <Icon className="h-4 w-4 shrink-0" />
@@ -425,7 +425,7 @@ export function TrackingUpload() {
                   placeholder="O escribe un estado personalizado..."
                   value={editEstado}
                   onChange={(e) => setEditEstado(e.target.value)}
-                  className="border-blue-200 focus:border-orange-400"
+                  className="border-blue-200 focus:border-[#123d83]"
                 />
               </div>
             </div>
@@ -483,7 +483,7 @@ export function TrackingUpload() {
             <Button
               onClick={handleSaveEdit}
               disabled={saving || !editEstado.trim()}
-              className="bg-gradient-to-r from-blue-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white gap-1"
+              className="bg-gradient-to-r from-blue-500 to-[#55b949] hover:from-[#071a46] hover:to-[#348f39] text-white gap-1"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
