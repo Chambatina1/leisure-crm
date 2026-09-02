@@ -102,12 +102,13 @@ function PublicNavbar() {
                 </span>
               )}
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={goToAdmin}
-                className="text-zinc-300 hover:text-zinc-500 hover:bg-zinc-50"
+                className="ml-2 border-[#123d83] text-[#123d83] hover:bg-[#123d83] hover:text-white font-semibold"
               >
-                <Lock className="h-4 w-4" />
+                <Lock className="h-4 w-4 mr-1" />
+                Admin
               </Button>
             </nav>
 
