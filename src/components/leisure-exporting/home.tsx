@@ -1,437 +1,260 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from './store';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
+  Fuel,
   Package,
-  Sun,
-  Search,
-  MapPin,
-  Phone,
-  Calculator,
+  Zap,
+  Bike,
   Truck,
   ChevronRight,
-  Weight,
-  DollarSign,
-  Sparkles,
-  UserCircle,
+  ChevronLeft,
+  Phone,
+  MapPin,
+  Search,
+  Flame,
+  Refrigerator,
+  ShoppingCart,
 } from 'lucide-react';
-import { calcularEnvio, type EnvioTipo } from '@/lib/leisure-exporting';
 
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4 },
-};
+const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4";
 
-const stagger = {
-  animate: { transition: { staggerChildren: 0.1 } },
-};
+const SLIDES = [
+  {
+    id: 'gas',
+    icon: Flame,
+    titulo: 'Balas de Gas',
+    sub: '10, 20, 25 y 100 lb — entrega a domicilio',
+    precio: 'Desde $15.00',
+    texto: 'Reservá tu balita',
+    color: '#123d83',
+  },
+  {
+    id: 'combustible',
+    icon: Fuel,
+    titulo: 'Combustible',
+    sub: 'Gasolina, diésel y petróleo — isotanques y tambores',
+    precio: 'Desde $5.26/gal',
+    texto: 'Pedí combustible',
+    color: '#e0a106',
+  },
+  {
+    id: 'electro',
+    icon: Refrigerator,
+    titulo: 'Electrodomésticos',
+    sub: 'Neveras, cocinas, lavadoras, freezers, ventiladores',
+    precio: 'Envío a Cuba',
+    texto: 'Comprá para tu familia',
+    color: '#1f6b3a',
+  },
+  {
+    id: 'motos',
+    icon: Bike,
+    titulo: 'Motos',
+    sub: 'Eléctricas y de gasolina — envío completo',
+    precio: 'Desde $1,200',
+    texto: 'Tu moto en Cuba',
+    color: '#7c3aed',
+  },
+];
 
 export function Home() {
-  const { setCurrentView, goToNuevoPedido, currentUser, setShowRegisterDialog } = useAppStore();
-  const [calcPeso, setCalcPeso] = useState('');
-  const [calcTipo, setCalcTipo] = useState<EnvioTipo>('equipo');
-  const [config, setConfig] = useState({
-    nombre_negocio: 'Leisure Exporting',
-    direccion: '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792',
-    telefono1: '786-942-6904',
-    nombre_contacto1: 'Geo',
-    telefono2: '786-784-6421',
-    nombre_contacto2: 'Adriana',
-    telefono3: '',
-    nombre_contacto3: '',
-    email: '',
-    horario: '',
-    whatsapp: '',
-    instagram: '',
-    facebook: '',
-  });
+  const { setCurrentView } = useAppStore();
+  const [slide, setSlide] = useState(0);
+  const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch('/api/config');
-        const json = await res.json();
-        if (json.ok) setConfig((prev) => ({ ...prev, ...json.data }));
-      } catch { /* use defaults */ }
-    }
-    load();
-
-    function onConfigUpdated() {
-      load();
-    }
-    window.addEventListener('config-updated', onConfigUpdated);
-    return () => window.removeEventListener('config-updated', onConfigUpdated);
+    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 4000);
+    return () => clearInterval(t);
   }, []);
 
-  const calcResult = useMemo(() => {
-    const peso = parseFloat(calcPeso);
-    if (!peso || peso <= 0) return null;
-    return calcularEnvio(peso, calcTipo);
-  }, [calcPeso, calcTipo]);
+  const slideActual = SLIDES[slide];
+  const Icono = slideActual.icon;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative bg-white overflow-hidden">
-        {/* VW Combi background - subtle and nice */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none">
-          <img
-            src="/background-combi.png"
-            alt=""
-            className="w-full max-w-2xl object-contain"
-            style={{ filter: 'grayscale(30%)' }}
-          />
-        </div>
-        <div className="absolute inset-0 opacity-[0.03]">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-blue-400 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-400 rounded-full blur-3xl" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-blue-50 border border-blue-100 shadow-lg shadow-blue-500/5 mb-6 overflow-hidden">
-              <Image src="/icon.svg" alt="Leisure Exporting" width={96} height={96} className="object-contain" />
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-zinc-900 tracking-tight mb-4">
-              LEISURE EXPORTING
-            </h1>
-            <p className="text-lg sm:text-xl text-blue-600 font-semibold tracking-wide mb-2">
-              Envíos Internacionales & Sistemas Solares
-            </p>
-            <p className="text-zinc-500 max-w-2xl mx-auto text-sm sm:text-base mb-8">
-              Tu empresa de logística confiable entre Estados Unidos y Latinoamérica. 
-              Enviamos paquetes, bicicletas, electrodomésticos y ofrecemos soluciones de energía solar.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
-                size="lg"
-                onClick={() => goToNuevoPedido()}
-                className="bg-blue-500 hover:bg-[#071a46] text-white font-semibold px-8 shadow-lg shadow-blue-500/20"
-              >
-                <Package className="h-5 w-5 mr-2" />
-                Hacer un Envío
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setCurrentView('rastreador')}
-                className="border-blue-200 text-blue-700 hover:bg-blue-50 px-8"
-              >
-                <Search className="h-5 w-5 mr-2" />
-                Rastrear Paquete
-              </Button>
-            </div>
+    <div className="min-h-screen bg-[#f5f7fa]">
+      {/* ═══ HERO CON VIDEO DE FONDO ═══ */}
+      <section className="relative h-[500px] overflow-hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={VIDEO_BG} type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/80 via-[#071a46]/60 to-[#071a46]/90" />
 
-            {/* User registration prompt */}
-            {!currentUser && (
+        <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
+          <div className="w-full">
+            <motion.img
+              src="/logo-white.svg"
+              alt="Leisure Exporting LLC"
+              className="h-12 mb-6"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+            />
+
+            <AnimatePresence mode="wait">
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.4 }}
-                className="mt-6"
+                key={slide}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.4 }}
               >
-                <button
-                  onClick={() => setShowRegisterDialog(true)}
-                  className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-blue-600 transition-colors"
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-white text-sm font-bold mb-4"
+                  style={{ background: `${slideActual.color}40` }}
                 >
-                  <UserCircle className="h-4 w-4" />
-                  ¿Primera vez? Regístrate para un mejor servicio
-                </button>
+                  <Icono className="w-4 h-4" />
+                  {slideActual.precio}
+                </div>
+                <h1 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tight">
+                  {slideActual.titulo}
+                </h1>
+                <p className="text-lg text-white/80 mt-4 max-w-md">{slideActual.sub}</p>
               </motion.div>
-            )}
-            {currentUser && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mt-4 text-sm text-zinc-500"
+            </AnimatePresence>
+
+            <div className="flex gap-3 mt-8">
+              <Button
+                onClick={() => setCurrentView('tienda')}
+                className="bg-[#55b949] hover:bg-[#348f39] text-white font-bold px-8 py-6 text-base"
               >
-                Bienvenido, {currentUser.nombre}
-              </motion.p>
-            )}
-          </motion.div>
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Ir a la Tienda
+              </Button>
+              <Button
+                onClick={() => setCurrentView('rastreador')}
+                className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base"
+              >
+                Rastrear pedido
+              </Button>
+            </div>
+
+            {/* Flechas y puntos */}
+            <div className="flex items-center gap-2 mt-8">
+              <button
+                onClick={() => setSlide(s => (s - 1 + SLIDES.length) % SLIDES.length)}
+                className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSlide(i)}
+                  className={`w-3 h-3 rounded-full transition-all ${i === slide ? 'bg-white scale-125' : 'bg-white/40'}`}
+                />
+              ))}
+              <button
+                onClick={() => setSlide(s => (s + 1) % SLIDES.length)}
+                className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Services */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-10">
-        <motion.div
-          variants={stagger}
-          initial="initial"
-          animate="animate"
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
-        >
-          <motion.div variants={fadeIn}>
-            <Card
-              className="cursor-pointer hover:shadow-lg transition-shadow border border-zinc-100 shadow-sm bg-white"
-              onClick={() => setCurrentView('tienda')}
-            >
-              <CardHeader className="pb-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
-                  <Truck className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg text-zinc-900">Envíos Internacionales</CardTitle>
-                <CardDescription className="text-sm text-zinc-500">
-                  Desde $1.80/libra. Recogemos en tu casa o trae a nuestra oficina.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center text-blue-600 text-sm font-medium">
-                  Ver precios <ChevronRight className="h-4 w-4 ml-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeIn}>
-            <Card
-              className="cursor-pointer hover:shadow-lg transition-shadow border border-zinc-100 shadow-sm bg-white"
-              onClick={() => setCurrentView('tienda')}
-            >
-              <CardHeader className="pb-3">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
-                  <Sun className="h-6 w-6 text-blue-600" />
-                </div>
-                <CardTitle className="text-lg text-zinc-900">Sistemas Solares</CardTitle>
-                <CardDescription className="text-sm text-zinc-500">
-                  Asesoría y productos EcoFlow para energía solar.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center text-[#123d83] text-sm font-medium">
-                  Más información <ChevronRight className="h-4 w-4 ml-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeIn}>
-            <Card
-              className="cursor-pointer hover:shadow-lg transition-shadow border border-zinc-100 shadow-sm bg-white"
-              onClick={() => setCurrentView('rastreador')}
-            >
-              <CardHeader className="pb-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-2">
-                  <Search className="h-6 w-6 text-emerald-500" />
-                </div>
-                <CardTitle className="text-lg text-zinc-900">Rastreo de Paquetes</CardTitle>
-                <CardDescription className="text-sm text-zinc-500">
-                  Busca por número CPK, carnet del destinatario o de un familiar.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center text-emerald-600 text-sm font-medium">
-                  Rastrear ahora <ChevronRight className="h-4 w-4 ml-1" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Quick Calculator */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Card className="border border-zinc-100 shadow-md overflow-hidden bg-white">
-            <div className="bg-gradient-to-r from-blue-500 to-[#55b949] p-6 text-white">
-              <div className="flex items-center gap-3">
-                <Calculator className="h-6 w-6" />
-                <div>
-                  <h2 className="text-xl font-bold">Calculadora de Envío</h2>
-                  <p className="text-blue-100 text-sm">Calcula el costo de tu envío al instante</p>
-                </div>
-              </div>
-            </div>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="text-sm font-medium text-zinc-700 mb-1.5 block">
-                    Peso (libras)
-                  </label>
-                  <div className="relative">
-                    <Weight className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-400" />
-                    <Input
-                      type="number"
-                      placeholder="Ej: 10"
-                      value={calcPeso}
-                      onChange={(e) => setCalcPeso(e.target.value)}
-                      className="pl-10 border-blue-200 focus:border-[#123d83]"
-                      min="0"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-zinc-700 mb-1.5 block">
-                    Tipo de envío
-                  </label>
-                  <div className="flex gap-2">
-                    {([
-                      { value: 'equipo' as EnvioTipo, label: 'Equipo' },
-                      { value: 'recogida' as EnvioTipo, label: 'Recogida' },
-                      { value: 'tiktok' as EnvioTipo, label: 'TikTok' },
-                    ]).map((opt) => (
-                      <Button
-                        key={opt.value}
-                        variant={calcTipo === opt.value ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setCalcTipo(opt.value)}
-                        className={calcTipo === opt.value
-                          ? 'bg-gradient-to-r from-blue-500 to-[#55b949] hover:from-[#071a46] hover:to-[#348f39] text-white border-0'
-                          : 'border-blue-200 text-blue-700 hover:bg-blue-50'
-                        }
-                      >
-                        {opt.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {calcResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+      {/* ═══ 4 SERVICIOS PRINCIPALES ═══ */}
+      <section className="max-w-6xl mx-auto px-6 -mt-10 relative z-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {SLIDES.map((s) => {
+            const Ico = s.icon;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setCurrentView('tienda')}
+                className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all text-left group"
+              >
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+                  style={{ background: `${s.color}15`, color: s.color }}
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="h-5 w-5 text-blue-600" />
-                    <span className="font-semibold text-[#071a46]">Resultado del Cálculo</span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                    <div>
-                      <span className="text-zinc-500">Precio/lb:</span>
-                      <p className="font-semibold">${calcResult.precioPorLibra.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500">Subtotal:</span>
-                      <p className="font-semibold">${calcResult.subtotal.toFixed(2)}</p>
-                    </div>
-                    {calcResult.cargoEquipo > 0 && (
-                      <div>
-                        <span className="text-zinc-500">Cargo equipo:</span>
-                        <p className="font-semibold">${calcResult.cargoEquipo.toFixed(2)}</p>
-                      </div>
-                    )}
-                    <div className="col-span-2 sm:col-span-1">
-                      <span className="text-zinc-500">Total:</span>
-                      <p className="text-xl font-bold text-blue-600">${calcResult.total.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      </section>
-
-      {/* AI Chat Promo */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-        >
-          <Card
-            className="border border-zinc-100 shadow-md bg-white cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => setCurrentView('chat')}
-          >
-            <CardContent className="p-6 sm:p-8 flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-[#55b949] flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/10">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-zinc-900 mb-1">Asistente Virtual Inteligente</h2>
-                <p className="text-zinc-600 text-sm">
-                  Pregúntame sobre precios, rastreo, horarios o cualquier duda. Estoy entrenado para ayudarte con todo lo de Leisure Exporting.
-                </p>
-              </div>
-              <ChevronRight className="h-6 w-6 text-blue-400 shrink-0" />
-            </CardContent>
-          </Card>
-        </motion.div>
-      </section>
-
-      {/* Contact Info */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.4 }}
-        >
-          <Card className="border border-zinc-100 shadow-md bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-zinc-900">
-                <MapPin className="h-5 w-5 text-blue-600" />
-                Información de Contacto
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm">Oficina</p>
-                    <p className="text-sm text-zinc-500">{config.direccion}</p>
-                    {config.horario && <p className="text-sm text-zinc-500 mt-1">{config.horario}</p>}
-                  </div>
+                  <Ico className="w-7 h-7" />
                 </div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="font-medium text-sm">Teléfonos</p>
-                    {config.telefono1 && (
-                      <p className="text-sm text-zinc-500">
-                        {config.nombre_contacto1 ? `${config.nombre_contacto1}: ` : ''}
-                        <a href={`tel:${config.telefono1.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono1}</a>
-                      </p>
-                    )}
-                    {config.telefono2 && (
-                      <p className="text-sm text-zinc-500">
-                        {config.nombre_contacto2 ? `${config.nombre_contacto2}: ` : ''}
-                        <a href={`tel:${config.telefono2.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono2}</a>
-                      </p>
-                    )}
-                    {config.telefono3 && (
-                      <p className="text-sm text-zinc-500">
-                        {config.nombre_contacto3 ? `${config.nombre_contacto3}: ` : ''}
-                        <a href={`tel:${config.telefono3.replace(/\D/g, '')}`} className="text-blue-600 hover:underline">{config.telefono3}</a>
-                      </p>
-                    )}
-                    {config.whatsapp && (
-                      <p className="text-sm text-zinc-500 mt-1">
-                        WhatsApp: <a href={`https://wa.me/${config.whatsapp.replace(/[^\d]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">{config.whatsapp}</a>
-                      </p>
-                    )}
-                    {config.email && (
-                      <p className="text-sm text-zinc-500 mt-1">
-                        Email: <a href={`mailto:${config.email}`} className="text-blue-600 hover:underline">{config.email}</a>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <h3 className="font-bold text-gray-900 text-lg">{s.titulo}</h3>
+                <p className="text-sm text-gray-500 mt-1">{s.precio}</p>
+                <span
+                  className="text-sm font-bold mt-3 inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                  style={{ color: s.color }}
+                >
+                  Ver <ChevronRight className="w-4 h-4" />
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </section>
 
-      {/* Mobile Bottom Spacer */}
-      <div className="md:hidden h-20" />
+      {/* ═══ BUSCADOR DE RASTREO ═══ */}
+      <section className="max-w-2xl mx-auto px-6 mt-12">
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Search className="w-5 h-5 text-[#123d83]" />
+            Rastrear tu pedido
+          </h3>
+          <div className="flex gap-2">
+            <Input
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+              placeholder="CPK-XXXXXXX o nombre..."
+              className="flex-1"
+              onKeyDown={e => { if (e.key === 'Enter') setCurrentView('rastreador'); }}
+            />
+            <Button
+              onClick={() => setCurrentView('rastreador')}
+              className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-6"
+            >
+              Buscar
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CONTACTO ═══ */}
+      <section className="max-w-6xl mx-auto px-6 mt-12 pb-16">
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Phone className="w-6 h-6 text-[#123d83]" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900">Llámanos</h4>
+              <p className="text-sm text-gray-500">+1 727-598-6802</p>
+              <p className="text-sm text-gray-500">Lun-Vie 8AM-5PM</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-[#123d83]" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900">Tampa, Florida</h4>
+              <p className="text-sm text-gray-500">Leisure Exporting LLC</p>
+              <p className="text-sm text-gray-500">EE.UU.</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+              <Truck className="w-6 h-6 text-[#123d83]" />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900">Envíos a Cuba</h4>
+              <p className="text-sm text-gray-500">Marítimo y aéreo</p>
+              <p className="text-sm text-gray-500">Entrega garantizada</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
