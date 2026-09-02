@@ -1,33 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#123d83"/>
-      <stop offset="100%" style="stop-color:#071a46"/>
+    <linearGradient id="lxBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d2a5c"/>
+      <stop offset="1" stop-color="#071a46"/>
     </linearGradient>
-    <linearGradient id="cont3" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#65d358"/>
-      <stop offset="100%" style="stop-color:#3a9e30"/>
+    <linearGradient id="lxHull" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c9d8f0"/>
+    </linearGradient>
+    <linearGradient id="lxWave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f7fd1"/>
+      <stop offset="1" stop-color="#55b949"/>
+    </linearGradient>
+    <linearGradient id="lxContA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7ed957"/>
+      <stop offset="1" stop-color="#3a9e30"/>
     </linearGradient>
   </defs>
 
-  <rect width="120" height="120" rx="28" fill="url(#bg)"/>
+  <!-- Fondo oscuro corporativo -->
+  <rect width="120" height="120" rx="30" fill="url(#lxBg)"/>
 
-  <g transform="translate(18,14) scale(0.72)">
-    <!-- Contenedores -->
-    <rect x="24" y="14" width="12" height="20" rx="1.5" fill="url(#cont3)"/>
-    <rect x="39" y="14" width="12" height="20" rx="1.5" fill="#ffffff" opacity="0.25"/>
-    <rect x="54" y="14" width="12" height="20" rx="1.5" fill="url(#cont3)"/>
-    <rect x="69" y="14" width="9" height="20" rx="1.5" fill="#ffffff" opacity="0.25"/>
+  <!-- Barco inclinado (proa a la derecha, en movimiento) -->
+  <g transform="rotate(-8 60 62)">
 
-    <rect x="18" y="36" width="18" height="20" rx="2" fill="url(#cont3)"/>
-    <rect x="38" y="36" width="18" height="20" rx="2" fill="#ffffff" opacity="0.2"/>
-    <rect x="58" y="36" width="18" height="20" rx="2" fill="url(#cont3)"/>
-    <rect x="78" y="36" width="9" height="20" rx="2" fill="#ffffff" opacity="0.2"/>
+    <!-- Contenedores (filas) -->
+    <rect x="38" y="38" width="17" height="12" rx="1.5" fill="url(#lxContA)"/>
+    <rect x="57" y="38" width="17" height="12" rx="1.5" fill="#2f7fd1"/>
+    <rect x="47" y="26" width="17" height="12" rx="1.5" fill="#2f7fd1"/>
+    <rect x="66" y="26" width="14" height="12" rx="1.5" fill="url(#lxContA)"/>
 
-    <!-- Casco -->
-    <path d="M6 58 H92 L84 88 Q81 95 73 95 H29 Q21 95 18 88 Z" fill="url(#cont3)"/>
+    <!-- Casco con franja -->
+    <path d="M24 52 H96 L88 72 Q86 76 80 76 H34 Q26 74 22 66 Z" fill="url(#lxHull)"/>
+    <path d="M26 68 H92 L88 72 Q86 76 80 76 H34 Q28 75 26 68 Z" fill="#123d83"/>
 
-    <!-- Ondas -->
-    <path d="M4 96 Q20 100 36 96 Q52 92 68 96 Q84 100 100 96" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+    <!-- Puente/estela superior -->
+    <rect x="30" y="30" width="6" height="22" rx="1.5" fill="#e8eefb"/>
+    <rect x="31.5" y="33" width="3" height="3" fill="#123d83"/>
+    <rect x="31.5" y="39" width="3" height="3" fill="#123d83"/>
+    <line x1="33" y1="30" x2="33" y2="22" stroke="#e8eefb" stroke-width="2" stroke-linecap="round"/>
   </g>
+
+  <!-- Ola swoosh azul→verde -->
+  <path d="M14 92 Q34 82 54 90 T94 88 Q102 87 108 82" fill="none" stroke="url(#lxWave)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M20 104 Q40 96 60 102 T100 100" fill="none" stroke="#ffffff" stroke-opacity="0.28" stroke-width="4" stroke-linecap="round"/>
 </svg>

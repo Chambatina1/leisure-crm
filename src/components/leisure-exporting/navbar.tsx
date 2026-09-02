@@ -55,8 +55,8 @@ function PublicNavbar() {
               onClick={() => handleNav('home')}
               className="flex items-center gap-3 hover:opacity-90 transition-opacity"
             >
-              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center overflow-hidden">
-                <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+              <div className="w-10 h-10 flex items-center justify-center drop-shadow-sm">
+                <Image src="/icon.svg" alt="Leisure Exporting" width={40} height={40} className="object-contain" priority />
               </div>
               <div>
                 <h1 className="text-lg font-black text-[#071a46] tracking-wide">LEISURE EXPORTING</h1>
@@ -249,7 +249,7 @@ function AdminNavbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo + Admin Badge */}
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center overflow-hidden">
+              <div className="w-9 h-9 rounded-lg bg-white/95 flex items-center justify-center overflow-hidden shadow-sm">
                 <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
               </div>
               <div>

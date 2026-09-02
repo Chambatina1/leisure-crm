@@ -54,8 +54,8 @@ export function LoginDialog() {
     <Dialog open={showLoginDialog} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center sm:text-center items-center">
-          <div className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-[#123d83] flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/20">
-            <Image src="/icon.svg" alt="Leisure Exporting" width={64} height={64} className="object-contain" />
+          <div className="mx-auto mb-3 h-20 w-auto rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border border-white/10">
+            <Image src="/logo-full.jpg" alt="Leisure Exporting" width={160} height={84} className="h-20 w-auto object-cover" priority />
           </div>
           <DialogTitle className="text-xl">Acceso Administrativo</DialogTitle>
           <DialogDescription>
