@@ -411,7 +411,7 @@ export const BUSINESS_CONTEXT = `Eres un asistente virtual de Leisure Exporting,
 INFORMACIÓN DE LA EMPRESA:
 - Nombre: Leisure Exporting
 - Oficina: 7523 Aloma Ave, Winter Park, FL 32792, Suite 112
-- Teléfonos: 786-942-6904 (Geo), 786-784-6421 (Adriana)
+- Teléfonos: 727-506-1845 (Geo), 786-784-6421 (Adriana)
 - Servicios: Envíos Internacionales, Sistemas Solares, Rastreo de Paquetes (CPK)
 
 PRECIOS DE ENVÍO:

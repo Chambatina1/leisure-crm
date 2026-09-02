@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 const DEFAULTS: Record<string, string> = {
   nombre_negocio: 'Leisure Exporting',
   direccion: '7523 Aloma Ave, Winter Park, FL 32792, Suite 112',
-  telefono1: '786-942-6904',
+  telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',
   nombre_contacto2: 'Adriana',

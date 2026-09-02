@@ -30,7 +30,7 @@ interface ConfigData {
 const DEFAULT_CONFIG: ConfigData = {
   nombre_negocio: 'Leisure Exporting',
   direccion: '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792',
-  telefono1: '786-942-6904',
+  telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',
   nombre_contacto2: 'Adriana',

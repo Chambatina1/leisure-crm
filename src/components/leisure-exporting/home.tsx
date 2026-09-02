@@ -229,7 +229,7 @@ export function Home() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900">Llámanos</h4>
-              <p className="text-sm text-gray-500">+1 727-598-6802</p>
+              <p className="text-sm text-gray-500">+1 (727) 506-1845</p>
               <p className="text-sm text-gray-500">Lun-Vie 8AM-5PM</p>
             </div>
           </div>
