@@ -175,6 +175,11 @@ export function TiendaAdmin() {
     setSaving(true);
     try {
       const payload = { ...form, precio, orden: parseInt(form.orden) || 0 };
+      // Si la imagen no cambió (sigue siendo la URL relativa del servidor),
+      // no enviarla: así no se sobreescribe la foto original guardada en la BD.
+      if (form.imagenUrl.startsWith('/api/')) {
+        delete (payload as { imagenUrl?: string }).imagenUrl;
+      }
       const method = editingId ? 'PUT' : 'POST';
       const res = await fetch('/api/tienda/admin', {
         method, headers: { 'Content-Type': 'application/json' },
@@ -275,7 +280,7 @@ export function TiendaAdmin() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {product.imagenUrl ? (
-                              <div className="w-8 h-8 rounded-lg overflow-hidden bg-zinc-100 shrink-0"><img src={product.imagenUrl} alt={product.nombre} className="w-full h-full object-cover" /></div>
+                              <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shrink-0 flex items-center justify-center border border-zinc-100"><img src={product.imagenUrl} alt={product.nombre} className="w-full h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /></div>
                             ) : (
                               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0"><ImageIcon className="h-4 w-4 text-blue-400" /></div>
                             )}

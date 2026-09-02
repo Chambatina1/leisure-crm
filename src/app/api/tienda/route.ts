@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { ensureCatalogo } from '@/lib/catalogo-seed';
 
-// Convierte la imagen guardada (base64 en BD) en una URL ligera por producto:
-// el listado pesa kilobytes y el navegador carga/cachea cada foto por su cuenta.
-function toImageUrl(id: number, imagenUrl: string | null): string | null {
+// Convierte la imagen guardada (base64 en BD) en una URL ligera por producto.
+// La versión (?v=) cambia cuando el producto se actualiza: si el dueño cambia
+// la foto, la URL cambia y el navegador descarga la nueva (caché immutable ok).
+function toImageUrl(id: number, imagenUrl: string | null, updatedAt: Date): string | null {
   if (!imagenUrl) return null;
-  if (imagenUrl.startsWith('data:')) return `/api/tienda/imagen/${id}`;
+  if (imagenUrl.startsWith('data:')) return `/api/tienda/imagen/${id}?v=${new Date(updatedAt).getTime()}`;
   return imagenUrl;
 }
 
@@ -24,7 +25,7 @@ export async function GET() {
     // Servir imágenes por URL (no incrustar base64 de megas en el JSON)
     const light = products.map((p) => ({
       ...p,
-      imagenUrl: toImageUrl(p.id, p.imagenUrl),
+      imagenUrl: toImageUrl(p.id, p.imagenUrl, p.updatedAt),
     }));
 
     // Agrupar por categoría

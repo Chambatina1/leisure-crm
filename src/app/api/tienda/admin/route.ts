@@ -50,12 +50,14 @@ export async function GET(request: NextRequest) {
       orderBy: [{ orden: 'asc' }, { createdAt: 'desc' }],
     });
 
-    // Miniaturas por URL ligera en vez de base64 incrustado
+    // Miniaturas por URL ligera en vez de base64 incrustado.
+    // La versión (?v=) cambia al actualizar el producto → el navegador
+    // descarga la foto nueva en vez de servir la vieja de su caché.
     const light = products.map((p) => ({
       ...p,
       imagenUrl: p.imagenUrl
         ? p.imagenUrl.startsWith('data:')
-          ? `/api/tienda/imagen/${p.id}`
+          ? `/api/tienda/imagen/${p.id}?v=${new Date(p.updatedAt).getTime()}`
           : p.imagenUrl
         : null,
     }));
