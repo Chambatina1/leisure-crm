@@ -1,15 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 120" width="380" height="120">
-  <g fill="#ffffff">
-    <rect x="40" y="26" width="9" height="20" rx="1.5"/>
-    <rect x="60" y="26" width="9" height="20" rx="1.5"/>
-    <rect x="34" y="46" width="58" height="20" rx="2"/>
-    <rect x="36" y="50" width="13" height="12" fill="#071a46"/>
-    <rect x="51" y="50" width="13" height="12" fill="#071a46"/>
-    <rect x="66" y="50" width="13" height="12" fill="#071a46"/>
-    <rect x="81" y="50" width="9" height="12" fill="#071a46"/>
-    <path d="M20 70 H106 L96 94 a6 6 0 0 1 -6 4 H36 a6 6 0 0 1 -6 -4 Z"/>
-    <text x="140" y="50" fontSize="32" fontFamily="Arial, sans-serif" fontWeight="900" fill="#55b949">LEISURE</text>
-    <text x="140" y="76" fontSize="21" fontFamily="Arial, sans-serif" fontWeight="700" letterSpacing="1.2" fill="#ffffff">EXPORTING</text>
-    <text x="140" y="100" fontSize="16" fontFamily="Arial, sans-serif" fontWeight="400" letterSpacing="2.5" fill="#8ea9d8">L L C</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 130" width="420" height="130">
+  <defs>
+    <linearGradient id="hull" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#c8d5e8;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="cont" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#55b949;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#3a9e30;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="contDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a9e3e;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#2d7a24;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6ccb60;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#449938;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" style="flood-color:#000000;flood-opacity:0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Barco: casco elegante -->
+  <g filter="url(#soft)">
+    <path d="M18 78 L104 78 L96 104 Q93 112 84 112 L38 112 Q29 112 26 104 Z" fill="url(#hull)"/>
+  </g>
+
+  <!-- Contenedores apilados con colores -->
+  <g>
+    <!-- Fila 1: contenedores superiores -->
+    <rect x="38" y="24" width="13" height="18" rx="1.5" fill="url(#cont)"/>
+    <rect x="54" y="24" width="13" height="18" rx="1.5" fill="#ffffff" opacity="0.9"/>
+    <rect x="70" y="24" width="13" height="18" rx="1.5" fill="url(#contDark)"/>
+    <rect x="86" y="24" width="10" height="18" rx="1.5" fill="url(#cont)"/>
+
+    <!-- Fila 2: base de contenedores -->
+    <rect x="32" y="44" width="18" height="20" rx="2" fill="url(#cont)"/>
+    <rect x="52" y="44" width="18" height="20" rx="2" fill="#ffffff" opacity="0.85"/>
+    <rect x="72" y="44" width="18" height="20" rx="2" fill="url(#contDark)"/>
+    <rect x="92" y="44" width="13" height="20" rx="2" fill="url(#cont)"/>
+
+    <!-- Detalles: líneas de contenedores -->
+    <line x1="32" y1="54" x2="105" y2="54" stroke="#0a2540" stroke-width="0.5" opacity="0.15"/>
+  </g>
+
+  <!-- Ondas de agua -->
+  <path d="M14 112 Q30 116 46 112 Q62 108 78 112 Q94 116 110 112" fill="none" stroke="#55b949" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Texto -->
+  <g fontFamily="'Segoe UI', Arial, sans-serif">
+    <text x="132" y="48" fontSize="34" fontWeight="900" fill="url(#textGrad)" letterSpacing="0.5">LEISURE</text>
+    <text x="133" y="74" fontSize="22" fontWeight="700" fill="#ffffff" letterSpacing="2.5">EXPORTING</text>
+    <rect x="133" y="82" width="120" height="1.5" fill="#55b949" opacity="0.5"/>
+    <text x="133" y="104" fontSize="15" fontWeight="400" fill="#8ea9d8" letterSpacing="6" fontFamily="'Segoe UI', Arial, sans-serif">L L C</text>
   </g>
 </svg>
