@@ -110,45 +110,51 @@ export function TiendaAdmin() {
   const handleImageUpload = async (file: File) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) { toast.error(`Tipo no permitido (${file.type}). Usa JPG, PNG, GIF o WebP.`); return; }
-    if (file.size > 4 * 1024 * 1024) { toast.error(`Imagen muy grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo 4MB.`); return; }
+    if (file.size > 8 * 1024 * 1024) { toast.error(`Imagen muy grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo 8MB.`); return; }
     setUploadingImage(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      // La imagen se guarda como data URL dentro del producto (en la BD),
+      // así sobrevive a los deploys de Render sin depender de almacenamiento externo.
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+        reader.readAsDataURL(file);
+      });
 
-      // Handle HTTP errors
-      if (!res.ok) {
-        let errorMsg = `Error del servidor (${res.status})`;
-        try {
-          const errorJson = await res.json();
-          errorMsg = errorJson.error || errorMsg;
-        } catch { /* response not JSON */ }
+      // Redimensionar y comprimir (los GIF animados no pueden pasar por canvas)
+      let finalUrl = dataUrl;
+      if (file.type !== 'image/gif') {
+        finalUrl = await new Promise<string>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const MAX = 900;
+            const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+            if (scale === 1 && dataUrl.length < 300 * 1024) { resolve(dataUrl); return; }
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { resolve(dataUrl); return; }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
+          };
+          img.onerror = () => resolve(dataUrl);
+          img.src = dataUrl;
+        });
+      }
 
-        if (res.status === 413) {
-          toast.error('Imagen demasiado grande para el servidor. Reduce el tamaño e intenta de nuevo.');
-        } else if (res.status === 408) {
-          toast.error('La subida tardó demasiado. Verifica tu conexión e intenta de nuevo.');
-        } else {
-          toast.error(errorMsg);
-        }
-        console.error('[Upload] Server error:', res.status, errorMsg);
+      if (finalUrl.length > 1.5 * 1024 * 1024) {
+        toast.error('La imagen sigue siendo muy grande después de comprimir. Prueba con una más pequeña.');
         return;
       }
 
-      const json = await res.json();
-      if (json.ok && json.data?.url) {
-        setForm((prev) => ({ ...prev, imagenUrl: json.data.url }));
-        toast.success('Imagen subida correctamente');
-        console.log('[Upload] Success:', json.data);
-      } else {
-        toast.error(json.error || 'Error al subir imagen');
-        console.error('[Upload] API error:', json);
-      }
+      setForm((prev) => ({ ...prev, imagenUrl: finalUrl }));
+      toast.success('Imagen lista — se guardará junto con el producto');
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
-      console.error('[Upload] Connection error:', errorMsg);
-      toast.error(`Error de conexión: ${errorMsg}`);
+      console.error('[Upload] Error:', errorMsg);
+      toast.error(`Error al procesar imagen: ${errorMsg}`);
     } finally { setUploadingImage(false); }
   };
 
