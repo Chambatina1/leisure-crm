@@ -22,7 +22,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Plus, Pencil, Trash2, Loader2, Store, ExternalLink, ImageIcon, Save, Check, Upload, X,
+  Plus, Pencil, Trash2, Loader2, Store, ExternalLink, ImageIcon, Save, Check, Upload, X, Camera,
 } from 'lucide-react';
 import { toast } from 'sonner';
 

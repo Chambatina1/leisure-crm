@@ -2,6 +2,8 @@
 // LEISURE EXPORTING - Business Logic Utilities
 // ============================================================
 
+import type { TrackingEntry } from '@prisma/client';
+
 // ---- Pricing Calculator ----
 
 export type EnvioTipo = 'equipo' | 'recogida' | 'tiktok';
