@@ -202,7 +202,7 @@ export function Tienda() {
             <Card key={product.id} className="border-0 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
               {hasImage ? (
                 <div className="w-full h-44 relative bg-zinc-100">
-                  <img src={product.imagenUrl!} alt={product.nombre} className="w-full h-full object-cover" onError={() => setImgErrors(prev => new Set(prev).add(product.id))} />
+                  <img src={product.imagenUrl!} alt={product.nombre} loading="lazy" decoding="async" className="w-full h-full object-cover" onError={() => setImgErrors(prev => new Set(prev).add(product.id))} />
                 </div>
               ) : (
                 <div className={`w-full h-32 flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100`}>

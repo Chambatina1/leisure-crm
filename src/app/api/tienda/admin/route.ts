@@ -50,7 +50,17 @@ export async function GET(request: NextRequest) {
       orderBy: [{ orden: 'asc' }, { createdAt: 'desc' }],
     });
 
-    return NextResponse.json({ ok: true, data: products });
+    // Miniaturas por URL ligera en vez de base64 incrustado
+    const light = products.map((p) => ({
+      ...p,
+      imagenUrl: p.imagenUrl
+        ? p.imagenUrl.startsWith('data:')
+          ? `/api/tienda/imagen/${p.id}`
+          : p.imagenUrl
+        : null,
+    }));
+
+    return NextResponse.json({ ok: true, data: light });
   } catch (error) {
     console.error('[Tienda Admin] Error al obtener productos:', error);
     return NextResponse.json(
