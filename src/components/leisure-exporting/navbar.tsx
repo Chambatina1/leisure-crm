@@ -59,8 +59,8 @@ function PublicNavbar() {
                 <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-zinc-900 tracking-wide">LEISURE EXPORTING</h1>
-                <p className="text-[10px] text-blue-600 font-medium tracking-widest uppercase -mt-0.5">
+                <h1 className="text-lg font-black text-[#071a46] tracking-wide">LEISURE EXPORTING</h1>
+                <p className="text-[11px] text-[#55b949] font-bold tracking-widest uppercase -mt-0.5">
                   Envíos Internacionales
                 </p>
               </div>
@@ -77,8 +77,8 @@ function PublicNavbar() {
                     onClick={() => handleNav(item.view)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       active
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
+                        ? 'bg-[#123d83] text-white shadow-md'
+                        : 'text-zinc-600 hover:text-[#071a46] hover:bg-blue-50 font-semibold'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -144,8 +144,8 @@ function PublicNavbar() {
                           onClick={() => handleNav(item.view)}
                           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                             active
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50'
+                              ? 'bg-[#123d83] text-white shadow-md'
+                              : 'text-zinc-600 hover:text-[#071a46] hover:bg-blue-50 font-semibold'
                           }`}
                         >
                           <Icon className="h-5 w-5" />
@@ -189,10 +189,10 @@ function PublicNavbar() {
               <button
                 key={item.view}
                 onClick={() => handleNav(item.view)}
-                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium transition-all duration-200 min-w-[56px] ${
+                className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 min-w-[64px] ${
                   active
-                    ? 'text-blue-600'
-                    : 'text-zinc-400 hover:text-zinc-600'
+                    ? 'text-[#123d83] bg-blue-50'
+                    : 'text-zinc-500 hover:text-zinc-800'
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -202,7 +202,7 @@ function PublicNavbar() {
           })}
           <button
             onClick={goToAdmin}
-            className="flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px] font-medium transition-all duration-200 min-w-[56px] text-zinc-300 hover:text-zinc-500"
+            className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 min-w-[64px] text-[#071a46] bg-blue-50"
           >
             <Lock className="h-5 w-5" />
             <span>Admin</span>
