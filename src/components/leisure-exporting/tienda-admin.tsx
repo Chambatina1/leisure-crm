@@ -33,15 +33,20 @@ interface Product {
 }
 
 const CATEGORIAS = [
-  { value: 'envios', label: 'Envíos' }, { value: 'bicicletas', label: 'Bicicletas' },
-  { value: 'cajas', label: 'Cajas' }, { value: 'solar', label: 'Solar' },
-  { value: 'tiktok', label: 'TikTok' }, { value: 'general', label: 'General' },
+  { value: 'gas', label: 'Balas de Gas' },
+  { value: 'combustible', label: 'Combustible' },
+  { value: 'motos', label: 'Motos' },
+  { value: 'paneles', label: 'Paneles Solares' },
+  { value: 'electrodomesticos', label: 'Electrodomésticos' },
+  { value: 'ferreteria', label: 'Ferretería' },
+  { value: 'general', label: 'General' },
 ];
 
 const CATEGORIA_COLORS: Record<string, string> = {
-  envios: 'bg-blue-100 text-blue-700', bicicletas: 'bg-blue-100 text-blue-700',
-  cajas: 'bg-blue-100 text-blue-700', solar: 'bg-yellow-100 text-yellow-700',
-  tiktok: 'bg-pink-100 text-pink-700', general: 'bg-zinc-100 text-zinc-700',
+  gas: 'bg-blue-100 text-blue-700', combustible: 'bg-amber-100 text-amber-700',
+  motos: 'bg-purple-100 text-purple-700', paneles: 'bg-green-100 text-green-700',
+  electrodomesticos: 'bg-blue-100 text-blue-700', ferreteria: 'bg-zinc-100 text-zinc-700',
+  general: 'bg-zinc-100 text-zinc-700',
 };
 
 interface ProductForm {
@@ -74,6 +79,7 @@ export function TiendaAdmin() {
   const [filterCat, setFilterCat] = useState<string>('all');
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -315,23 +321,37 @@ export function TiendaAdmin() {
                   <button type="button" onClick={() => setForm({ ...form, imagenUrl: '' })} className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"><X className="h-4 w-4" /></button>
                 </div>
               )}
-              {!form.imagenUrl && (
-                <div className="relative border-2 border-dashed border-zinc-200 hover:border-blue-400 rounded-lg p-6 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-blue-50/30"
+              {!form.imagenUrl ? (
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative border-2 border-dashed border-zinc-200 hover:border-blue-400 rounded-lg p-4 text-center cursor-pointer transition-colors bg-zinc-50 hover:bg-blue-50/30"
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   onDrop={async (e) => { e.preventDefault(); e.stopPropagation(); const file = e.dataTransfer.files[0]; if (file) await handleImageUpload(file); }}>
-                  <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); e.target.value = ''; }} />
+                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); e.target.value = ''; }} />
                   {uploadingImage ? (
-                    <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 text-blue-600 animate-spin" /><p className="text-xs text-zinc-500">Subiendo imagen...</p></div>
+                    <div className="flex flex-col items-center gap-2"><Loader2 className="h-8 w-8 text-blue-600 animate-spin" /><p className="text-xs text-zinc-500">Subiendo...</p></div>
                   ) : (
                     <div className="flex flex-col items-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"><Upload className="h-5 w-5 text-[#123d83]" /></div>
-                      <div><p className="text-sm font-medium text-zinc-700">Haz clic o arrastra una imagen</p><p className="text-xs text-zinc-400 mt-0.5">JPG, PNG, GIF o WebP (máx. 4MB)</p></div>
+                      <div><p className="text-sm font-medium text-zinc-700">Elegir archivo</p><p className="text-xs text-zinc-400">Cualquier formato</p></div>
                     </div>
                   )}
                 </div>
-              )}
-              <details className="mt-1"><summary className="text-xs text-zinc-400 cursor-pointer hover:text-zinc-600 transition-colors">O pegar URL de imagen...</summary><Input className="mt-1" value={form.imagenUrl} onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })} placeholder="https://ejemplo.com/imagen.jpg" /></details>
+                <div className="relative border-2 border-dashed border-green-200 hover:border-green-400 rounded-lg p-4 text-center cursor-pointer transition-colors bg-green-50/30" onClick={() => cameraInputRef.current?.click()}>
+                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); e.target.value = ''; }} />
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center"><Camera className="h-5 w-5 text-green-600" /></div>
+                    <div><p className="text-sm font-medium text-zinc-700">Tomar foto</p><p className="text-xs text-zinc-400">Cámara del celular</p></div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative w-full h-36 rounded-lg overflow-hidden bg-zinc-100 border">
+                <img src={form.imagenUrl} alt="Vista previa" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <button type="button" onClick={() => setForm({ ...form, imagenUrl: '' })} className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"><X className="h-4 w-4" /></button>
+              </div>
+            )}
+              <details className="mt-1"><summary className="text-xs text-zinc-400 cursor-pointer hover:text-zinc-600 transition-colors">O pegar URL de imagen...</summary><Input className="mt-1" value={form.imagenUrl} onChange={(e) => setForm({ ...form, imagenUrl: e.target.value })} placeholder="https://..." /></details>
             </div>
             <div className="space-y-2"><Label className="text-xs font-medium">Link de Compra Directo</Label><Input value={form.tiktokUrl} onChange={(e) => setForm({ ...form, tiktokUrl: e.target.value })} placeholder="https://tu-tienda.com/producto/..." /></div>
             <div className="flex items-center gap-3 pt-2"><Switch checked={form.activo} onCheckedChange={(val) => setForm({ ...form, activo: val })} /><Label className="text-sm">Producto activo</Label></div>
