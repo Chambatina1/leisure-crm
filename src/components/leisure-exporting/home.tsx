@@ -131,7 +131,7 @@ export function Home() {
                 Ir a la Tienda
               </Button>
               <Button
-                onClick={() => setCurrentView('rastreador')}
+                onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
                 className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base"
               >
                 Rastrear pedido
