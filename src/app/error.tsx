@@ -7,6 +7,26 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Limpieza TOTAL: datos del sitio + cachés + service workers (el SW viejo
+  // congelaba la app sirviendo la versión anterior aunque el servidor fuera nueva)
+  const handleFullReset = async () => {
+    try { localStorage.clear(); } catch {}
+    try { sessionStorage.clear(); } catch {}
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+    } catch {}
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map((r) => r.unregister()));
+      }
+    } catch {}
+    window.location.reload();
+  };
+
   return (
     <html>
       <body style={{
@@ -22,7 +42,7 @@ export default function GlobalError({
         <div style={{
           textAlign: 'center',
           padding: '2rem',
-          maxWidth: '400px',
+          maxWidth: '420px',
         }}>
           <div style={{
             fontSize: '3rem',
@@ -37,27 +57,35 @@ export default function GlobalError({
           <p style={{
             color: '#71717a',
             fontSize: '0.875rem',
-            marginBottom: '1.5rem',
+            marginBottom: '1rem',
           }}>
-            Ocurrió un error inesperado. Esto puede deberse a datos temporales.
+            Se limpiará la memoria del navegador (incluida la versión congelada) y se recargará.
+          </p>
+          {/* Detalle técnico del error real — ayuda a diagnosticar */}
+          <p style={{
+            color: '#a1a1aa',
+            fontSize: '0.7rem',
+            marginBottom: '1.5rem',
+            wordBreak: 'break-word',
+            fontFamily: 'monospace',
+          }}>
+            {error?.message || 'Error desconocido'}
+            {error?.digest ? ` · ${error.digest}` : ''}
           </p>
           <button
-            onClick={() => {
-              try { localStorage.clear(); } catch {}
-              reset();
-            }}
+            onClick={handleFullReset}
             style={{
-              backgroundColor: '#f59e0b',
+              backgroundColor: '#123d83',
               color: 'white',
               border: 'none',
-              padding: '0.625rem 1.5rem',
+              padding: '0.75rem 1.75rem',
               borderRadius: '0.5rem',
-              fontSize: '0.875rem',
+              fontSize: '0.9rem',
               fontWeight: '600',
               cursor: 'pointer',
             }}
           >
-            Reintentar
+            Limpiar todo y recargar
           </button>
         </div>
       </body>
