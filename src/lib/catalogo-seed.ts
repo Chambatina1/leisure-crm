@@ -22,19 +22,29 @@ interface SeedProduct {
 }
 
 async function seedIfEmpty(): Promise<void> {
-  const count = await db.tiendaProduct.count();
-  if (count > 0) return;
+  const products = await db.tiendaProduct.findMany({ select: { nombre: true } });
+  const existing = new Set(products.map((p) => p.nombre.trim()));
 
   try {
     const seedPath = path.join(process.cwd(), 'src', 'data', 'catalogo-seed.json');
     const raw = await fs.readFile(seedPath, 'utf-8');
-    const products: SeedProduct[] = JSON.parse(raw);
-    if (!Array.isArray(products) || products.length === 0) return;
+    const seedProducts: SeedProduct[] = JSON.parse(raw);
+    if (!Array.isArray(seedProducts) || seedProducts.length === 0) return;
 
-    // Insertar en lotes para no saturar la conexión
+    // Restablecer SOLO los que falten (por nombre). Protege tanto borrados
+    // masivos (deploys) como parciales, sin duplicar ni tocar lo existente.
+    const missing = seedProducts.filter((p) => !existing.has(p.nombre.trim()));
+
+    // Si el catálogo está sano (casi todo presente) y solo faltan pocos,
+    // respetar las eliminaciones intencionales hechas desde el admin.
+    const mayormenteVacio = products.length < seedProducts.length / 2;
+    if (missing.length === 0) return;
+    if (!mayormenteVacio && missing.length <= 3) return;
+
     const BATCH = 20;
-    for (let i = 0; i < products.length; i += BATCH) {
-      const batch = products.slice(i, i + BATCH).map((p) => ({
+    let inserted = 0;
+    for (let i = 0; i < missing.length; i += BATCH) {
+      const batch = missing.slice(i, i + BATCH).map((p) => ({
         nombre: p.nombre,
         descripcion: p.descripcion || null,
         precio: p.precio,
@@ -44,8 +54,9 @@ async function seedIfEmpty(): Promise<void> {
         orden: p.orden ?? 10,
       }));
       await db.tiendaProduct.createMany({ data: batch });
+      inserted += batch.length;
     }
-    console.log(`[Catálogo] Auto-restaurado: ${products.length} productos desde la semilla`);
+    console.log(`[Catálogo] Auto-restaurado: ${inserted} productos desde la semilla`);
   } catch (error) {
     // Si no hay semilla o falla, no romper la app — solo registrar
     console.error('[Catálogo] No se pudo auto-restaurar:', error);
