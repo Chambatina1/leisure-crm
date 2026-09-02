@@ -36,8 +36,15 @@ const CATEGORIAS = [
   { value: 'gas', label: 'Balas de Gas' },
   { value: 'combustible', label: 'Combustible' },
   { value: 'motos', label: 'Motos' },
+  { value: 'motoselectricas', label: 'Motos Eléctricas' },
+  { value: 'triciclos', label: 'Triciclos' },
+  { value: 'bicicletas', label: 'Bicicletas' },
   { value: 'paneles', label: 'Paneles Solares' },
+  { value: 'plantas', label: 'Plantas Eléctricas' },
   { value: 'electrodomesticos', label: 'Electrodomésticos' },
+  { value: 'celulares', label: 'Teléfonos' },
+  { value: 'alimentos', label: 'Alimentos' },
+  { value: 'insumos', label: 'Insumos' },
   { value: 'ferreteria', label: 'Ferretería' },
   { value: 'general', label: 'General' },
 ];
@@ -45,8 +52,11 @@ const CATEGORIAS = [
 const CATEGORIA_COLORS: Record<string, string> = {
   gas: 'bg-blue-100 text-blue-700', combustible: 'bg-amber-100 text-amber-700',
   motos: 'bg-purple-100 text-purple-700', paneles: 'bg-green-100 text-green-700',
-  electrodomesticos: 'bg-blue-100 text-blue-700', ferreteria: 'bg-zinc-100 text-zinc-700',
-  general: 'bg-zinc-100 text-zinc-700',
+  motoselectricas: 'bg-cyan-100 text-cyan-700', triciclos: 'bg-purple-100 text-purple-700',
+  bicicletas: 'bg-purple-100 text-purple-700', plantas: 'bg-red-100 text-red-700',
+  electrodomesticos: 'bg-blue-100 text-blue-700', celulares: 'bg-sky-100 text-sky-700',
+  alimentos: 'bg-yellow-100 text-yellow-800', insumos: 'bg-zinc-100 text-zinc-700',
+  ferreteria: 'bg-zinc-100 text-zinc-700', general: 'bg-zinc-100 text-zinc-700',
 };
 
 interface ProductForm {
