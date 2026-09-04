@@ -5,7 +5,8 @@
 #   sudo bash install.sh <IP_PUBLICA_DEL_SERVIDOR> <PSK_GENERADO>
 #
 # Ejemplo:
-#   sudo bash install.sh 203.0.113.45 "$(openssl rand -base64 32)"
+#   sudo bash install.sh 203.0.113.45 "$(openssl rand -hex 32)"
+# (usar hex: los PSK base64 contienen '/' y rompen el sed de abajo)
 # ═══════════════════════════════════════════════════════════════════
 set -euo pipefail
 

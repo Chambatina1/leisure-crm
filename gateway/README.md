@@ -23,7 +23,7 @@ Túnel **IPsec Site-to-Site (IKEv2)** que cumple el formulario técnico de ETECS
 ## Instalación (Ubuntu 24.04, como root)
 
 ```bash
-sudo bash install.sh <IP_PUBLICA_DEL_SERVIDOR> "$(openssl rand -base64 32)"
+sudo bash install.sh <IP_PUBLICA_DEL_SERVIDOR> "$(openssl rand -hex 32)"
 ```
 
 ## Verificación
