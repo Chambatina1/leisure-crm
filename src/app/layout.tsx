@@ -15,16 +15,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://leisureexportin.com"),
+  metadataBase: new URL("https://leisureexporting.com"),
   title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
   description:
     "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Leisure Exporting LLC.",
   alternates: {
-    canonical: "https://leisureexportin.com",
+    canonical: "https://leisureexporting.com",
   },
   openGraph: {
     type: "website",
-    url: "https://leisureexportin.com",
+    url: "https://leisureexporting.com",
     siteName: "Leisure Exporting LLC",
     title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
     description: "Balas de gas, combustible en isotanques, tienda y envíos a Cuba.",
