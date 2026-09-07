@@ -139,3 +139,20 @@
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.7 0.1 55);
 }
+
+/* ═══ Hero animado Leisure (olas + partículas) ═══ */
+@keyframes waveSlide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes rise {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-540px); opacity: 0; }
+}
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+.hero-float { animation: floatSoft 5s ease-in-out infinite; }

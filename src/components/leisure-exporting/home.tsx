@@ -20,45 +20,38 @@ import {
   Refrigerator,
   ShoppingCart,
 } from 'lucide-react';
-
-const VIDEO_BG = "https://videos.pexels.com/video-files/3840442/3840442-hd_1280_720_30fps.mp4";
+import { GasCylindersSVG, IsotankSVG, DrumsSVG, AnimatedSeaBackground } from './hero-illustrations';
 
 const SLIDES = [
   {
     id: 'gas',
     icon: Flame,
     titulo: 'Balas de Gas',
-    sub: '10, 20, 25 y 100 lb — entrega a domicilio',
+    sub: '10, 20, 25 y 100 lb — entrega a domicilio en toda Cuba',
     precio: 'Desde $15.00',
     texto: 'Reservá tu balita',
-    color: '#123d83',
+    color: '#55b949',
+    imagen: <GasCylindersSVG />,
   },
   {
-    id: 'combustible',
+    id: 'isotanques',
     icon: Fuel,
-    titulo: 'Combustible',
-    sub: 'Gasolina, diésel y petróleo — isotanques y tambores',
+    titulo: 'Isotanques',
+    sub: 'Combustible a granel en isotanques certificados — marítimo y aéreo',
     precio: 'Desde $5.26/gal',
     texto: 'Pedí combustible',
+    color: '#2f7fd1',
+    imagen: <IsotankSVG />,
+  },
+  {
+    id: 'tambores',
+    icon: Package,
+    titulo: 'Tambores de Combustible',
+    sub: 'Gasolina, diésel y petróleo — mayorista y minorista',
+    precio: 'Precios al mayoreo',
+    texto: 'Cotizá al mayoreo',
     color: '#e0a106',
-  },
-  {
-    id: 'electro',
-    icon: Refrigerator,
-    titulo: 'Electrodomésticos',
-    sub: 'Neveras, cocinas, lavadoras, freezers, ventiladores',
-    precio: 'Envío a Cuba',
-    texto: 'Comprá para tu familia',
-    color: '#1f6b3a',
-  },
-  {
-    id: 'motos',
-    icon: Bike,
-    titulo: 'Motos',
-    sub: 'Eléctricas y de gasolina — envío completo',
-    precio: 'Desde $1,200',
-    texto: 'Tu moto en Cuba',
-    color: '#7c3aed',
+    imagen: <DrumsSVG />,
   },
 ];
 
@@ -77,88 +70,98 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
-      {/* ═══ HERO CON VIDEO DE FONDO ═══ */}
-      <section className="relative h-[500px] overflow-hidden">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={VIDEO_BG} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/80 via-[#071a46]/60 to-[#071a46]/90" />
+      {/* ═══ HERO CON FONDO MARINO ANIMADO + CARRUSEL ═══ */}
+      <section className="relative h-[520px] overflow-hidden">
+        <AnimatedSeaBackground />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
-          <div className="w-full">
-            <motion.img
-              src="/logo-white.svg"
-              alt="Leisure Exporting LLC"
-              className="h-12 mb-6"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-            />
+          <div className="w-full grid md:grid-cols-2 gap-6 items-center">
+            {/* Texto del carrusel */}
+            <div>
+              <motion.img
+                src="/logo-white.svg"
+                alt="Leisure Exporting LLC"
+                className="h-12 mb-6"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+              />
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={slide}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
-                transition={{ duration: 0.4 }}
-              >
-                <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-white text-sm font-bold mb-4"
-                  style={{ background: `${slideActual.color}40` }}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <Icono className="w-4 h-4" />
-                  {slideActual.precio}
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black text-white leading-none tracking-tight">
-                  {slideActual.titulo}
-                </h1>
-                <p className="text-lg text-white/80 mt-4 max-w-md">{slideActual.sub}</p>
-              </motion.div>
-            </AnimatePresence>
+                  <div
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-white text-sm font-bold mb-4"
+                    style={{ background: `${slideActual.color}55` }}
+                  >
+                    <Icono className="w-4 h-4" />
+                    {slideActual.precio}
+                  </div>
+                  <h1 className="text-5xl md:text-6xl font-black text-white leading-none tracking-tight">
+                    {slideActual.titulo}
+                  </h1>
+                  <p className="text-lg text-white/80 mt-4 max-w-md">{slideActual.sub}</p>
+                </motion.div>
+              </AnimatePresence>
 
-            <div className="flex gap-3 mt-8">
-              <Button
-                onClick={() => setCurrentView('tienda')}
-                className="bg-[#55b949] hover:bg-[#348f39] text-white font-bold px-8 py-6 text-base"
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Ir a la Tienda
-              </Button>
-              <Button
-                onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
-                className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base"
-              >
-                Rastrear pedido
-              </Button>
+              <div className="flex gap-3 mt-8">
+                <Button
+                  onClick={() => setCurrentView('tienda')}
+                  className="bg-[#55b949] hover:bg-[#348f39] text-white font-bold px-8 py-6 text-base"
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Ir a la Tienda
+                </Button>
+                <Button
+                  onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
+                  className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base"
+                >
+                  Rastrear pedido
+                </Button>
+              </div>
+
+              {/* Flechas y puntos */}
+              <div className="flex items-center gap-2 mt-8">
+                <button
+                  onClick={() => setSlide(s => (s - 1 + SLIDES.length) % SLIDES.length)}
+                  className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                {SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSlide(i)}
+                    className={`w-3 h-3 rounded-full transition-all ${i === slide ? 'bg-white scale-125' : 'bg-white/40'}`}
+                  />
+                ))}
+                <button
+                  onClick={() => setSlide(s => (s + 1) % SLIDES.length)}
+                  className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            {/* Flechas y puntos */}
-            <div className="flex items-center gap-2 mt-8">
-              <button
-                onClick={() => setSlide(s => (s - 1 + SLIDES.length) % SLIDES.length)}
-                className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              {SLIDES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSlide(i)}
-                  className={`w-3 h-3 rounded-full transition-all ${i === slide ? 'bg-white scale-125' : 'bg-white/40'}`}
-                />
-              ))}
-              <button
-                onClick={() => setSlide(s => (s + 1) % SLIDES.length)}
-                className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+            {/* Ilustración del carrusel (flotando suavemente) */}
+            <div className="hidden md:block h-[380px] relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide}
+                  className="absolute inset-0 hero-float"
+                  initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, rotate: 2 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {slideActual.imagen}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -166,7 +169,7 @@ export function Home() {
 
       {/* ═══ 4 SERVICIOS PRINCIPALES ═══ */}
       <section className="max-w-6xl mx-auto px-6 -mt-10 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {SLIDES.map((s) => {
             const Ico = s.icon;
             return (

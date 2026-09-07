@@ -15,9 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Leisure Exporting LLC — Tienda, Combustible y Envíos",
+  metadataBase: new URL("https://leisureexportin.com"),
+  title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
   description:
-    "Balas de gas, combustible, electrodomésticos, motos y envíos a Cuba. Todo desde Leisure Exporting LLC.",
+    "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Leisure Exporting LLC.",
+  alternates: {
+    canonical: "https://leisureexportin.com",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://leisureexportin.com",
+    siteName: "Leisure Exporting LLC",
+    title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
+    description: "Balas de gas, combustible en isotanques, tienda y envíos a Cuba.",
+  },
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "32x32", type: "image/png" },

@@ -60,9 +60,6 @@ function PublicNavbar() {
               </div>
               <div>
                 <h1 className="text-lg font-black text-[#071a46] tracking-wide">LEISURE EXPORTING</h1>
-                <p className="text-[11px] text-[#55b949] font-bold tracking-widest uppercase -mt-0.5">
-                  Envíos Internacionales
-                </p>
               </div>
             </button>
 
@@ -129,9 +126,6 @@ function PublicNavbar() {
                       </div>
                       <div>
                         <h2 className="text-lg font-bold text-zinc-900">LEISURE EXPORTING</h2>
-                        <p className="text-[10px] text-blue-600 font-medium tracking-widest uppercase">
-                          Envíos Internacionales
-                        </p>
                       </div>
                     </div>
                   </div>

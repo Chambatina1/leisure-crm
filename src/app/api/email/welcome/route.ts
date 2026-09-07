@@ -171,7 +171,7 @@ function buildWelcomeHtml(
                           <div style="width:40px;height:40px;background:#F59E0B;border-radius:10px;text-align:center;line-height:40px;font-size:20px;">📦</div>
                         </td>
                         <td style="padding-left:12px;">
-                          <p style="margin:0 0 2px;font-size:15px;font-weight:700;color:#92400E;">Envíos Internacionales</p>
+                          
                           <p style="margin:0;font-size:13px;color:#78716C;line-height:1.5;">Desde $1.80/lb · Equipo, recogida a domicilio y compras TikTok</p>
                         </td>
                       </tr>
