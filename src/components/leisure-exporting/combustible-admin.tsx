@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Zap, RefreshCw, Copy, Check, X, Phone } from 'lucide-react';
+import { Zap, RefreshCw, Copy, Check, X, Phone, MapPin, Fuel } from 'lucide-react';
 
 interface Solicitud {
   id: number;
@@ -39,6 +39,16 @@ export function CombustibleAdmin() {
 
   const clave = 'leisure-exporting2024'; // fase 1 — misma clave del panel
 
+  const [stock, setStock] = useState<Array<{ servicenterId: number; estacionNombre: string; direccion: string; combustible: string; amount: number; priceXLiter: number; totalUsd: number; mapsUrl: string }>>([]);
+
+  const cargarStock = useCallback(async () => {
+    try {
+      const r = await fetch('/api/cupet/stock', { headers: { 'x-admin-password': clave } });
+      const j = await r.json();
+      if (j.ok) setStock(j.data);
+    } catch { /* silencioso */ }
+  }, []);
+
   const cargar = useCallback(async () => {
     setCargando(true);
     try {
@@ -52,7 +62,7 @@ export function CombustibleAdmin() {
     }
   }, []);
 
-  useEffect(() => { cargar(); }, [cargar]);
+  useEffect(() => { cargar(); cargarStock(); }, [cargar, cargarStock]);
 
   const confirmar = async (id: number) => {
     setProcesando(id);
@@ -105,6 +115,36 @@ Beneficiario: ${s.nombreBeneficiario}`);
         </div>
         <Button variant="secondary" onClick={cargar}><RefreshCw className="w-4 h-4 mr-1" /> Actualizar</Button>
       </div>
+
+      {/* ═══ MI STOCK: dónde está la gasolina ═══ */}
+      {stock.length > 0 && (
+        <Card className="bg-gradient-to-r from-[#071a46] to-[#123d83] text-white">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Fuel className="w-5 h-5 text-[#7ed957]" />
+              <h2 className="font-black">Mi combustible — dónde está tu gasolina</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {stock.map((s, i) => (
+                <a key={i} href={s.mapsUrl} target="_blank" rel="noopener noreferrer"
+                   className="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold">{s.combustible}</span>
+                    <span className="text-xl font-black text-[#7ed957]">{s.amount} L</span>
+                  </div>
+                  <p className="text-sm text-white/80 mt-1 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5" /> {s.estacionNombre}
+                  </p>
+                  <p className="text-xs text-white/50">{s.direccion}</p>
+                  <p className="text-xs text-white/60 mt-1">
+                    ${s.priceXLiter.toFixed(2)}/L · valor total ${s.totalUsd.toFixed(2)} · clic para ver en el mapa →
+                  </p>
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {mensaje && (
         <div className="bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-xl px-4 py-3 font-semibold">
