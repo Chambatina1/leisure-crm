@@ -45,6 +45,7 @@ export function CombustibleCupet() {
   const [nombre, setNombre] = useState('');
   const [ci, setCi] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [montoPagado, setMontoPagado] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoOrden | null>(null);
   const [copiado, setCopiado] = useState(false);
@@ -76,7 +77,10 @@ export function CombustibleCupet() {
           amount: parseFloat(litros),
           identifyProvider: ci,
           nameProvider: nombre,
-          phoneProvider: telefono || undefined,
+          phoneProvider: telefono,
+          bankId: '12',
+          amountPaid: parseFloat(montoPagado),
+          currency: 'USD',
         }),
       });
       const json = await res.json();
@@ -215,8 +219,9 @@ export function CombustibleCupet() {
             </div>
             <Input label="Nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellidos" />
             <Input label="Carnet de identidad (CI)" value={ci} onChange={(e) => setCi(e.target.value.replace(/[^0-9A-Za-z]/g, ''))} placeholder="Ej: 85073109694" />
-            <Input label="Teléfono en Cuba (opcional)" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="5XXXXXXXX" />
-            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || ci.length < 5} onClick={enviar}>
+            <Input label="Teléfono en Cuba" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="5XXXXXXXX" />
+            <Input label="Monto pagado (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
+            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || ci.length < 5 || telefono.length < 5 || !montoPagado || parseFloat(montoPagado) <= 0} onClick={enviar}>
               {enviando ? 'Registrando en CUPET…' : `⚡ Confirmar — ${litros} litros`}
             </Button>
           </CardContent>

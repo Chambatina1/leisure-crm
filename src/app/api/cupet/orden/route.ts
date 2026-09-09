@@ -8,10 +8,11 @@ const ordenSchema = z.object({
   amount: z.number().positive().max(2000),        // litros
   identifyProvider: z.string().min(5).max(20),    // CI del beneficiario
   nameProvider: z.string().min(3).max(100),
-  phoneProvider: z.string().max(20).optional(),
+  phoneProvider: z.string().min(5).max(20),   // obligatorio según CUPET
   mailProvider: z.string().email().optional(),
-  amountPaid: z.number().nonnegative().optional(),
+  amountPaid: z.number().positive(),          // obligatorio según CUPET
   currency: z.string().max(5).optional(),
+  bankId: z.string().max(20).optional(),
 });
 
 export async function POST(request: Request) {
