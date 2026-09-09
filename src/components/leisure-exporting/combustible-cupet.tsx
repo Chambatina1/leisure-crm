@@ -66,7 +66,7 @@ export function CombustibleCupet() {
         if (t.ok) setTipos(t.data || []);
         if (k.ok) setStock(k.data || []);
       })
-      .catch(() => setError('Error de conexión con CUPET'))
+      .catch(() => setError('Error de conexión, intenta de nuevo'))
       .finally(() => setCargando(false));
   }, []);
 
@@ -118,11 +118,23 @@ export function CombustibleCupet() {
   const precioDe = (sid: number, tid: number) => stock.find((k) => k.servicenterId === sid && k.typeFuelId === tid);
   const totalAuto = estacion && tipo && litros ? (precioDe(estacion.servicenterId, tipo.typeFuelId)?.precio ?? 0) * parseFloat(litros) : 0;
 
+  const [soloConStock, setSoloConStock] = useState(true);
+  const estacionesConStock = new Set(stock.map((k) => k.servicenterId));
+  const totalLitros = stock.reduce((s2, k) => s2 + k.litros, 0);
+  const resumenCombustibles = Object.values(
+    stock.reduce((acc: Record<number, { combustible: string; litros: number; precio: number }>, k) => {
+      acc[k.typeFuelId] = acc[k.typeFuelId] || { combustible: k.combustible, litros: 0, precio: k.precio };
+      acc[k.typeFuelId].litros += k.litros;
+      return acc;
+    }, {})
+  );
+
   const estacionesFiltradas = estaciones.filter(
     (e) =>
-      !busqueda ||
-      e.servicenterName.toLowerCase().includes(busqueda.toLowerCase()) ||
-      e.address.toLowerCase().includes(busqueda.toLowerCase())
+      (!soloConStock || estacionesConStock.has(e.servicenterId)) &&
+      (!busqueda ||
+        e.servicenterName.toLowerCase().includes(busqueda.toLowerCase()) ||
+        e.address.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
   return (
@@ -137,7 +149,7 @@ export function CombustibleCupet() {
             <Zap className="w-6 h-6 text-[#55b949]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-zinc-900">Combustible CUPET</h1>
+            <h1 className="text-2xl font-black text-zinc-900">Combustible</h1>
             <p className="text-sm text-zinc-500">Carga en gasolineras de Cuba — recibe tu PIN al instante</p>
           </div>
         </div>
@@ -161,46 +173,108 @@ export function CombustibleCupet() {
         </div>
       )}
 
+      {/* ═══ BANNER: dónde hay combustible HOY ═══ */}
+      {paso === 1 && !cargando && stock.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-[#071a46] via-[#123d83] to-[#1a4fa0] rounded-2xl p-5 text-white shadow-xl relative overflow-hidden mb-4"
+        >
+          <div className="absolute -right-4 -top-8 text-[110px] leading-none opacity-10 select-none">⛽</div>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Combustible disponible HOY</p>
+          <div className="flex items-end gap-3 mt-1">
+            <span className="text-4xl font-black text-[#7ed957]">{totalLitros.toLocaleString('es-ES')} L</span>
+            <span className="text-sm text-white/60 mb-1.5">
+              en {estacionesConStock.size} estación{estacionesConStock.size !== 1 ? 'es' : ''} de Cuba
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {resumenCombustibles.map((k) => (
+              <span key={k.combustible} className="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 text-xs font-bold">
+                <Droplets className="w-3.5 h-3.5 text-[#7ed957]" />
+                {k.combustible} · {k.litros} L · ${k.precio.toFixed(2)}/L
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* PASO 1: estación */}
       {!cargando && paso === 1 && (
         <Card>
           <CardHeader className="pb-3">
-            <h2 className="font-bold text-zinc-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-[#123d83]" /> Elige la gasolinera</h2>
+            <h2 className="font-bold text-zinc-900 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#123d83]" /> Elige la gasolinera
+            </h2>
             <Input placeholder="Buscar por nombre o dirección…" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+            <button
+              onClick={() => setSoloConStock(!soloConStock)}
+              className={`self-start mt-1 text-xs font-bold px-3 py-1.5 rounded-full transition-colors ${
+                soloConStock ? 'bg-[#55b949]/15 text-[#3a9e30]' : 'bg-zinc-100 text-zinc-500'
+              }`}
+            >
+              {soloConStock ? '✅ Solo con combustible' : 'Ver todas las estaciones'}
+            </button>
           </CardHeader>
-          <CardContent className="max-h-[420px] overflow-y-auto space-y-2">
-            {estacionesFiltradas.length === 0 && <p className="text-sm text-zinc-400 text-center py-6">Sin resultados</p>}
-            {[...estacionesFiltradas].sort((a, b) => (combustiblesEn(b.servicenterId).length - combustiblesEn(a.servicenterId).length)).map((e) => {
-              <button
-                key={e.servicenterId}
-                onClick={() => { setEstacion(e); setPaso(2); }}
-                className="w-full text-left p-4 rounded-xl border border-zinc-200 hover:border-[#123d83] hover:bg-blue-50/50 transition-all"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="font-bold text-zinc-900">{e.servicenterName}</div>
-                  {combustiblesEn(e.servicenterId).length > 0 && (
-                    <span className="bg-[#55b949]/10 text-[#3a9e30] text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                      ✅ Hay combustible
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-zinc-500">{e.address || 'Cuba'}</div>
-                {combustiblesEn(e.servicenterId).length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {combustiblesEn(e.servicenterId).map((k) => (
-                      <span key={k.typeFuelId} className="text-[11px] font-semibold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">
-                        {k.combustible}: {k.litros} L · ${k.precio.toFixed(2)}/L
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.servicenterName + ' ' + (e.address || 'Cuba'))}`}
-                   target="_blank" rel="noopener noreferrer"
-                   className="text-xs text-[#123d83] font-semibold mt-1 inline-flex items-center gap-1 hover:underline">
-                  📍 Ver ubicación en el mapa ↗
-                </a>
-              </button>
-            })}
+          <CardContent className="max-h-[420px] overflow-y-auto space-y-3">
+            {estacionesFiltradas.length === 0 && (
+              <p className="text-sm text-zinc-400 text-center py-6">
+                {soloConStock ? 'Ninguna estación coincide con stock disponible' : 'Sin resultados'}
+              </p>
+            )}
+            {[...estacionesFiltradas]
+              .sort((a, b) => combustiblesEn(b.servicenterId).length - combustiblesEn(a.servicenterId).length)
+              .map((e) => {
+                const disp = combustiblesEn(e.servicenterId);
+                return (
+                  <button
+                    key={e.servicenterId}
+                    onClick={() => { if (disp.length) { setEstacion(e); setPaso(2); } }}
+                    disabled={disp.length === 0}
+                    className={`w-full text-left p-4 rounded-xl transition-all ${
+                      disp.length
+                        ? 'border-l-4 border-[#55b949] bg-gradient-to-r from-[#55b949]/5 to-transparent border-y border-r border-zinc-200 hover:shadow-md hover:shadow-blue-100 hover:-translate-y-0.5'
+                        : 'border border-dashed border-zinc-200 opacity-55 cursor-not-allowed'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-zinc-900">{e.servicenterName}</div>
+                        <div className="text-sm text-zinc-500">{e.address || 'Cuba'}</div>
+                      </div>
+                      {disp.length ? (
+                        <span className="bg-[#55b949] text-white text-[10px] font-black px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm">
+                          DISPONIBLE
+                        </span>
+                      ) : (
+                        <span className="bg-zinc-100 text-zinc-400 text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+                          SIN STOCK
+                        </span>
+                      )}
+                    </div>
+                    {disp.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {disp.map((k) => (
+                          <span key={k.typeFuelId} className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 bg-white border border-zinc-100 shadow-sm px-2.5 py-1 rounded-full">
+                            <Droplets className={`w-3.5 h-3.5 ${/diesel/i.test(k.combustible) ? 'text-[#b45309]' : 'text-[#123d83]'}`} />
+                            {k.combustible}
+                            <span className="text-zinc-400 font-semibold">· {k.litros} L · ${k.precio.toFixed(2)}/L</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {disp.length > 0 && (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.servicenterName + ' ' + (e.address || 'Cuba'))}`}
+                        target="_blank" rel="noopener noreferrer"
+                        onClick={(ev) => ev.stopPropagation()}
+                        className="text-xs text-[#123d83] font-bold mt-2.5 inline-flex items-center gap-1 hover:underline"
+                      >
+                        📍 Ver ubicación exacta en el mapa ↗
+                      </a>
+                    )}
+                  </button>
+                );
+              })}
           </CardContent>
         </Card>
       )}
@@ -278,7 +352,7 @@ export function CombustibleCupet() {
             </div>
             <div className="bg-[#071a46] rounded-xl p-4 text-white">
               <div className="flex justify-between text-sm text-white/70">
-                <span>{tipo?.typeFuelName} · precio CUPET ${((precioDe(estacion?.servicenterId || 0, tipo?.typeFuelId || 0)?.precio) ?? 0).toFixed(2)}/L</span>
+                <span>{tipo?.typeFuelName} · precio por litro ${((precioDe(estacion?.servicenterId || 0, tipo?.typeFuelId || 0)?.precio) ?? 0).toFixed(2)}/L</span>
                 <span>{litros} L</span>
               </div>
               <div className="flex justify-between items-end mt-1">

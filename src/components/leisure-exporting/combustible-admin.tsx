@@ -88,7 +88,7 @@ export function CombustibleAdmin() {
 
   const copiarPin = (s: Solicitud) => {
     if (s.pin) {
-      navigator.clipboard.writeText(`Leisure Exporting — Combustible CUPET
+      navigator.clipboard.writeText(`Leisure Exporting — Combustible
 Orden: ${s.cupetTransactionId}
 PIN de carga: ${s.pin}
 ${s.typeFuelNombre} · ${s.litros} litros
@@ -109,7 +109,7 @@ Beneficiario: ${s.nombreBeneficiario}`);
             <Zap className="w-6 h-6 text-[#55b949]" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-zinc-900">Combustible CUPET</h1>
+            <h1 className="text-2xl font-black text-zinc-900">Combustible</h1>
             <p className="text-sm text-zinc-500">{pendientes.length} solicitud(es) pendiente(s) de pago</p>
           </div>
         </div>
@@ -187,7 +187,7 @@ Beneficiario: ${s.nombreBeneficiario}`);
                       disabled={procesando === s.id}
                       onClick={() => confirmar(s.id)}
                     >
-                      {procesando === s.id ? 'Registrando en CUPET…' : '✅ Pago recibido → Generar PIN'}
+                      {procesando === s.id ? 'Registrando orden…' : '✅ Pago recibido → Generar PIN'}
                     </Button>
                     <p className="text-[11px] text-zinc-400">Confirma solo cuando el Zelle llegó</p>
                   </>
