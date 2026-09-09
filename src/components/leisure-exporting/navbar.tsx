@@ -23,6 +23,7 @@ import {
   Store,
   Users,
   UserPlus,
+  Zap,
 } from 'lucide-react';
 
 // ---- PUBLIC NAV ----
@@ -30,6 +31,7 @@ import {
 const publicNavItems: { view: PublicView; label: string; icon: typeof Home }[] = [
   { view: 'home', label: 'Inicio', icon: Home },
   { view: 'tienda', label: 'Tienda', icon: ShoppingBag },
+  { view: 'combustible', label: 'Combustible', icon: Zap },
   { view: 'rastreador', label: 'Rastreador', icon: Search },
   { view: 'chat', label: 'Chat IA', icon: MessageCircle },
 ];

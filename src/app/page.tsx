@@ -8,6 +8,7 @@ import { LoginDialog } from '@/components/leisure-exporting/login-dialog';
 import { RegisterDialog } from '@/components/leisure-exporting/register-dialog';
 import { Home } from '@/components/leisure-exporting/home';
 import { Tienda } from '@/components/leisure-exporting/tienda';
+import { CombustibleCupet } from '@/components/leisure-exporting/combustible-cupet';
 import { PedidosList } from '@/components/leisure-exporting/pedidos-list';
 import { PedidoForm } from '@/components/leisure-exporting/pedido-form';
 import { PedidoDetail } from '@/components/leisure-exporting/pedido-detail';
@@ -189,6 +190,7 @@ export default function Page() {
       switch (currentView) {
         case 'home': return <Home />;
         case 'tienda': return <Tienda />;
+        case 'combustible': return <CombustibleCupet />;
         case 'rastreador': return <Rastreador />;
         case 'chat': return <ChatIA />;
         case 'pedido-public': return <PedidoForm />;
