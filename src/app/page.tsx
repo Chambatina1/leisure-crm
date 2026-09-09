@@ -18,6 +18,7 @@ import { ConfigPanel } from '@/components/leisure-exporting/config-panel';
 import { Rastreador } from '@/components/leisure-exporting/rastreador';
 import { ChatIA } from '@/components/leisure-exporting/chat-ia';
 import { TiendaAdmin } from '@/components/leisure-exporting/tienda-admin';
+import { CombustibleAdmin } from '@/components/leisure-exporting/combustible-admin';
 import { AITrainingPanel } from '@/components/leisure-exporting/ai-training-panel';
 import { AparienciaPanel } from '@/components/leisure-exporting/apariencia-panel';
 import { UsersPanel } from '@/components/leisure-exporting/users-panel';
@@ -206,6 +207,7 @@ export default function Page() {
         case 'tracking': return <TrackingUpload />;
         case 'config': return <ConfigPanel />;
         case 'tienda-admin': return <TiendaAdmin />;
+        case 'combustible-admin': return <CombustibleAdmin />;
         case 'ai-training': return <AITrainingPanel />;
         case 'apariencia': return <AparienciaPanel />;
         case 'users': return <UsersPanel />;

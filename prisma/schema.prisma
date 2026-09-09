@@ -105,3 +105,29 @@ model EmailLog {
 
   user      User?    @relation(fields: [userId], references: [id])
 }
+
+// ─── Solicitudes de Combustible CUPET (fase 1: Zelle + confirmación manual) ───
+model SolicitudCombustible {
+  id             Int       @id @default(autoincrement())
+  numero         String    @unique // SC-000001
+  nombreComprador String
+  telefonoComprador String
+  emailComprador String?
+  ciBeneficiario String
+  nombreBeneficiario String
+  telefonoCuba   String
+  servicenterId  Int
+  servicenterNombre String
+  typeFuelId     Int
+  typeFuelNombre String
+  litros         Float
+  montoUsd       Float
+  metodoPago     String    @default("ZELLE")
+  estado         String    @default("pendiente_pago") // pendiente_pago|pagada|anulada
+  cupetExternalId String?
+  cupetTransactionId Int?
+  pin            String?
+  expiracionPin  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}

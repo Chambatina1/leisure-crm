@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export type PublicView = 'home' | 'tienda' | 'combustible' | 'rastreador' | 'chat' | 'registro' | 'pedido-public';
-export type AdminView = 'dashboard' | 'pedidos' | 'tracking' | 'config' | 'pedido-detail' | 'pedido-form' | 'pedido-edit' | 'tienda-admin' | 'ai-training' | 'apariencia' | 'users' | 'emails';
+export type AdminView = 'dashboard' | 'pedidos' | 'tracking' | 'config' | 'pedido-detail' | 'pedido-form' | 'pedido-edit' | 'tienda-admin' | 'combustible-admin' | 'ai-training' | 'apariencia' | 'users' | 'emails';
 export type AppMode = 'public' | 'admin';
 
 interface UserData {

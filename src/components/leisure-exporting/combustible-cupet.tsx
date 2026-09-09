@@ -48,6 +48,7 @@ export function CombustibleCupet() {
   const [montoPagado, setMontoPagado] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoOrden | null>(null);
+  const [solicitud, setSolicitud] = useState<{ numero: string; montoUsd: number; zelle: string; instrucciones: string } | null>(null);
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
@@ -68,32 +69,30 @@ export function CombustibleCupet() {
     setEnviando(true);
     setError('');
     try {
-      const res = await fetch('/api/cupet/orden', {
+      // Calcular monto: litros × precio (se toma del campo montoPagado)
+      const res = await fetch('/api/cupet/solicitud', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          nombreComprador: nombre,
+          telefonoComprador: telefono,
+          nombreBeneficiario: nombre,
+          ciBeneficiario: ci,
+          telefonoCuba: telefono,
           servicenterId: estacion!.servicenterId,
+          servicenterNombre: estacion!.servicenterName,
           typeFuelId: tipo!.typeFuelId,
-          amount: parseFloat(litros),
-          identifyProvider: ci,
-          nameProvider: nombre,
-          phoneProvider: telefono,
-          bankId: '12',
-          amountPaid: parseFloat(montoPagado),
-          currency: 'USD',
+          typeFuelNombre: tipo!.typeFuelName,
+          litros: parseFloat(litros),
+          montoUsd: parseFloat(montoPagado),
         }),
       });
       const json = await res.json();
-      if (json.ok && json.data?.transactionId) {
-        setResultado(json);
+      if (json.ok) {
+        setSolicitud(json.data);
         setPaso(4);
       } else {
-        setError(
-          (json.data?.errors && json.data.errors[0]) ||
-          json.data?.message ||
-          json.error ||
-          'La orden no pudo registrarse'
-        );
+        setError(json.error || 'No se pudo crear la solicitud');
       }
     } catch {
       setError('Error de conexión');
@@ -228,8 +227,44 @@ export function CombustibleCupet() {
         </Card>
       )}
 
-      {/* PASO 4: ¡ÉXITO! */}
-      {paso === 4 && resultado?.data && (
+      {/* PASO 4: SOLICITUD CREADA — pagar por Zelle */}
+      {paso === 4 && solicitud && (
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+          <Card className="border-2 border-[#123d83]">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-8 h-8 text-[#123d83]" />
+              </div>
+              <h2 className="text-xl font-black text-zinc-900">Solicitud {solicitud.numero}</h2>
+              <p className="text-sm text-zinc-500 mb-6">
+                {tipo?.typeFuelName} · {litros} litros · {estacion?.servicenterName}
+              </p>
+
+              <div className="bg-gradient-to-br from-[#071a46] to-[#123d83] rounded-2xl p-6 mb-4">
+                <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Paga por Zelle</p>
+                <p className="text-3xl font-black text-white font-mono">{solicitud.zelle}</p>
+                <p className="text-2xl font-black text-[#7ed957] mt-2">
+                  ${solicitud.montoUsd.toFixed(2)} USD
+                </p>
+              </div>
+
+              <p className="text-sm text-zinc-600 mb-2">
+                <b>Importante:</b> usa la referencia <b className="font-mono">{solicitud.numero}</b> en tu pago.
+              </p>
+              <p className="text-sm text-zinc-500 mb-6">
+                Al confirmar tu pago te enviaremos el <b>PIN de carga</b> por WhatsApp.
+              </p>
+
+              <Button variant="outline" onClick={() => { setPaso(1); setSolicitud(null); setLitros(''); setTipo(null); setEstacion(null); setMontoPagado(''); }}>
+                Nueva solicitud
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* PASO 4b: orden directa (uso futuro) */}
+      {paso === 4 && !solicitud && resultado?.data && (
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
           <Card className="border-2 border-[#55b949]">
             <CardContent className="p-8 text-center">
