@@ -348,7 +348,8 @@ export function CombustibleCupet() {
               <p className="text-xs text-zinc-400 mb-3">Se valida el <b>carnet + PIN</b> en el surtidor: el nombre debe ser EXACTAMENTE como aparece en el carnet de identidad.</p>
               <div className="space-y-3">
                 <Input label="Nombre EXACTO como en el carnet" value={nombreBeneficiario} onChange={(e) => setNombreBeneficiario(e.target.value)} placeholder="Ej: EVELYN DOMINGUEZ GAITAN" />
-                <Input label="Número de carnet (CI)" value={ci} onChange={(e) => setCi(e.target.value.replace(/[^0-9A-Za-z]/g, ''))} placeholder="Ej: 85073109694 (11 dígitos)" />
+                <Input label={`Número de carnet (CI) ${ci.length}/11 dígitos`} inputMode="numeric" maxLength={11} value={ci} onChange={(e) => setCi(e.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="85073109694" className={ci.length > 0 && ci.length !== 11 ? 'border-red-400' : ''} />
+                {ci.length > 0 && ci.length !== 11 && <p className="text-xs text-red-500 mt-1">El carnet cubano tiene exactamente 11 dígitos (llevas {ci.length})</p>}
                 <Input label="Teléfono del beneficiario en Cuba" value={telefonoBeneficiario} onChange={(e) => setTelefonoBeneficiario(e.target.value)} placeholder="5XXXXXXXX (para enviarle el PIN)" />
               </div>
             </div>
@@ -366,7 +367,7 @@ export function CombustibleCupet() {
             ) : (
               <Input label="Monto a pagar (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
             )}
-            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length < 8 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))} onClick={enviar}>
+            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length !== 11 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))} onClick={enviar}>
               {enviando ? 'Enviando solicitud…' : `⚡ Solicitar — ${litros} litros de ${tipo?.typeFuelName}`}
             </Button>
           </CardContent>
