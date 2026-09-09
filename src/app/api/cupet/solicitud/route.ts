@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { z } from 'zod';
 
 // ═══════════════════════════════════════════════════════════════
@@ -28,6 +29,7 @@ const solicitudSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    await asegurarTablaSolicitudes();
     const body = solicitudSchema.parse(await request.json());
 
     // Número consecutivo SC-000001
@@ -75,6 +77,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    await asegurarTablaSolicitudes();
     if (!esAdmin(request)) {
       return NextResponse.json({ ok: false, error: 'No autorizado' }, { status: 401 });
     }

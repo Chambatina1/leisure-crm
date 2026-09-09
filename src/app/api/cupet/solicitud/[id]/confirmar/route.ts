@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { cupetPost } from '@/lib/cupet-proxy';
 
 // ═══════════════════════════════════════════════════════════════
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (request.headers.get('x-admin-password') !== CLAVE_ADMIN) {
       return NextResponse.json({ ok: false, error: 'No autorizado' }, { status: 401 });
     }
+    await asegurarTablaSolicitudes();
     const { id } = await params;
     const sol = await db.solicitudCombustible.findUnique({ where: { id: parseInt(id, 10) } });
     if (!sol) return NextResponse.json({ ok: false, error: 'Solicitud no encontrada' }, { status: 404 });
