@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -119,6 +120,7 @@ export function CombustibleCupet() {
   const totalAuto = estacion && tipo && litros ? (precioDe(estacion.servicenterId, tipo.typeFuelId)?.precio ?? 0) * parseFloat(litros) : 0;
 
   const [soloConStock, setSoloConStock] = useState(true);
+  const [mapa, setMapa] = useState<{ titulo: string; query: string } | null>(null);
   const estacionesConStock = new Set(stock.map((k) => k.servicenterId));
   const totalLitros = stock.reduce((s2, k) => s2 + k.litros, 0);
   const resumenCombustibles = Object.values(
@@ -263,14 +265,16 @@ export function CombustibleCupet() {
                       </div>
                     )}
                     {disp.length > 0 && (
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.servicenterName + ' ' + (e.address || 'Cuba'))}`}
-                        target="_blank" rel="noopener noreferrer"
-                        onClick={(ev) => ev.stopPropagation()}
-                        className="text-xs text-[#123d83] font-bold mt-2.5 inline-flex items-center gap-1 hover:underline"
+                      <span
+                        role="button"
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          setMapa({ titulo: e.servicenterName, query: `${e.servicenterName} ${e.address || 'Cuba'}` });
+                        }}
+                        className="text-xs text-[#123d83] font-bold mt-2.5 inline-flex items-center gap-1 hover:underline cursor-pointer"
                       >
-                        📍 Ver ubicación exacta en el mapa ↗
-                      </a>
+                        📍 Ver ubicación en el mapa
+                      </span>
                     )}
                   </button>
                 );
@@ -438,6 +442,42 @@ export function CombustibleCupet() {
           </Card>
         </motion.div>
       )}
+      {/* ═══ MAPA DENTRO DE LA WEB (sin salir de la tienda) ═══ */}
+      <Dialog open={!!mapa} onOpenChange={(v) => !v && setMapa(null)}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-left">
+              <MapPin className="w-4 h-4 text-[#123d83]" /> {mapa?.titulo}
+            </DialogTitle>
+          </DialogHeader>
+          {mapa && (
+            <iframe
+              title={`Mapa ${mapa.titulo}`}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(mapa.query)}&z=15&output=embed`}
+              className="w-full h-[380px] rounded-xl border border-zinc-100"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          )}
+          <div className="flex items-center justify-between gap-3">
+            <button
+              onClick={() => setMapa(null)}
+              className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
+            >
+              ← Volver a la tienda
+            </button>
+            {mapa && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapa.query)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="text-xs text-zinc-400 hover:text-zinc-600 font-semibold"
+              >
+                Abrir en la app de Mapas ↗
+              </a>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
