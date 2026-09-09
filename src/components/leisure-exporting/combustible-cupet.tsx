@@ -90,7 +90,7 @@ export function CombustibleCupet() {
           typeFuelId: tipo!.typeFuelId,
           typeFuelNombre: tipo!.typeFuelName,
           litros: parseFloat(litros),
-          montoUsd: totalAuto,
+          montoUsd: totalAuto > 0 ? totalAuto : parseFloat(montoPagado),
         }),
       });
       const json = await res.json();
@@ -230,8 +230,7 @@ export function CombustibleCupet() {
                 return (
                   <button
                     key={e.servicenterId}
-                    onClick={() => { if (disp.length) { setEstacion(e); setPaso(2); } }}
-                    disabled={disp.length === 0}
+                    onClick={() => { setEstacion(e); setPaso(2); }}
                     className={`w-full text-left p-4 rounded-xl transition-all ${
                       disp.length
                         ? 'border-l-4 border-[#55b949] bg-gradient-to-r from-[#55b949]/5 to-transparent border-y border-r border-zinc-200 hover:shadow-md hover:shadow-blue-100 hover:-translate-y-0.5'
@@ -297,8 +296,7 @@ export function CombustibleCupet() {
                 return (
                   <button
                     key={t.typeFuelId}
-                    onClick={() => k && setTipo(t)}
-                    disabled={!k}
+                    onClick={() => setTipo(t)}
                     className={`p-3 rounded-xl border-2 font-semibold text-sm transition-all text-left ${
                       tipo?.typeFuelId === t.typeFuelId
                         ? 'border-[#123d83] bg-blue-50 text-[#123d83]'
@@ -313,7 +311,7 @@ export function CombustibleCupet() {
                         ${k.precio.toFixed(2)}/litro · {k.litros} L disp.
                       </span>
                     )}
-                    {!k && <span className="block text-[11px] font-normal">Sin stock aquí</span>}
+                    {!k && <span className="block text-[11px] font-normal text-amber-500">Stock no confirmado aquí</span>}
                   </button>
                 );
               })}
@@ -354,17 +352,21 @@ export function CombustibleCupet() {
                 <Input label="Teléfono del beneficiario en Cuba" value={telefonoBeneficiario} onChange={(e) => setTelefonoBeneficiario(e.target.value)} placeholder="5XXXXXXXX (para enviarle el PIN)" />
               </div>
             </div>
-            <div className="bg-[#071a46] rounded-xl p-4 text-white">
-              <div className="flex justify-between text-sm text-white/70">
-                <span>{tipo?.typeFuelName} · precio por litro ${((precioDe(estacion?.servicenterId || 0, tipo?.typeFuelId || 0)?.precio) ?? 0).toFixed(2)}/L</span>
-                <span>{litros} L</span>
+            {precioDe(estacion?.servicenterId || 0, tipo?.typeFuelId || 0) ? (
+              <div className="bg-[#071a46] rounded-xl p-4 text-white">
+                <div className="flex justify-between text-sm text-white/70">
+                  <span>{tipo?.typeFuelName} · ${precioDe(estacion!.servicenterId, tipo!.typeFuelId)!.precio.toFixed(2)}/L</span>
+                  <span>{litros} L</span>
+                </div>
+                <div className="flex justify-between items-end mt-1">
+                  <span className="text-xs text-white/50 uppercase tracking-widest">Total a pagar</span>
+                  <span className="text-3xl font-black font-mono text-[#7ed957]">${totalAuto.toFixed(2)}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-end mt-1">
-                <span className="text-xs text-white/50 uppercase tracking-widest">Total a pagar</span>
-                <span className="text-3xl font-black font-mono text-[#7ed957]">${totalAuto.toFixed(2)}</span>
-              </div>
-            </div>
-            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length < 8 || telefono.length < 5 || telefonoBeneficiario.length < 5 || !montoPagado || parseFloat(montoPagado) <= 0} onClick={enviar}>
+            ) : (
+              <Input label="Monto a pagar (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
+            )}
+            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length < 8 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))} onClick={enviar}>
               {enviando ? 'Enviando solicitud…' : `⚡ Solicitar — ${litros} litros de ${tipo?.typeFuelName}`}
             </Button>
           </CardContent>
