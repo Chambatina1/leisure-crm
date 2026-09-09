@@ -38,6 +38,7 @@ export function CombustibleCupet() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
   const [busqueda, setBusqueda] = useState('');
+  const [stock, setStock] = useState<Array<{ servicenterId: number; typeFuelId: number; combustible: string; litros: number; precio: number }>>([]);
 
   const [estacion, setEstacion] = useState<Servicentro | null>(null);
   const [tipo, setTipo] = useState<TipoFuel | null>(null);
@@ -57,11 +58,13 @@ export function CombustibleCupet() {
     Promise.all([
       fetch('/api/cupet/servicentros').then((r) => r.json()),
       fetch('/api/cupet/tipos').then((r) => r.json()),
+      fetch('/api/cupet/stock-public').then((r) => r.json()),
     ])
-      .then(([e, t]) => {
+      .then(([e, t, k]) => {
         if (e.ok) setEstaciones(e.data || []);
         else setError(e.error || 'No se pudo cargar las estaciones');
         if (t.ok) setTipos(t.data || []);
+        if (k.ok) setStock(k.data || []);
       })
       .catch(() => setError('Error de conexión con CUPET'))
       .finally(() => setCargando(false));
@@ -86,7 +89,7 @@ export function CombustibleCupet() {
           typeFuelId: tipo!.typeFuelId,
           typeFuelNombre: tipo!.typeFuelName,
           litros: parseFloat(litros),
-          montoUsd: parseFloat(montoPagado),
+          montoUsd: totalAuto,
         }),
       });
       const json = await res.json();
@@ -110,6 +113,10 @@ export function CombustibleCupet() {
       setTimeout(() => setCopiado(false), 2000);
     }
   };
+
+  const combustiblesEn = (sid: number) => stock.filter((k) => k.servicenterId === sid);
+  const precioDe = (sid: number, tid: number) => stock.find((k) => k.servicenterId === sid && k.typeFuelId === tid);
+  const totalAuto = estacion && tipo && litros ? (precioDe(estacion.servicenterId, tipo.typeFuelId)?.precio ?? 0) * parseFloat(litros) : 0;
 
   const estacionesFiltradas = estaciones.filter(
     (e) =>
@@ -163,21 +170,37 @@ export function CombustibleCupet() {
           </CardHeader>
           <CardContent className="max-h-[420px] overflow-y-auto space-y-2">
             {estacionesFiltradas.length === 0 && <p className="text-sm text-zinc-400 text-center py-6">Sin resultados</p>}
-            {estacionesFiltradas.map((e) => (
+            {[...estacionesFiltradas].sort((a, b) => (combustiblesEn(b.servicenterId).length - combustiblesEn(a.servicenterId).length)).map((e) => {
               <button
                 key={e.servicenterId}
                 onClick={() => { setEstacion(e); setPaso(2); }}
                 className="w-full text-left p-4 rounded-xl border border-zinc-200 hover:border-[#123d83] hover:bg-blue-50/50 transition-all"
               >
-                <div className="font-bold text-zinc-900">{e.servicenterName}</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-bold text-zinc-900">{e.servicenterName}</div>
+                  {combustiblesEn(e.servicenterId).length > 0 && (
+                    <span className="bg-[#55b949]/10 text-[#3a9e30] text-[11px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                      ✅ Hay combustible
+                    </span>
+                  )}
+                </div>
                 <div className="text-sm text-zinc-500">{e.address || 'Cuba'}</div>
+                {combustiblesEn(e.servicenterId).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {combustiblesEn(e.servicenterId).map((k) => (
+                      <span key={k.typeFuelId} className="text-[11px] font-semibold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded-full">
+                        {k.combustible}: {k.litros} L · ${k.precio.toFixed(2)}/L
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.servicenterName + ' ' + (e.address || 'Cuba'))}`}
                    target="_blank" rel="noopener noreferrer"
                    className="text-xs text-[#123d83] font-semibold mt-1 inline-flex items-center gap-1 hover:underline">
                   📍 Ver ubicación en el mapa ↗
                 </a>
               </button>
-            ))}
+            })}
           </CardContent>
         </Card>
       )}
@@ -191,19 +214,31 @@ export function CombustibleCupet() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              {tipos.map((t) => (
-                <button
-                  key={t.typeFuelId}
-                  onClick={() => setTipo(t)}
-                  className={`p-3 rounded-xl border-2 font-semibold text-sm transition-all ${
-                    tipo?.typeFuelId === t.typeFuelId
-                      ? 'border-[#123d83] bg-blue-50 text-[#123d83]'
-                      : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
-                  }`}
-                >
-                  {t.typeFuelName}
-                </button>
-              ))}
+              {tipos.map((t) => {
+                const k = estacion ? precioDe(estacion.servicenterId, t.typeFuelId) : undefined;
+                return (
+                  <button
+                    key={t.typeFuelId}
+                    onClick={() => k && setTipo(t)}
+                    disabled={!k}
+                    className={`p-3 rounded-xl border-2 font-semibold text-sm transition-all text-left ${
+                      tipo?.typeFuelId === t.typeFuelId
+                        ? 'border-[#123d83] bg-blue-50 text-[#123d83]'
+                        : k
+                          ? 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                          : 'border-zinc-100 text-zinc-300 cursor-not-allowed'
+                    }`}
+                  >
+                    {t.typeFuelName}
+                    {k && (
+                      <span className="block text-[11px] font-normal text-[#3a9e30]">
+                        ${k.precio.toFixed(2)}/litro · {k.litros} L disp.
+                      </span>
+                    )}
+                    {!k && <span className="block text-[11px] font-normal">Sin stock aquí</span>}
+                  </button>
+                );
+              })}
             </div>
             <Input label="Litros" type="number" min="1" step="1" value={litros} onChange={(e) => setLitros(e.target.value)} placeholder="Ej: 40" />
             <Button className="w-full bg-[#123d83] hover:bg-[#071a46]" disabled={!tipo || !litros || parseFloat(litros) <= 0} onClick={() => setPaso(3)}>
@@ -241,7 +276,16 @@ export function CombustibleCupet() {
                 <Input label="Teléfono del beneficiario en Cuba" value={telefonoBeneficiario} onChange={(e) => setTelefonoBeneficiario(e.target.value)} placeholder="5XXXXXXXX (para enviarle el PIN)" />
               </div>
             </div>
-            <Input label="Monto pagado (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
+            <div className="bg-[#071a46] rounded-xl p-4 text-white">
+              <div className="flex justify-between text-sm text-white/70">
+                <span>{tipo?.typeFuelName} · precio CUPET ${((precioDe(estacion?.servicenterId || 0, tipo?.typeFuelId || 0)?.precio) ?? 0).toFixed(2)}/L</span>
+                <span>{litros} L</span>
+              </div>
+              <div className="flex justify-between items-end mt-1">
+                <span className="text-xs text-white/50 uppercase tracking-widest">Total a pagar</span>
+                <span className="text-3xl font-black font-mono text-[#7ed957]">${totalAuto.toFixed(2)}</span>
+              </div>
+            </div>
             <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length < 8 || telefono.length < 5 || telefonoBeneficiario.length < 5 || !montoPagado || parseFloat(montoPagado) <= 0} onClick={enviar}>
               {enviando ? 'Enviando solicitud…' : `⚡ Solicitar — ${litros} litros de ${tipo?.typeFuelName}`}
             </Button>
@@ -277,7 +321,7 @@ export function CombustibleCupet() {
                 Al confirmar tu pago te enviaremos el <b>PIN de carga</b> por WhatsApp.
               </p>
 
-              <Button variant="outline" onClick={() => { setPaso(1); setSolicitud(null); setLitros(''); setTipo(null); setEstacion(null); setMontoPagado(''); }}>
+              <Button variant="outline" onClick={() => { setPaso(1); setSolicitud(null); setLitros(''); setTipo(null); setEstacion(null); setMontoPagado(''); setNombreBeneficiario(''); setTelefonoBeneficiario(''); }}>
                 Nueva solicitud
               </Button>
             </CardContent>
