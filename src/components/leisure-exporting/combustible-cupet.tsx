@@ -43,8 +43,10 @@ export function CombustibleCupet() {
   const [tipo, setTipo] = useState<TipoFuel | null>(null);
   const [litros, setLitros] = useState('');
   const [nombre, setNombre] = useState('');
+  const [nombreBeneficiario, setNombreBeneficiario] = useState('');
+  const [telefonoBeneficiario, setTelefonoBeneficiario] = useState('');
   const [ci, setCi] = useState('');
-  const [telefono, setTelefono] = useState('');
+  const [telefono, setTelefono] = useState(''); // teléfono de quien paga
   const [montoPagado, setMontoPagado] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoOrden | null>(null);
@@ -76,9 +78,9 @@ export function CombustibleCupet() {
         body: JSON.stringify({
           nombreComprador: nombre,
           telefonoComprador: telefono,
-          nombreBeneficiario: nombre,
+          nombreBeneficiario: nombreBeneficiario,
           ciBeneficiario: ci,
-          telefonoCuba: telefono,
+          telefonoCuba: telefonoBeneficiario,
           servicenterId: estacion!.servicenterId,
           servicenterNombre: estacion!.servicenterName,
           typeFuelId: tipo!.typeFuelId,
@@ -169,6 +171,11 @@ export function CombustibleCupet() {
               >
                 <div className="font-bold text-zinc-900">{e.servicenterName}</div>
                 <div className="text-sm text-zinc-500">{e.address || 'Cuba'}</div>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.servicenterName + ' ' + (e.address || 'Cuba'))}`}
+                   target="_blank" rel="noopener noreferrer"
+                   className="text-xs text-[#123d83] font-semibold mt-1 inline-flex items-center gap-1 hover:underline">
+                  📍 Ver ubicación en el mapa ↗
+                </a>
               </button>
             ))}
           </CardContent>
@@ -216,12 +223,27 @@ export function CombustibleCupet() {
             <div className="bg-blue-50 rounded-xl p-3 text-sm text-zinc-600">
               {tipo?.typeFuelName} · <b>{litros} litros</b> · {estacion?.servicenterName}
             </div>
-            <Input label="Nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellidos" />
-            <Input label="Carnet de identidad (CI)" value={ci} onChange={(e) => setCi(e.target.value.replace(/[^0-9A-Za-z]/g, ''))} placeholder="Ej: 85073109694" />
-            <Input label="Teléfono en Cuba" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="5XXXXXXXX" />
+
+            <div className="border-t border-zinc-100 pt-4">
+              <p className="text-xs font-black text-[#123d83] uppercase tracking-wide mb-3">👤 1. Quien paga (tú, desde USA)</p>
+              <div className="space-y-3">
+                <Input label="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellidos del que paga" />
+                <Input label="Tu teléfono" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono de contacto en USA" />
+              </div>
+            </div>
+
+            <div className="border-t border-zinc-100 pt-4">
+              <p className="text-xs font-black text-[#b45309] uppercase tracking-wide mb-1">⛽ 2. Quien carga en Cuba (beneficiario)</p>
+              <p className="text-xs text-zinc-400 mb-3">CUPET valida el <b>carnet + PIN</b> en el surtidor: el nombre debe ser EXACTAMENTE como aparece en el carnet de identidad.</p>
+              <div className="space-y-3">
+                <Input label="Nombre EXACTO como en el carnet" value={nombreBeneficiario} onChange={(e) => setNombreBeneficiario(e.target.value)} placeholder="Ej: EVELYN DOMINGUEZ GAITAN" />
+                <Input label="Número de carnet (CI)" value={ci} onChange={(e) => setCi(e.target.value.replace(/[^0-9A-Za-z]/g, ''))} placeholder="Ej: 85073109694 (11 dígitos)" />
+                <Input label="Teléfono del beneficiario en Cuba" value={telefonoBeneficiario} onChange={(e) => setTelefonoBeneficiario(e.target.value)} placeholder="5XXXXXXXX (para enviarle el PIN)" />
+              </div>
+            </div>
             <Input label="Monto pagado (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
-            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || ci.length < 5 || telefono.length < 5 || !montoPagado || parseFloat(montoPagado) <= 0} onClick={enviar}>
-              {enviando ? 'Registrando en CUPET…' : `⚡ Confirmar — ${litros} litros`}
+            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length < 8 || telefono.length < 5 || telefonoBeneficiario.length < 5 || !montoPagado || parseFloat(montoPagado) <= 0} onClick={enviar}>
+              {enviando ? 'Enviando solicitud…' : `⚡ Solicitar — ${litros} litros de ${tipo?.typeFuelName}`}
             </Button>
           </CardContent>
         </Card>
