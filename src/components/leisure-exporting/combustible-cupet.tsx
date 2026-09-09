@@ -343,7 +343,7 @@ export function CombustibleCupet() {
 
             <div className="border-t border-zinc-100 pt-4">
               <p className="text-xs font-black text-[#b45309] uppercase tracking-wide mb-1">⛽ 2. Quien carga en Cuba (beneficiario)</p>
-              <p className="text-xs text-zinc-400 mb-3">CUPET valida el <b>carnet + PIN</b> en el surtidor: el nombre debe ser EXACTAMENTE como aparece en el carnet de identidad.</p>
+              <p className="text-xs text-zinc-400 mb-3">Se valida el <b>carnet + PIN</b> en el surtidor: el nombre debe ser EXACTAMENTE como aparece en el carnet de identidad.</p>
               <div className="space-y-3">
                 <Input label="Nombre EXACTO como en el carnet" value={nombreBeneficiario} onChange={(e) => setNombreBeneficiario(e.target.value)} placeholder="Ej: EVELYN DOMINGUEZ GAITAN" />
                 <Input label="Número de carnet (CI)" value={ci} onChange={(e) => setCi(e.target.value.replace(/[^0-9A-Za-z]/g, ''))} placeholder="Ej: 85073109694 (11 dígitos)" />
