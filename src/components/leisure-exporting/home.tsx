@@ -107,18 +107,17 @@ export function Home() {
           <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest text-center mb-5">Nuestros productos</h2>
           <div className="flex gap-4 overflow-x-auto pb-3 px-1" style={{ scrollbarWidth: 'thin' }}>
             {[
-              { img: '/carrusel/surtidor.png', titulo: 'Combustible', sub: 'Gasolineras de Cuba', view: 'combustible' },
-              { img: '/carrusel/bala-gas.png', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
-              { img: '/carrusel/inversor.png', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
-              { img: '/carrusel/moto.png', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/1', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/105', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/81', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
             ].map((prod, i) => (
               <button
                 key={i}
                 onClick={() => setCurrentView(prod.view as never)}
-                className="flex-shrink-0 w-[160px] sm:w-[180px] group"
+                className="flex-shrink-0 w-[170px] sm:w-[200px] group"
               >
-                <div className="h-[120px] sm:h-[140px] flex items-center justify-center rounded-2xl bg-gradient-to-b from-zinc-50 to-white border border-zinc-100 overflow-hidden group-hover:border-[#123d83]/30 group-hover:shadow-lg transition-all">
-                  <img src={prod.img} alt={prod.titulo} className="max-h-[100px] sm:max-h-[120px] object-contain" />
+                <div className="h-[130px] sm:h-[150px] rounded-2xl overflow-hidden border border-zinc-200 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 transition-all">
+                  <img src={prod.img} alt={prod.titulo} className="w-full h-full object-cover" loading="lazy" />
                 </div>
                 <p className="text-sm font-bold text-zinc-900 mt-2 text-center">{prod.titulo}</p>
                 <p className="text-xs text-zinc-400 text-center">{prod.sub}</p>
