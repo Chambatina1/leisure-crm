@@ -75,7 +75,13 @@ export function Home() {
       <section className="relative h-[60vh] min-h-[380px] md:h-[70vh] overflow-hidden">
         <video
           autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover hero-video-1"
+        >
+          <source src="/videos/malecon4.mp4" type="video/mp4" />
+        </video>
+        <video
+          autoPlay muted loop playsInline
+          className="absolute inset-0 w-full h-full object-cover hero-video-2"
         >
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
