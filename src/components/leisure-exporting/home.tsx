@@ -186,18 +186,18 @@ export function Home() {
       {/* ═══ 4 SERVICIOS PRINCIPALES ═══ */}
       <section className="max-w-6xl mx-auto px-6 -mt-10 relative z-20">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {SLIDES.map((s) => {
-            const Ico = s.icon;
+          {SLIDES.map((s, idx) => {
+            const esCombustible = idx === 0;
             return (
               <button
                 key={s.id}
-                onClick={() => setCurrentView('tienda')}
+                onClick={() => setCurrentView(esCombustible ? 'combustible' : 'tienda')}
                 className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all text-left group"
               >
                 <div className="h-24 flex items-center justify-center mb-3 overflow-hidden">
                   <div className="scale-150">{s.imagen}</div>
                 </div>
-                <h3 className="font-bold text-gray-900 text-lg">{s.titulo}</h3>
+                <h3 className="font-bold text-gray-900 text-lg">{esCombustible ? 'Combustible' : s.titulo}</h3>
                 <p className="text-sm text-gray-500 mt-1">{s.precio}</p>
                 <span
                   className="text-sm font-bold mt-3 inline-flex items-center gap-1 group-hover:gap-2 transition-all"
