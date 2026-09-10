@@ -85,8 +85,34 @@ export function Home() {
         >
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
-        {/* Sombra muy sutil abajo para el logo */}
+        {/* Sombra muy sutil abajo */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)" }} />
+
+        {/* LETRA CORRIDA arriba: Leisure Exporting — blanca, gruesa, elegante */}
+        <div className="absolute top-0 left-0 right-0 z-10 overflow-hidden bg-black/30 backdrop-blur-[2px] py-3">
+          <div className="flex whitespace-nowrap animate-marquee">
+            <span
+              className="text-2xl md:text-4xl font-black tracking-widest uppercase pr-12"
+              style={{
+                color: '#ffffff',
+                textShadow: '0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.2)',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+              }}
+            >
+              LEISURE EXPORTING · ENVÍOS A CUBA · COMBUSTIBLE · BALAS DE GAS · MOTOS ·
+            </span>
+            <span
+              className="text-2xl md:text-4xl font-black tracking-widest uppercase pr-12"
+              style={{
+                color: '#ffffff',
+                textShadow: '0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.2)',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+              }}
+            >
+              LEISURE EXPORTING · ENVÍOS A CUBA · COMBUSTIBLE · BALAS DE GAS · MOTOS ·
+            </span>
+          </div>
+        </div>
 
         {/* Logo centrado — el video corre sin interrupciones */}
       </section>
