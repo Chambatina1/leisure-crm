@@ -98,15 +98,6 @@ export function Home() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           />
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-            <button
-              onClick={() => setCurrentView('combustible')}
-              className="btn-combustible !w-auto px-10 text-base"
-              style={{ height: '3.5rem' }}
-            >
-              Comprar combustible
-            </button>
-          </motion.div>
         </div>
       </section>
 
@@ -142,6 +133,12 @@ export function Home() {
       {/* ═══ BOTONES PRINCIPALES ═══ */}
       <section className="max-w-4xl mx-auto px-4 py-6">
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={() => setCurrentView('combustible')}
+            className="btn-combustible"
+          >
+            Comprar combustible
+          </button>
           <Button
             onClick={() => setCurrentView('tienda')}
             className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-8 h-14 text-base shadow-lg"
