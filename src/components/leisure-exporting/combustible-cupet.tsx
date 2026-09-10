@@ -140,7 +140,15 @@ export function CombustibleCupet() {
   );
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 max-w-4xl mx-auto pb-32" /* pb-32: ningún botón queda bajo la barra móvil */>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 max-w-4xl mx-auto pb-32 relative">
+      {/* Video de fondo: Malecón propio */}
+      <video
+        autoPlay muted loop playsInline
+        className="fixed inset-0 w-full h-full object-cover pointer-events-none"
+      >
+        <source src="/videos/malecon.mp4" type="video/mp4" />
+      </video>
+      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-[#071a46]/85 via-[#0d2a5c]/78 to-[#123d83]/88" />
       {/* Encabezado */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={goBackToPublic} className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600">
