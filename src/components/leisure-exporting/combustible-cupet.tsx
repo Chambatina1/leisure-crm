@@ -140,7 +140,7 @@ export function CombustibleCupet() {
   );
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 max-w-4xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 sm:p-6 max-w-4xl mx-auto pb-32" /* pb-32: ningún botón queda bajo la barra móvil */>
       {/* Encabezado */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={goBackToPublic} className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600">
@@ -317,9 +317,11 @@ export function CombustibleCupet() {
               })}
             </div>
             <Input label="Litros" type="number" min="1" step="1" value={litros} onChange={(e) => setLitros(e.target.value)} placeholder="Ej: 40" />
-            <Button className="w-full bg-[#123d83] hover:bg-[#071a46]" disabled={!tipo || !litros || parseFloat(litros) <= 0} onClick={() => setPaso(3)}>
-              Continuar
-            </Button>
+            <div className="sticky bottom-4 pt-2" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+              <Button className="w-full h-14 text-base font-black shadow-lg shadow-blue-900/30 bg-[#123d83] hover:bg-[#071a46]" disabled={!tipo || !litros || parseFloat(litros) <= 0} onClick={() => setPaso(3)}>
+                Continuar →
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -367,9 +369,16 @@ export function CombustibleCupet() {
             ) : (
               <Input label="Monto a pagar (USD)" type="number" min="1" step="0.01" value={montoPagado} onChange={(e) => setMontoPagado(e.target.value)} placeholder="Ej: 65.00" />
             )}
-            <Button className="w-full bg-[#55b949] hover:bg-[#348f39] text-white font-bold" disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length !== 11 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))} onClick={enviar}>
-              {enviando ? 'Enviando solicitud…' : `⚡ Solicitar — ${litros} litros de ${tipo?.typeFuelName}`}
-            </Button>
+            <div className="sticky bottom-4 pt-2" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+              <button
+                disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length !== 11 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))}
+                onClick={enviar}
+                className="btn-combustible"
+              >
+              `⚡ Comprar — ${litros} litros · $${(totalAuto > 0 ? totalAuto : parseFloat(montoPagado || '0')).toFixed(2)}
+                {enviando && <span className="block text-sm font-semibold mt-0.5">Registrando tu solicitud…</span>}
+              </button>
+            </div>
           </CardContent>
         </Card>
       )}
