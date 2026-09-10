@@ -172,9 +172,9 @@ Beneficiario: ${s.nombreBeneficiario}`);
                 <p className="text-sm text-zinc-600">
                   <b>{s.typeFuelNombre}</b> · {s.litros} litros · ${s.montoUsd.toFixed(2)}
                 </p>
-                <p className="text-sm text-zinc-500">⛽ {s.servicenterNombre}</p>
+                <p className="text-sm text-zinc-500">{s.servicenterNombre}</p>
                 <p className="text-sm text-zinc-500">
-                  👤 {s.nombreBeneficiario} · CI {s.ciBeneficiario} · <Phone className="w-3 h-3 inline" /> {s.telefonoCuba}
+                  {s.nombreBeneficiario} · CI {s.ciBeneficiario} · <Phone className="w-3 h-3 inline" /> {s.telefonoCuba}
                 </p>
                 <p className="text-xs text-zinc-400">Solicitó: {s.nombreComprador} ({s.telefonoComprador}) · {new Date(s.createdAt).toLocaleString('es-ES')}</p>
               </div>
@@ -187,7 +187,7 @@ Beneficiario: ${s.nombreBeneficiario}`);
                       disabled={procesando === s.id}
                       onClick={() => confirmar(s.id)}
                     >
-                      {procesando === s.id ? 'Registrando orden…' : '✅ Pago recibido → Generar PIN'}
+                      {procesando === s.id ? 'Registrando orden…' : 'Pago recibido · Generar PIN'}
                     </Button>
                     <p className="text-[11px] text-zinc-400">Confirma solo cuando el Zelle llegó</p>
                   </>

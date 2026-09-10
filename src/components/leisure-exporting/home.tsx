@@ -125,7 +125,7 @@ export function Home() {
                   className="btn-combustible !w-auto px-8"
                   style={{ height: '3.75rem' }}
                 >
-                  ⚡ Comprar Combustible
+                  Comprar combustible
                 </button>
                 <Button
                   onClick={() => setCurrentView('tienda')}

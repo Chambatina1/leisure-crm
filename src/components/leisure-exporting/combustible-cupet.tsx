@@ -182,7 +182,7 @@ export function CombustibleCupet() {
           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           className="bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-5 text-white shadow-2xl relative overflow-hidden mb-4"
         >
-          <div className="absolute -right-4 -top-8 text-[110px] leading-none opacity-10 select-none">⛽</div>
+          
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Combustible disponible HOY</p>
           <div className="flex items-end gap-3 mt-1">
             <span className="text-4xl font-black text-[#7ed957]">{totalLitros.toLocaleString('es-ES')} L</span>
@@ -215,7 +215,7 @@ export function CombustibleCupet() {
                 soloConStock ? 'bg-[#55b949]/15 text-[#3a9e30]' : 'bg-zinc-100 text-zinc-500'
               }`}
             >
-              {soloConStock ? '✅ Solo con combustible' : 'Ver todas las estaciones'}
+              {soloConStock ? 'Solo con disponibilidad' : 'Ver todas las estaciones'}
             </button>
           </CardHeader>
           <CardContent className="max-h-[420px] overflow-y-auto space-y-3">
@@ -273,7 +273,7 @@ export function CombustibleCupet() {
                         }}
                         className="text-xs text-[#123d83] font-bold mt-2.5 inline-flex items-center gap-1 hover:underline cursor-pointer"
                       >
-                        📍 Ver ubicación en el mapa
+                        Ver ubicación en el mapa
                       </span>
                     )}
                   </button>
@@ -320,7 +320,7 @@ export function CombustibleCupet() {
             <Input label="Litros" type="number" min="1" step="1" value={litros} onChange={(e) => setLitros(e.target.value)} placeholder="Ej: 40" />
             <div className="sticky bottom-4 pt-2" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
               <Button className="w-full h-14 text-base font-black shadow-lg shadow-blue-900/30 bg-[#123d83] hover:bg-[#071a46]" disabled={!tipo || !litros || parseFloat(litros) <= 0} onClick={() => setPaso(3)}>
-                Continuar →
+                Continuar
               </Button>
             </div>
           </CardContent>
@@ -339,7 +339,7 @@ export function CombustibleCupet() {
             </div>
 
             <div className="border-t border-zinc-100 pt-4">
-              <p className="text-xs font-black text-[#123d83] uppercase tracking-wide mb-3">👤 1. Quien paga (tú, desde USA)</p>
+              <p className="text-xs font-black text-[#123d83] uppercase tracking-wide mb-3">1. Quien paga (desde USA)</p>
               <div className="space-y-3">
                 <Input label="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellidos del que paga" />
                 <Input label="Tu teléfono" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono de contacto en USA" />
@@ -347,7 +347,7 @@ export function CombustibleCupet() {
             </div>
 
             <div className="border-t border-zinc-100 pt-4">
-              <p className="text-xs font-black text-[#b45309] uppercase tracking-wide mb-1">⛽ 2. Quien carga en Cuba (beneficiario)</p>
+              <p className="text-xs font-black text-[#b45309] uppercase tracking-wide mb-1">2. Quien carga en Cuba (beneficiario)</p>
               <p className="text-xs text-zinc-400 mb-3">Se valida el <b>carnet + PIN</b> en el surtidor: el nombre debe ser EXACTAMENTE como aparece en el carnet de identidad.</p>
               <div className="space-y-3">
                 <Input label="Nombre EXACTO como en el carnet" value={nombreBeneficiario} onChange={(e) => setNombreBeneficiario(e.target.value)} placeholder="Ej: EVELYN DOMINGUEZ GAITAN" />
@@ -376,7 +376,7 @@ export function CombustibleCupet() {
                 onClick={enviar}
                 className="btn-combustible"
               >
-              `⚡ Comprar — ${litros} litros · $${(totalAuto > 0 ? totalAuto : parseFloat(montoPagado || '0')).toFixed(2)}
+              `Comprar — ${litros} litros · $${(totalAuto > 0 ? totalAuto : parseFloat(montoPagado || '0')).toFixed(2)}
                 {enviando && <span className="block text-sm font-semibold mt-0.5">Registrando tu solicitud…</span>}
               </button>
             </div>
@@ -478,7 +478,7 @@ export function CombustibleCupet() {
               onClick={() => setMapa(null)}
               className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors"
             >
-              ← Volver a la tienda
+              Volver a la tienda
             </button>
             {mapa && (
               <a
@@ -486,7 +486,7 @@ export function CombustibleCupet() {
                 target="_blank" rel="noopener noreferrer"
                 className="text-xs text-zinc-400 hover:text-zinc-600 font-semibold"
               >
-                Abrir en la app de Mapas ↗
+                Abrir en la app de Mapas
               </a>
             )}
           </div>
