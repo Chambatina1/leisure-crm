@@ -194,11 +194,8 @@ export function Home() {
                 onClick={() => setCurrentView('tienda')}
                 className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all text-left group"
               >
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: `${s.color}15`, color: s.color }}
-                >
-                  <Ico className="w-7 h-7" />
+                <div className="h-24 flex items-center justify-center mb-3 overflow-hidden">
+                  <div className="scale-150">{s.imagen}</div>
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg">{s.titulo}</h3>
                 <p className="text-sm text-gray-500 mt-1">{s.precio}</p>
