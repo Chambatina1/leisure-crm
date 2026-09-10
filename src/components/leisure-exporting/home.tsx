@@ -31,17 +31,17 @@ const SLIDES = [
     precio: 'Desde $15.00',
     texto: 'Reservá tu balita',
     color: '#55b949',
-    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/1?v=2" alt="Balas de gas reales" className="w-full h-full object-contain drop-shadow-2xl" />,
+    imagen: <img src="/carrusel/bala-gas.png" alt="Balas de gas" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
-    id: 'isotanques',
+    id: 'energia',
     icon: Fuel,
-    titulo: 'Isotanques',
-    sub: 'Combustible a granel en isotanques certificados — marítimo y aéreo',
-    precio: 'Desde $5.26/gal',
-    texto: 'Pedí combustible',
+    titulo: 'Energía Solar',
+    sub: 'Inversores y plantas eléctricas — entrega en Cuba',
+    precio: 'Desde $299',
+    texto: 'Consultá energía',
     color: '#2f7fd1',
-    imagen: <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tank%20container%20on%20trailer.jpg?width=900" alt="Isotanque real" className="w-full h-full object-contain drop-shadow-2xl" />,
+    imagen: <img src="/carrusel/moto.png" alt="Moto Panther" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
     id: 'motos',
@@ -51,7 +51,7 @@ const SLIDES = [
     precio: 'Desde $1,200',
     texto: 'Tu moto en Cuba',
     color: '#7c3aed',
-    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/81" alt="Moto Panther real" className="w-full h-full object-contain drop-shadow-2xl" />,
+    imagen: <img src="/carrusel/inversor.png" alt="Inversor de corriente" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
 ];
 
@@ -75,10 +75,10 @@ export function Home() {
         {/* 🎬 Video de fondo: auto clásico en La Habana (uso libre, Mixkit) */}
         <video
           autoPlay muted loop playsInline
-          poster="https://assets.mixkit.co/videos/4190/4190-thumb-720-0.jpg"
+          poster="https://assets.mixkit.co/videos/4189/4189-thumb-720-0.jpg"
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="https://assets.mixkit.co/videos/4190/4190-720.mp4" type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/4189/4189-720.mp4" type="video/mp4" />
         </video>
         {/* Velo azul para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/70 via-[#0d2a5c]/55 to-[#123d83]/85" />
