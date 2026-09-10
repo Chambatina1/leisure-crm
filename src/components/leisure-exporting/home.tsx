@@ -71,9 +71,8 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
-      {/* ═══ HERO CON FONDO MARINO ANIMADO + CARRUSEL ═══ */}
-      <section className="relative h-auto min-h-[480px] md:h-[520px] overflow-hidden py-8 md:py-0">
-        {/* 🎬 Videos del Malecón — malecon2 ABRE, luego alternan */}
+      {/* ═══ HERO: VIDEO LIMPIO A PANTALLA COMPLETA ═══ */}
+      <section className="relative h-[60vh] min-h-[380px] md:h-[70vh] overflow-hidden">
         <video
           autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover hero-video-1"
@@ -86,127 +85,77 @@ export function Home() {
         >
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
-        {/* Sombra sutil para legibilidad — colores originales del video */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.4) 100%)" }} />
+        {/* Sombra muy sutil abajo para el logo */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)" }} />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
-          <div className="w-full grid md:grid-cols-2 gap-4 md:gap-6 items-center px-2 md:px-0">
-            {/* Texto del carrusel */}
-            <div>
-              <motion.img
-                src="/logo-white.svg"
-                alt="Leisure Exporting LLC"
-                className="h-12 mb-6" style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.6))" }}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-              />
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={slide}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -30 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <h1 className="text-5xl md:text-6xl font-black text-white leading-none tracking-tight" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7), 0 0 40px rgba(0,0,0,0.3)" }}>
-                    {slideActual.titulo}
-                  </h1>
-                  
-                </motion.div>
-              </AnimatePresence>
-
-              <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8 w-full sm:w-auto">
-                <button
-                  onClick={() => setCurrentView('combustible')}
-                  className="btn-combustible w-full sm:!w-auto sm:px-8"
-                  style={{ height: '3.75rem' }}
-                >
-                  Comprar combustible
-                </button>
-                <Button
-                  onClick={() => setCurrentView('tienda')}
-                  className="bg-white/95 hover:bg-white text-[#071a46] font-bold px-8 py-6 text-base shadow-lg"
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  Ir a la Tienda
-                </Button>
-                <Button
-                  onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
-                  className="bg-transparent border-2 border-white/40 text-white hover:bg-white/10 font-bold px-8 py-6 text-base"
-                >
-                  Rastrear pedido
-                </Button>
-              </div>
-
-              {/* Flechas y puntos */}
-              <div className="flex items-center gap-2 mt-8">
-                <button
-                  onClick={() => setSlide(s => (s - 1 + SLIDES.length) % SLIDES.length)}
-                  className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                {SLIDES.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSlide(i)}
-                    className={`w-3 h-3 rounded-full transition-all ${i === slide ? 'bg-white scale-125' : 'bg-white/40'}`}
-                  />
-                ))}
-                <button
-                  onClick={() => setSlide(s => (s + 1) % SLIDES.length)}
-                  className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Ilustración del carrusel (flotando suavemente) */}
-            <div className="hidden sm:block h-[200px] md:h-[380px] relative">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={slide}
-                  className="absolute inset-0 hero-float"
-                  initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, rotate: 2 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {slideActual.imagen}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
+        {/* Logo centrado — el video corre sin interrupciones */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center">
+          <motion.img
+            src="/logo-white.svg"
+            alt="Leisure Exporting LLC"
+            className="h-14 md:h-20 mb-4"
+            style={{ filter: "drop-shadow(0 4px 20px rgba(0,0,0,0.7))" }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            <button
+              onClick={() => setCurrentView('combustible')}
+              className="btn-combustible !w-auto px-10 text-base"
+              style={{ height: '3.5rem' }}
+            >
+              Comprar combustible
+            </button>
+          </motion.div>
         </div>
       </section>
 
-      {/* ═══ 4 SERVICIOS PRINCIPALES ═══ */}
-      <section className="max-w-6xl mx-auto px-6 -mt-10 relative z-20">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {SLIDES.map((s, idx) => {
-            const esCombustible = idx === 0;
-            return (
+      {/* ═══ VITRINA: carrusel horizontal de productos (cintillo) ═══ */}
+      <section className="bg-white py-6 md:py-8 border-b border-zinc-100">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest text-center mb-5">Nuestros productos</h2>
+          <div className="flex gap-4 overflow-x-auto pb-3 px-1" style={{ scrollbarWidth: 'thin' }}>
+            {[
+              { img: '/carrusel/surtidor.png', titulo: 'Combustible', sub: 'Gasolineras de Cuba', view: 'combustible' },
+              { img: '/carrusel/bala-gas.png', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
+              { img: '/carrusel/inversor.png', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
+              { img: '/carrusel/moto.png', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
+            ].map((prod, i) => (
               <button
-                key={s.id}
-                onClick={() => setCurrentView(esCombustible ? 'combustible' : 'tienda')}
-                className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all text-left group"
+                key={i}
+                onClick={() => setCurrentView(prod.view as never)}
+                className="flex-shrink-0 w-[160px] sm:w-[180px] group"
               >
-                <div className="h-28 sm:h-32 flex items-center justify-center mb-3">
-                  {s.imagen}
+                <div className="h-[120px] sm:h-[140px] flex items-center justify-center rounded-2xl bg-gradient-to-b from-zinc-50 to-white border border-zinc-100 overflow-hidden group-hover:border-[#123d83]/30 group-hover:shadow-lg transition-all">
+                  <img src={prod.img} alt={prod.titulo} className="max-h-[100px] sm:max-h-[120px] object-contain" />
                 </div>
-                <h3 className="font-bold text-gray-900 text-lg">{esCombustible ? 'Combustible' : s.titulo}</h3>
-                
-                <span
-                  className="text-sm font-bold mt-3 inline-flex items-center gap-1 group-hover:gap-2 transition-all"
-                  style={{ color: s.color }}
-                >
-                  Ver <ChevronRight className="w-4 h-4" />
-                </span>
+                <p className="text-sm font-bold text-zinc-900 mt-2 text-center">{prod.titulo}</p>
+                <p className="text-xs text-zinc-400 text-center">{prod.sub}</p>
               </button>
-            );
-          })}
+            ))}
+          </div>
+          {/* Indicador de scroll */}
+          <p className="text-[10px] text-zinc-300 text-center mt-2">← Desliza para ver más →</p>
+        </div>
+      </section>
+
+      {/* ═══ BOTONES PRINCIPALES ═══ */}
+      <section className="max-w-4xl mx-auto px-4 py-6">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button
+            onClick={() => setCurrentView('tienda')}
+            className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-8 h-14 text-base shadow-lg"
+          >
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            Ir a la Tienda
+          </Button>
+          <Button
+            onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
+            className="bg-white border-2 border-[#123d83]/30 text-[#123d83] hover:bg-blue-50 font-bold px-8 h-14 text-base"
+          >
+            <Search className="mr-2 h-5 w-5" />
+            Rastrear pedido
+          </Button>
         </div>
       </section>
 
