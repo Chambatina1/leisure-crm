@@ -41,7 +41,7 @@ const SLIDES = [
     precio: 'Desde $299',
     texto: 'Consultá energía',
     color: '#2f7fd1',
-    imagen: <img src="/carrusel/moto.png" alt="Moto Panther" className="w-full h-full object-contain drop-shadow-2xl" />,
+    imagen: <img src="/carrusel/inversor.png" alt="Inversor de corriente" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
     id: 'motos',
@@ -51,7 +51,7 @@ const SLIDES = [
     precio: 'Desde $1,200',
     texto: 'Tu moto en Cuba',
     color: '#7c3aed',
-    imagen: <img src="/carrusel/inversor.png" alt="Inversor de corriente" className="w-full h-full object-contain drop-shadow-2xl" />,
+    imagen: <img src="/carrusel/moto.png" alt="Moto Panther" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
 ];
 
