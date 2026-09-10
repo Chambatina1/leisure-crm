@@ -81,7 +81,7 @@ export function Home() {
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
         {/* Velo azul para legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/70 via-[#0d2a5c]/55 to-[#123d83]/85" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/45" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
           <div className="w-full grid md:grid-cols-2 gap-6 items-center">

@@ -148,7 +148,7 @@ export function CombustibleCupet() {
       >
         <source src="/videos/malecon.mp4" type="video/mp4" />
       </video>
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-[#071a46]/85 via-[#0d2a5c]/78 to-[#123d83]/88" />
+      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-black/15 to-black/40" />
       {/* Encabezado */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={goBackToPublic} className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600">
