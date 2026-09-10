@@ -44,14 +44,14 @@ const SLIDES = [
     imagen: <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tank%20container%20on%20trailer.jpg?width=900" alt="Isotanque real" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
-    id: 'tambores',
+    id: 'motos',
     icon: Package,
-    titulo: 'Tambores de Combustible',
-    sub: 'Gasolina, diésel y petróleo — mayorista y minorista',
-    precio: 'Precios al mayoreo',
-    texto: 'Cotizá al mayoreo',
-    color: '#e0a106',
-    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/3?v=2" alt="Combustible real" className="w-full h-full object-contain drop-shadow-2xl" />,
+    titulo: 'Motos',
+    sub: 'Panther y ADVI — entrega armada en Cuba, con garantía',
+    precio: 'Desde $1,200',
+    texto: 'Tu moto en Cuba',
+    color: '#7c3aed',
+    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/81" alt="Moto Panther real" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
 ];
 
