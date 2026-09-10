@@ -72,7 +72,18 @@ export function Home() {
     <div className="min-h-screen bg-[#f5f7fa]">
       {/* ═══ HERO CON FONDO MARINO ANIMADO + CARRUSEL ═══ */}
       <section className="relative h-[520px] overflow-hidden">
-        <AnimatedSeaBackground />
+        {/* 🎬 Video de fondo: auto clásico en La Habana (uso libre, Mixkit) */}
+        <video
+          autoPlay muted loop playsInline
+          poster="https://assets.mixkit.co/videos/4190/4190-thumb-720-0.jpg"
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="https://assets.mixkit.co/videos/4190/4190-720.mp4" type="video/mp4" />
+        </video>
+        {/* Olas animadas ENCIMA del video (identidad de marca) */}
+        <div className="absolute inset-0"><AnimatedSeaBackground /></div>
+        {/* Velo azul para legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/70 via-[#0d2a5c]/55 to-[#123d83]/85" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
           <div className="w-full grid md:grid-cols-2 gap-6 items-center">
