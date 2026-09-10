@@ -148,7 +148,7 @@ export function CombustibleCupet() {
       >
         <source src="/videos/malecon.mp4" type="video/mp4" />
       </video>
-      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-black/15 to-black/40" />
+      <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-black/20 via-black/8 to-black/35" />
       {/* Encabezado */}
       <div className="flex items-center gap-3 mb-6">
         <button onClick={goBackToPublic} className="p-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-600">
@@ -188,19 +188,19 @@ export function CombustibleCupet() {
       {paso === 1 && !cargando && stock.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-[#071a46] rounded-2xl p-4 sm:p-5 text-white shadow-lg mb-4"
+          className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg mb-4 border border-zinc-100"
         >
           
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Combustible disponible HOY</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">Combustible disponible HOY</p>
           <div className="flex items-end gap-3 mt-1">
-            <span className="text-4xl font-black text-[#7ed957]">{totalLitros.toLocaleString('es-ES')} L</span>
-            <span className="text-sm text-white/60 mb-1.5">
+            <span className="text-4xl font-black text-[#3a9e30]">{totalLitros.toLocaleString('es-ES')} L</span>
+            <span className="text-sm text-zinc-500 mb-1.5">
               en {estacionesConStock.size} estación{estacionesConStock.size !== 1 ? 'es' : ''} de Cuba
             </span>
           </div>
           <div className="flex flex-wrap gap-2 mt-3">
             {resumenCombustibles.map((k) => (
-              <span key={k.combustible} className="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 text-xs font-bold">
+              <span key={k.combustible} className="flex items-center gap-1.5 bg-emerald-50 rounded-full px-3 py-1 text-xs font-bold text-emerald-700">
                 <Droplets className="w-3.5 h-3.5 text-[#7ed957]" />
                 {k.combustible} · {k.litros} L · ${k.precio.toFixed(2)}/L
               </span>

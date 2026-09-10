@@ -27,7 +27,7 @@ const SLIDES = [
     id: 'gas',
     icon: Flame,
     titulo: 'Balas de Gas',
-    sub: '10, 20, 25 y 100 lb — entrega a domicilio en toda Cuba',
+    sub: '',
     precio: 'Desde $15.00',
     texto: 'Reservá tu balita',
     color: '#55b949',
@@ -37,7 +37,7 @@ const SLIDES = [
     id: 'energia',
     icon: Fuel,
     titulo: 'Energía Solar',
-    sub: 'Inversores y plantas eléctricas — entrega en Cuba',
+    sub: '',
     precio: 'Desde $299',
     texto: 'Consultá energía',
     color: '#2f7fd1',
@@ -47,7 +47,7 @@ const SLIDES = [
     id: 'motos',
     icon: Package,
     titulo: 'Motos',
-    sub: 'Panther y ADVI — entrega armada en Cuba, con garantía',
+    sub: '',
     precio: 'Desde $1,200',
     texto: 'Tu moto en Cuba',
     color: '#7c3aed',
@@ -86,7 +86,7 @@ export function Home() {
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
         {/* Sombra sutil para legibilidad — colores originales del video */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/45" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.4) 100%)" }} />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
           <div className="w-full grid md:grid-cols-2 gap-6 items-center">
@@ -95,7 +95,7 @@ export function Home() {
               <motion.img
                 src="/logo-white.svg"
                 alt="Leisure Exporting LLC"
-                className="h-12 mb-6"
+                className="h-12 mb-6" style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.6))" }}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
               />
@@ -108,17 +108,10 @@ export function Home() {
                   exit={{ opacity: 0, x: -30 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 text-white text-sm font-bold mb-4"
-                    style={{ background: `${slideActual.color}55` }}
-                  >
-                    <Icono className="w-4 h-4" />
-                    {slideActual.precio}
-                  </div>
-                  <h1 className="text-5xl md:text-6xl font-black text-white leading-none tracking-tight">
+                  <h1 className="text-5xl md:text-6xl font-black text-white leading-none tracking-tight" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.7), 0 0 40px rgba(0,0,0,0.3)" }}>
                     {slideActual.titulo}
                   </h1>
-                  <p className="text-lg text-white/80 mt-4 max-w-md">{slideActual.sub}</p>
+                  
                 </motion.div>
               </AnimatePresence>
 
@@ -203,7 +196,7 @@ export function Home() {
                   {s.imagen}
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg">{esCombustible ? 'Combustible' : s.titulo}</h3>
-                <p className="text-sm text-gray-500 mt-1">{s.precio}</p>
+                
                 <span
                   className="text-sm font-bold mt-3 inline-flex items-center gap-1 group-hover:gap-2 transition-all"
                   style={{ color: s.color }}
