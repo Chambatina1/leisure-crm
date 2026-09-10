@@ -80,8 +80,6 @@ export function Home() {
         >
           <source src="https://assets.mixkit.co/videos/4190/4190-720.mp4" type="video/mp4" />
         </video>
-        {/* Olas animadas ENCIMA del video (identidad de marca) */}
-        <div className="absolute inset-0"><AnimatedSeaBackground /></div>
         {/* Velo azul para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#071a46]/70 via-[#0d2a5c]/55 to-[#123d83]/85" />
 
