@@ -188,7 +188,7 @@ export function CombustibleCupet() {
       {paso === 1 && !cargando && stock.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white/8 backdrop-blur-xl border border-white/15 rounded-2xl p-5 text-white shadow-2xl relative overflow-hidden mb-4"
+          className="bg-[#071a46] rounded-2xl p-4 sm:p-5 text-white shadow-lg mb-4"
         >
           
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Combustible disponible HOY</p>
@@ -211,7 +211,7 @@ export function CombustibleCupet() {
 
       {/* PASO 1: estación */}
       {!cargando && paso === 1 && (
-        <Card className="bg-white/94 backdrop-blur-md shadow-xl border-white/30">
+        <Card className="bg-white shadow-md border-zinc-100">
           <CardHeader className="pb-3">
             <h2 className="font-bold text-zinc-900 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-[#123d83]" /> Elige la gasolinera
@@ -293,7 +293,7 @@ export function CombustibleCupet() {
 
       {/* PASO 2: tipo + litros */}
       {paso === 2 && (
-        <Card className="bg-white/94 backdrop-blur-md shadow-xl border-white/30">
+        <Card className="bg-white shadow-md border-zinc-100">
           <CardHeader>
             <h2 className="font-bold text-zinc-900 flex items-center gap-2"><Droplets className="w-4 h-4 text-[#123d83]" /> {estacion?.servicenterName}</h2>
             <p className="text-xs text-zinc-400">{estacion?.address}</p>
@@ -337,7 +337,7 @@ export function CombustibleCupet() {
 
       {/* PASO 3: beneficiario */}
       {paso === 3 && (
-        <Card className="bg-white/94 backdrop-blur-md shadow-xl border-white/30">
+        <Card className="bg-white shadow-md border-zinc-100">
           <CardHeader>
             <h2 className="font-bold text-zinc-900 flex items-center gap-2"><User className="w-4 h-4 text-[#123d83]" /> Datos de quien carga en Cuba</h2>
           </CardHeader>
