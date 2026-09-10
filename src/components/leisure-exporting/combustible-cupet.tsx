@@ -175,6 +175,7 @@ export function CombustibleCupet() {
         </div>
       )}
 
+      <div className="relative z-10">
       {/* ═══ BANNER: dónde hay combustible HOY ═══ */}
       {paso === 1 && !cargando && stock.length > 0 && (
         <motion.div
@@ -454,6 +455,7 @@ export function CombustibleCupet() {
           </Card>
         </motion.div>
       )}
+      </div>
       {/* ═══ MAPA DENTRO DE LA WEB (sin salir de la tienda) ═══ */}
       <Dialog open={!!mapa} onOpenChange={(v) => !v && setMapa(null)}>
         <DialogContent className="sm:max-w-2xl">
