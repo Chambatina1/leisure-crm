@@ -20,7 +20,7 @@ import {
   Refrigerator,
   ShoppingCart,
 } from 'lucide-react';
-import { GasCylindersSVG, IsotankSVG, DrumsSVG, AnimatedSeaBackground } from './hero-illustrations';
+import { AnimatedSeaBackground } from './hero-illustrations';
 
 const SLIDES = [
   {
@@ -31,7 +31,7 @@ const SLIDES = [
     precio: 'Desde $15.00',
     texto: 'Reservá tu balita',
     color: '#55b949',
-    imagen: <GasCylindersSVG />,
+    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/1?v=2" alt="Balas de gas reales" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
     id: 'isotanques',
@@ -41,7 +41,7 @@ const SLIDES = [
     precio: 'Desde $5.26/gal',
     texto: 'Pedí combustible',
     color: '#2f7fd1',
-    imagen: <IsotankSVG />,
+    imagen: <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tank%20container%20on%20trailer.jpg?width=900" alt="Isotanque real" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
   {
     id: 'tambores',
@@ -51,7 +51,7 @@ const SLIDES = [
     precio: 'Precios al mayoreo',
     texto: 'Cotizá al mayoreo',
     color: '#e0a106',
-    imagen: <DrumsSVG />,
+    imagen: <img src="https://leisure-crm-1.onrender.com/api/tienda/imagen/3?v=2" alt="Combustible real" className="w-full h-full object-contain drop-shadow-2xl" />,
   },
 ];
 
