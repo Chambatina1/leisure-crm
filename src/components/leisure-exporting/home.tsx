@@ -19,6 +19,7 @@ import {
   Flame,
   Refrigerator,
   ShoppingCart,
+  MessageCircle,
 } from 'lucide-react';
 import { AnimatedSeaBackground } from './hero-illustrations';
 
@@ -89,7 +90,7 @@ export function Home() {
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.4) 100%)" }} />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
-          <div className="w-full grid md:grid-cols-2 gap-6 items-center">
+          <div className="w-full grid md:grid-cols-2 gap-4 md:gap-6 items-center px-2 md:px-0">
             {/* Texto del carrusel */}
             <div>
               <motion.img
@@ -115,10 +116,10 @@ export function Home() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="flex flex-wrap gap-3 mt-8">
+              <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8 w-full sm:w-auto">
                 <button
                   onClick={() => setCurrentView('combustible')}
-                  className="btn-combustible !w-auto px-8"
+                  className="btn-combustible w-full sm:!w-auto sm:px-8"
                   style={{ height: '3.75rem' }}
                 >
                   Comprar combustible
@@ -163,7 +164,7 @@ export function Home() {
             </div>
 
             {/* Ilustración del carrusel (flotando suavemente) */}
-            <div className="block h-[240px] md:h-[380px] relative">
+            <div className="hidden sm:block h-[200px] md:h-[380px] relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={slide}
