@@ -31,7 +31,7 @@ const SLIDES = [
     precio: 'Desde $15.00',
     texto: 'Reservá tu balita',
     color: '#55b949',
-    imagen: <img src="/carrusel/bala-gas.png" alt="Balas de gas" className="max-w-full max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
+    imagen: <img src="/carrusel/bala-gas.png" alt="Balas de gas" className="max-w-full max-h-[220px] md:max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
   },
   {
     id: 'energia',
@@ -41,7 +41,7 @@ const SLIDES = [
     precio: 'Desde $299',
     texto: 'Consultá energía',
     color: '#2f7fd1',
-    imagen: <img src="/carrusel/inversor.png" alt="Inversor de corriente" className="max-w-full max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
+    imagen: <img src="/carrusel/inversor.png" alt="Inversor de corriente" className="max-w-full max-h-[220px] md:max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
   },
   {
     id: 'motos',
@@ -51,7 +51,7 @@ const SLIDES = [
     precio: 'Desde $1,200',
     texto: 'Tu moto en Cuba',
     color: '#7c3aed',
-    imagen: <img src="/carrusel/moto.png" alt="Moto Panther" className="max-w-full max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
+    imagen: <img src="/carrusel/moto.png" alt="Moto Panther" className="max-w-full max-h-[220px] md:max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
   },
 ];
 
@@ -71,7 +71,7 @@ export function Home() {
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
       {/* ═══ HERO CON FONDO MARINO ANIMADO + CARRUSEL ═══ */}
-      <section className="relative h-[520px] overflow-hidden">
+      <section className="relative h-auto min-h-[480px] md:h-[520px] overflow-hidden py-8 md:py-0">
         {/* 🎬 Videos del Malecón — malecon2 ABRE, luego alternan */}
         <video
           autoPlay muted loop playsInline
@@ -163,7 +163,7 @@ export function Home() {
             </div>
 
             {/* Ilustración del carrusel (flotando suavemente) */}
-            <div className="hidden md:block h-[380px] relative">
+            <div className="block h-[240px] md:h-[380px] relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={slide}
@@ -270,5 +270,32 @@ export function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+// ═══ BOTÓN FLOTANTE DE CHAT — siempre visible ═══
+export function FloatingChatButton() {
+  const { setCurrentView } = useAppStore();
+  const [hover, setHover] = useState(false);
+
+  return (
+    <button
+      onClick={() => setCurrentView('chat')}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="fixed bottom-20 right-4 z-[60] w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all"
+      style={{
+        background: 'linear-gradient(135deg, #123d83 0%, #071a46 100%)',
+        border: '2px solid rgba(85,185,73,0.4)',
+        transform: hover ? 'scale(1.08)' : 'scale(1)',
+      }}
+    >
+      <MessageCircle className="w-6 h-6 text-[#7ed957]" />
+      {hover && (
+        <span className="absolute right-16 whitespace-nowrap bg-white text-zinc-800 text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg">
+          Chatea con nosotros
+        </span>
+      )}
+    </button>
   );
 }
