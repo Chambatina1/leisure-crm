@@ -108,10 +108,17 @@ export function Home() {
                 </motion.div>
               </AnimatePresence>
 
-              <div className="flex gap-3 mt-8">
+              <div className="flex flex-wrap gap-3 mt-8">
+                <button
+                  onClick={() => setCurrentView('combustible')}
+                  className="btn-combustible !w-auto px-8"
+                  style={{ height: '3.75rem' }}
+                >
+                  ⚡ Comprar Combustible
+                </button>
                 <Button
                   onClick={() => setCurrentView('tienda')}
-                  className="bg-[#55b949] hover:bg-[#348f39] text-white font-bold px-8 py-6 text-base"
+                  className="bg-white/95 hover:bg-white text-[#071a46] font-bold px-8 py-6 text-base shadow-lg"
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
                   Ir a la Tienda
