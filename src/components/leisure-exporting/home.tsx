@@ -72,15 +72,20 @@ export function Home() {
     <div className="min-h-screen bg-[#f5f7fa]">
       {/* ═══ HERO CON FONDO MARINO ANIMADO + CARRUSEL ═══ */}
       <section className="relative h-[520px] overflow-hidden">
-        {/* 🎬 Video de fondo: auto clásico en La Habana (uso libre, Mixkit) */}
+        {/* 🎬 Videos del Malecón — malecon2 ABRE, luego alternan */}
         <video
           autoPlay muted loop playsInline
-          
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover hero-video-1"
+        >
+          <source src="/videos/malecon2.mp4" type="video/mp4" />
+        </video>
+        <video
+          autoPlay muted loop playsInline
+          className="absolute inset-0 w-full h-full object-cover hero-video-2"
         >
           <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
-        {/* Velo azul para legibilidad */}
+        {/* Sombra sutil para legibilidad — colores originales del video */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/45" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex items-center">
