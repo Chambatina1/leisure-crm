@@ -198,3 +198,22 @@
   0%, 100% { box-shadow: 0 10px 34px rgba(85,185,73,.45), 0 2px 8px rgba(7,26,70,.25); }
   50% { box-shadow: 0 10px 44px rgba(85,185,73,.75), 0 2px 12px rgba(7,26,70,.3); }
 }
+
+/* ═══ Crossfade de videos del héroe ═══ */
+.hero-video-1, .hero-video-2 {
+  animation-duration: 16s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+.hero-video-1 { animation-name: videoA; }
+.hero-video-2 { animation-name: videoB; }
+@keyframes videoA {
+  0%, 40% { opacity: 1; }
+  50%, 90% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes videoB {
+  0%, 40% { opacity: 0; }
+  50%, 90% { opacity: 1; }
+  100% { opacity: 0; }
+}
