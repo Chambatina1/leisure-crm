@@ -77,7 +77,7 @@ export function Home() {
           autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/videos/malecon2.mp4" type="video/mp4" />
+          <source src="/videos/malecon.mp4" type="video/mp4" />
         </video>
         {/* Sombra muy sutil abajo */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)" }} />
@@ -158,6 +158,33 @@ export function Home() {
               </svg>
               WhatsApp
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ VITRINA DE PRODUCTOS — carrusel horizontal ═══ */}
+      <section className="bg-zinc-50 py-8 border-b border-zinc-100">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest text-center mb-5">Nuestros productos</h2>
+          <div className="flex gap-4 overflow-x-auto pb-3 px-1" style={{ scrollbarWidth: 'thin' }}>
+            {[
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/1', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/105', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/81', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
+              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/15', titulo: 'Cocinas', sub: 'Electrodomésticos', view: 'tienda' },
+            ].map((prod, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentView(prod.view as never)}
+                className="flex-shrink-0 w-[170px] sm:w-[200px] group"
+              >
+                <div className="h-[130px] sm:h-[150px] rounded-2xl overflow-hidden border border-zinc-200 shadow-sm bg-white group-hover:shadow-xl group-hover:-translate-y-1 transition-all">
+                  <img src={prod.img} alt={prod.titulo} className="w-full h-full object-cover" loading="lazy" />
+                </div>
+                <p className="text-sm font-bold text-zinc-900 mt-2 text-center">{prod.titulo}</p>
+                <p className="text-xs text-zinc-400 text-center">{prod.sub}</p>
+              </button>
+            ))}
           </div>
         </div>
       </section>
