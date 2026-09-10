@@ -77,7 +77,7 @@ export function Home() {
           autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/videos/malecon.mp4" type="video/mp4" />
+          <source src="/videos/malecon2.mp4" type="video/mp4" />
         </video>
         {/* Sombra muy sutil abajo */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)" }} />
