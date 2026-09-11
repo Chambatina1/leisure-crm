@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════════════
 // Ilustraciones SVG premium para el carrusel principal + fondo animado
-// Estilo corporativo Leisure: azul marino #071a46/#123d83 + verde #55b949
+// Estilo corporativo Ambitosmax: azul marino #071a46/#123d83 + verde #55b949
 // ═══════════════════════════════════════════════════════════════════
 
 // ── BALAS DE GAS (grupo de cilindros) ─────────────────────────────

@@ -38,7 +38,7 @@ const defaultData: PedidoData = {
   notas: '',
 };
 
-const LEISURE_ADDRESS = '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792';
+const AMBITOSMAX_ADDRESS = '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792';
 
 export function PedidoForm() {
   const { selectedPedidoId, selectedProduct, setAdminView, adminView, mode, setCurrentView, setSelectedProduct } = useAppStore();
@@ -77,7 +77,7 @@ export function PedidoForm() {
       setData({
         ...defaultData,
         producto: `${selectedProduct.nombre} - $${selectedProduct.precio.toFixed(2)}`,
-        notas: `Enviar equipo a: ${LEISURE_ADDRESS}`,
+        notas: `Enviar equipo a: ${AMBITOSMAX_ADDRESS}`,
       });
     }
   }, [isEdit, selectedPedidoId, selectedProduct]);
@@ -198,7 +198,7 @@ export function PedidoForm() {
                 <div className="flex items-start gap-1.5 mt-2">
                   <MapPin className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
                   <p className="text-xs text-[#123d83] leading-relaxed">
-                    Enviar equipo a: {LEISURE_ADDRESS}
+                    Enviar equipo a: {AMBITOSMAX_ADDRESS}
                   </p>
                 </div>
               </div>

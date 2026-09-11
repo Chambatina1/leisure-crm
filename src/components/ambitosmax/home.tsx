@@ -174,10 +174,10 @@ export function Home() {
           <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest text-center mb-5">Nuestros productos</h2>
           <div className="flex gap-4 overflow-x-auto pb-3 px-1" style={{ scrollbarWidth: 'thin' }}>
             {[
-              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/1', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
-              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/105', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
-              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/81', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
-              { img: 'https://leisure-crm-1.onrender.com/api/tienda/imagen/15', titulo: 'Cocinas', sub: 'Electrodomésticos', view: 'tienda' },
+              { img: '/api/tienda/imagen/1', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
+              { img: '/api/tienda/imagen/105', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
+              { img: '/api/tienda/imagen/81', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
+              { img: '/api/tienda/imagen/15', titulo: 'Cocinas', sub: 'Electrodomésticos', view: 'tienda' },
             ].map((prod, i) => (
               <button
                 key={i}

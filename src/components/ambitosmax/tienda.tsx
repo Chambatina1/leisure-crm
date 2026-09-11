@@ -76,10 +76,10 @@ export function Tienda() {
 
   // Carrito persistente
   useEffect(() => {
-    const c = localStorage.getItem('leisure_cart');
+    const c = localStorage.getItem('ambitosmax_cart');
     if (c) setCart(JSON.parse(c));
   }, []);
-  useEffect(() => { localStorage.setItem('leisure_cart', JSON.stringify(cart)); }, [cart]);
+  useEffect(() => { localStorage.setItem('ambitosmax_cart', JSON.stringify(cart)); }, [cart]);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartTotal = cart.reduce((s, i) => s + i.product.precio * i.qty, 0);
