@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
 const DEFAULTS: Record<string, string> = {
-  nombre_negocio: 'Leisure Exporting',
+  nombre_negocio: 'Ambitosmax',
   direccion: '7523 Aloma Ave, Winter Park, FL 32792, Suite 112',
   telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',

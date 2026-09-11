@@ -107,7 +107,7 @@ export function Home() {
               letterSpacing: '0.02em',
             }}
           >
-            Leisure Exporting
+            Ambitosmax
           </motion.span>
         </div>
 
@@ -239,7 +239,7 @@ export function Home() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900">Tampa, Florida</h4>
-              <p className="text-sm text-gray-500">Leisure Exporting LLC</p>
+              <p className="text-sm text-gray-500">Ambitosmax LLC</p>
               <p className="text-sm text-gray-500">EE.UU.</p>
             </div>
           </div>

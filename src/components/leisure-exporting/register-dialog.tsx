@@ -70,7 +70,7 @@ export function RegisterDialog() {
 
       if (json.ok) {
         setCurrentUser(json.data);
-        toast.success('¡Registro exitoso! Bienvenido/a a Leisure Exporting');
+        toast.success('¡Registro exitoso! Bienvenido/a a Ambitosmax');
         setForm(INITIAL_FORM);
         setErrors({});
         setShowRegisterDialog(false);
@@ -116,7 +116,7 @@ export function RegisterDialog() {
           >
             <Image
               src="/icon.svg"
-              alt="Leisure Exporting"
+              alt="Ambitosmax"
               width={64}
               height={64}
               className="object-contain"
@@ -124,7 +124,7 @@ export function RegisterDialog() {
           </motion.div>
           <DialogTitle className="text-xl">Crear Cuenta</DialogTitle>
           <DialogDescription className="text-sm text-center max-w-xs">
-            Regístrate en Leisure Exporting y accede a todos nuestros servicios
+            Regístrate en Ambitosmax y accede a todos nuestros servicios
           </DialogDescription>
         </DialogHeader>
 

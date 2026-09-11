@@ -58,10 +58,10 @@ function PublicNavbar() {
               className="flex items-center gap-3 hover:opacity-90 transition-opacity"
             >
               <div className="w-10 h-10 flex items-center justify-center drop-shadow-sm">
-                <Image src="/icon.svg" alt="Leisure Exporting" width={40} height={40} className="object-contain" priority />
+                <Image src="/icon.svg" alt="Ambitosmax" width={40} height={40} className="object-contain" priority />
               </div>
               <div>
-                <h1 className="text-lg font-black text-[#071a46] tracking-wide">LEISURE EXPORTING</h1>
+                <h1 className="text-lg font-black text-[#071a46] tracking-wide">AMBITOSMAX</h1>
               </div>
             </button>
 
@@ -124,10 +124,10 @@ function PublicNavbar() {
                   <div className="p-4 border-b border-zinc-100">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center overflow-hidden">
-                        <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+                        <Image src="/icon.svg" alt="Ambitosmax" width={36} height={36} className="object-contain" />
                       </div>
                       <div>
-                        <h2 className="text-lg font-bold text-zinc-900">LEISURE EXPORTING</h2>
+                        <h2 className="text-lg font-bold text-zinc-900">AMBITOSMAX</h2>
                       </div>
                     </div>
                   </div>
@@ -247,11 +247,11 @@ function AdminNavbar() {
             {/* Logo + Admin Badge */}
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-white/95 flex items-center justify-center overflow-hidden shadow-sm">
-                <Image src="/icon.svg" alt="Leisure Exporting" width={36} height={36} className="object-contain" />
+                <Image src="/icon.svg" alt="Ambitosmax" width={36} height={36} className="object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-bold text-white tracking-wide">LEISURE EXPORTING</h1>
+                  <h1 className="text-lg font-bold text-white tracking-wide">AMBITOSMAX</h1>
                   <span className="text-[10px] bg-white/20 text-blue-100 px-2 py-0.5 rounded font-semibold tracking-wide">
                     ADMIN
                   </span>
@@ -312,7 +312,7 @@ function AdminNavbar() {
                   <div className="p-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
-                        <Image src="/icon.svg" alt="Leisure Exporting" width={32} height={32} className="object-contain" />
+                        <Image src="/icon.svg" alt="Ambitosmax" width={32} height={32} className="object-contain" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">

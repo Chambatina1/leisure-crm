@@ -16,17 +16,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://leisureexporting.com"),
-  title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
+  title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
   description:
-    "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Leisure Exporting LLC.",
+    "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Ambitosmax LLC.",
   alternates: {
     canonical: "https://leisureexporting.com",
   },
   openGraph: {
     type: "website",
     url: "https://leisureexporting.com",
-    siteName: "Leisure Exporting LLC",
-    title: "Leisure Exporting LLC — Gas, Combustible y Envíos a Cuba",
+    siteName: "Ambitosmax LLC",
+    title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
     description: "Balas de gas, combustible en isotanques, tienda y envíos a Cuba.",
   },
   icons: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.json",
-  applicationName: "Leisure Exporting",
+  applicationName: "Ambitosmax",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -66,7 +66,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="application-name" content="Leisure Exporting" />
+        <meta name="application-name" content="Ambitosmax" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
       </head>
       <body

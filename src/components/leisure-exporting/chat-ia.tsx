@@ -119,7 +119,7 @@ export function ChatIA() {
             <Sparkles className="h-6 w-6 text-blue-600" />
             Chat Asistente
           </h1>
-          <p className="text-zinc-500 text-sm mt-0.5">Tu asistente virtual de Leisure Exporting</p>
+          <p className="text-zinc-500 text-sm mt-0.5">Tu asistente virtual de Ambitosmax</p>
         </div>
         {messages.length > 0 && (
           <Button variant="ghost" size="sm" className="text-zinc-400" onClick={clearChat}>
@@ -138,7 +138,7 @@ export function ChatIA() {
               </div>
               <h3 className="text-lg font-semibold text-zinc-700 mb-2">¡Hola! 👋</h3>
               <p className="text-sm text-zinc-400 max-w-sm mb-6">
-                Soy el asistente virtual de Leisure Exporting. Puedo ayudarte con precios, rastreo y más.
+                Soy el asistente virtual de Ambitosmax. Puedo ayudarte con precios, rastreo y más.
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {QUICK_QUESTIONS.map(q => (

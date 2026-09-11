@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
     } else {
     switch (intent.intent) {
       case 'saludo':
-        respuesta = '¡Hola! 👋 Soy el asistente virtual de **Leisure Exporting**. Estoy aquí para ayudarte con lo que necesites.\n\nPuedo ayudarte con:\n- 📦 **Precios de envío** — Dime el peso y te calculo el costo\n- 🚲 **Envío de bicicletas** — Precios por tipo\n- 📋 **Rastreo de paquetes** — Busca por CPK o carnet\n- ☀️ **Sistemas solares** — Info sobre EcoFlow\n- 📍 **Información de contacto** — Dirección y teléfonos\n\n¿En qué te puedo ayudar?';
+        respuesta = '¡Hola! 👋 Soy el asistente virtual de **Ambitosmax**. Estoy aquí para ayudarte con lo que necesites.\n\nPuedo ayudarte con:\n- 📦 **Precios de envío** — Dime el peso y te calculo el costo\n- 🚲 **Envío de bicicletas** — Precios por tipo\n- 📋 **Rastreo de paquetes** — Busca por CPK o carnet\n- ☀️ **Sistemas solares** — Info sobre EcoFlow\n- 📍 **Información de contacto** — Dirección y teléfonos\n\n¿En qué te puedo ayudar?';
         break;
 
       case 'precio_peso': {
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'precio_general':
-        respuesta = `💰 **Lista de Precios Leisure Exporting:**\n\n**Envíos por libra:**\n- 🏢 Equipo: **$1.99/lb** + $25 cargo\n- 🏠 Recogida a domicilio: **$2.30/lb**\n- 🛒 Compras TikTok: **$1.80/lb**\n\n**Bicicletas:**\n${intent.data.bicicletas.map((b: { descripcion: string; precio: number }) => `- ${b.descripcion}: $${b.precio}`).join('\n')}\n\n**Cajas:**\n${intent.data.cajas.map((c: { nombre: string; dimensiones: string; precio: number }) => `- ${c.nombre} (${c.dimensiones}): $${c.precio}`).join('\n')}\n\n¿Quieres que calcule el precio de un envío específico? Solo dime el peso.`;
+        respuesta = `💰 **Lista de Precios Ambitosmax:**\n\n**Envíos por libra:**\n- 🏢 Equipo: **$1.99/lb** + $25 cargo\n- 🏠 Recogida a domicilio: **$2.30/lb**\n- 🛒 Compras TikTok: **$1.80/lb**\n\n**Bicicletas:**\n${intent.data.bicicletas.map((b: { descripcion: string; precio: number }) => `- ${b.descripcion}: $${b.precio}`).join('\n')}\n\n**Cajas:**\n${intent.data.cajas.map((c: { nombre: string; dimensiones: string; precio: number }) => `- ${c.nombre} (${c.dimensiones}): $${c.precio}`).join('\n')}\n\n¿Quieres que calcule el precio de un envío específico? Solo dime el peso.`;
         break;
 
       case 'tracking_cpk':
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
       }
 
       case 'bicicletas':
-        respuesta = `🚲 **Servicio de Envío de Bicicletas Leisure Exporting:**\n\n${BICICLETAS.map(b => `- **${b.descripcion}**: $${b.precio}`).join('\n')}\n\n¿Te interesa enviar una bicicleta? Contáctanos y coordinamos la recogida.`;
+        respuesta = `🚲 **Servicio de Envío de Bicicletas Ambitosmax:**\n\n${BICICLETAS.map(b => `- **${b.descripcion}**: $${b.precio}`).join('\n')}\n\n¿Te interesa enviar una bicicleta? Contáctanos y coordinamos la recogida.`;
         break;
 
       case 'solar': {
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
         if (sd.telefono1) solarLines.push(`📞 **${sd.telefono1}** (${sd.nombre_contacto1 || 'Contacto'})`);
         if (sd.telefono2) solarLines.push(`📞 **${sd.telefono2}** (${sd.nombre_contacto2 || 'Contacto'})`);
         const solarPhones = solarLines.join('\n') || '📞 Contacta a la oficina';
-        respuesta = `☀️ **Sistemas de Energía Solar:**\n\nLeisure Exporting ofrece orientación y productos de energía solar, incluyendo sistemas **EcoFlow** para tu hogar o negocio.\n\nPara más información sobre productos y precios:\n${solarPhones}\n\n¡La energía solar es el futuro, y nosotros te ayudamos a dar el primer paso!`;
+        respuesta = `☀️ **Sistemas de Energía Solar:**\n\nAmbitosmax ofrece orientación y productos de energía solar, incluyendo sistemas **EcoFlow** para tu hogar o negocio.\n\nPara más información sobre productos y precios:\n${solarPhones}\n\n¡La energía solar es el futuro, y nosotros te ayudamos a dar el primer paso!`;
         break;
       }
 

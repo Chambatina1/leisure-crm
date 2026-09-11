@@ -56,7 +56,7 @@ const DEFAULT_DATA: AparienciaData = {
   theme_primary: '#f59e0b',
   theme_secondary: '#d97706',
   theme_accent: '#b45309',
-  seo_title: 'Leisure Exporting - Envíos y Servicios',
+  seo_title: 'Ambitosmax - Envíos y Servicios',
   seo_description: 'Servicios de envíos, bicicletas, cajas y más.',
   seo_keywords: 'leisure-exporting, envios, cuba, miami',
 };
@@ -408,7 +408,7 @@ export function AparienciaPanel() {
                 <Textarea
                   value={data.custom_js}
                   onChange={updateField('custom_js')}
-                  placeholder={`// Tu JavaScript personalizado\nconsole.log('Leisure Exporting custom JS loaded');`}
+                  placeholder={`// Tu JavaScript personalizado\nconsole.log('Ambitosmax custom JS loaded');`}
                   rows={10}
                   className="font-mono text-xs bg-zinc-900 text-yellow-400 border-zinc-700 resize-y"
                 />
@@ -556,7 +556,7 @@ export function AparienciaPanel() {
             <Input
               value={data.seo_title}
               onChange={updateField('seo_title')}
-              placeholder="Leisure Exporting - Envíos y Servicios"
+              placeholder="Ambitosmax - Envíos y Servicios"
             />
             <p className="text-xs text-zinc-400">
               Aparece en la pestaña del navegador y resultados de búsqueda

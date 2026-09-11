@@ -1,5 +1,5 @@
 // ============================================================
-// LEISURE EXPORTING - Business Logic Utilities
+// AMBITOSMAX - Business Logic Utilities
 // ============================================================
 
 import type { TrackingEntry } from '@prisma/client';
@@ -227,7 +227,7 @@ export function parsearTrackingTSV(texto: string): TrackingParsed[] {
 
     // Find embarcador (first company-like column)
     for (const col of columnas) {
-      if (/LEISURE EXPORTING|MIAMI|GEO/i.test(col) && !/CPK/i.test(col)) {
+      if (/AMBITOSMAX|MIAMI|GEO/i.test(col) && !/CPK/i.test(col)) {
         embarcador = col;
         break;
       }
@@ -406,10 +406,10 @@ export function detectarIntencion(mensaje: string): DetectedIntent {
 
 // ---- Business Context for AI Chat ----
 
-export const BUSINESS_CONTEXT = `Eres un asistente virtual de Leisure Exporting, una empresa de logística especializada en envíos internacionales y sistemas de energía solar.
+export const BUSINESS_CONTEXT = `Eres un asistente virtual de Ambitosmax, una empresa de logística especializada en envíos internacionales y sistemas de energía solar.
 
 INFORMACIÓN DE LA EMPRESA:
-- Nombre: Leisure Exporting
+- Nombre: Ambitosmax
 - Oficina: 7523 Aloma Ave, Winter Park, FL 32792, Suite 112
 - Teléfonos: 727-506-1845 (Geo), 786-784-6421 (Adriana)
 - Servicios: Gas, Combustible (isotanques y tambores), Tienda, Rastreo de Paquetes (CPK)
@@ -440,7 +440,7 @@ RASTREO:
 - Los estados incluyen: EN AGENCIA, EN TRANSITO HACIA CUBA, EN ADUANA CUBA, EN DISTRIBUCION, ENTREGADO
 
 ENERGÍA SOLAR:
-- Leisure Exporting ofrece orientación sobre sistemas de energía solar
+- Ambitosmax ofrece orientación sobre sistemas de energía solar
 - Productos EcoFlow disponibles
 
 REGLAS:

@@ -88,7 +88,7 @@ export function CombustibleAdmin() {
 
   const copiarPin = (s: Solicitud) => {
     if (s.pin) {
-      navigator.clipboard.writeText(`Leisure Exporting — Combustible
+      navigator.clipboard.writeText(`Ambitosmax — Combustible
 Orden: ${s.cupetTransactionId}
 PIN de carga: ${s.pin}
 ${s.typeFuelNombre} · ${s.litros} litros

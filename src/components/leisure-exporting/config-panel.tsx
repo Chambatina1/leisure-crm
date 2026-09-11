@@ -28,7 +28,7 @@ interface ConfigData {
 }
 
 const DEFAULT_CONFIG: ConfigData = {
-  nombre_negocio: 'Leisure Exporting',
+  nombre_negocio: 'Ambitosmax',
   direccion: '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792',
   telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',
@@ -152,7 +152,7 @@ export function ConfigPanel() {
                 id="nombre_negocio"
                 value={config.nombre_negocio}
                 onChange={updateField('nombre_negocio')}
-                placeholder="Leisure Exporting"
+                placeholder="Ambitosmax"
               />
             </div>
             <div className="space-y-2">

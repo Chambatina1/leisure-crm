@@ -345,7 +345,7 @@ export function PedidoForm() {
                 {selectedProduct && !isEdit && (
                   <p className="text-xs text-[#123d83] mt-1.5 flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
-                    La dirección de Leisure Exporting se incluye automáticamente como nota de envío
+                    La dirección de Ambitosmax se incluye automáticamente como nota de envío
                   </p>
                 )}
               </div>

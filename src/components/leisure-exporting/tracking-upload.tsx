@@ -245,7 +245,7 @@ export function TrackingUpload() {
         </CardHeader>
         <CardContent>
           <Textarea
-            placeholder={`LEISURE EXPORTING MIAMI\tGEO MIA\t\tCPK-0264397\tPENDIENTE DESAGRUPE\t...\nLEISURE EXPORTING MIAMI\tGEO MIA\t\tCPK-0255247\tENTREGADO\t...`}
+            placeholder={`AMBITOSMAX MIAMI\tGEO MIA\t\tCPK-0264397\tPENDIENTE DESAGRUPE\t...\nAMBITOSMAX MIAMI\tGEO MIA\t\tCPK-0255247\tENTREGADO\t...`}
             value={tsvData}
             onChange={(e) => setTsvData(e.target.value)}
             rows={4}

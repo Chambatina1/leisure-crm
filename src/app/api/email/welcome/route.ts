@@ -97,7 +97,7 @@ function buildWelcomeHtml(
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bienvenido a Leisure Exporting</title>
+  <title>Bienvenido a Ambitosmax</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -111,7 +111,7 @@ function buildWelcomeHtml(
 <body style="margin:0;padding:0;background-color:#F9FAFB;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-font-smoothing:antialiased;">
   <!-- Preheader -->
   <div style="display:none;font-size:1px;color:#F9FAFB;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
-    ¡Bienvenido a Leisure Exporting! Tu plataforma de envíos internacionales, rastreo de paquetes y mucho más.
+    ¡Bienvenido a Ambitosmax! Tu plataforma de envíos internacionales, rastreo de paquetes y mucho más.
   </div>
 
   <!-- Outer wrapper -->
@@ -130,7 +130,7 @@ function buildWelcomeHtml(
                 <span style="font-size:36px;">📦</span>
               </div>
               <h1 style="margin:0;font-size:28px;font-weight:700;color:#FFFFFF;letter-spacing:-0.5px;">
-                ¡Bienvenido a Leisure Exporting!
+                ¡Bienvenido a Ambitosmax!
               </h1>
               <p style="margin:8px 0 0;font-size:15px;color:rgba(255,255,255,0.9);font-weight:400;">
                 Tu puente hacia envíos internacionales confiables
@@ -148,7 +148,7 @@ function buildWelcomeHtml(
               </p>
 
               <p style="margin:0 0 24px;font-size:15px;color:#4B5563;line-height:1.7;">
-                Gracias por registrarte en <strong>Leisure Exporting</strong>, tu plataforma integral para
+                Gracias por registrarte en <strong>Ambitosmax</strong>, tu plataforma integral para
                 envíos internacionales desde Estados Unidos. Estamos encantados de tenerte con nosotros
                 y estamos listos para ayudarte con todos tus envíos.
               </p>
@@ -337,7 +337,7 @@ function buildWelcomeHtml(
               </p>
               <p style="margin:16px 0 0;font-size:14px;color:#374151;line-height:1.7;text-align:center;">
                 Un saludo afectuoso,<br/>
-                <strong style="color:#D97706;font-size:15px;">El equipo de Leisure Exporting</strong> 🤝
+                <strong style="color:#D97706;font-size:15px;">El equipo de Ambitosmax</strong> 🤝
               </p>
 
             </td>
@@ -347,7 +347,7 @@ function buildWelcomeHtml(
           <tr>
             <td style="background:#1F2937;padding:24px 32px;text-align:center;">
               <p style="margin:0 0 8px;font-size:13px;color:#9CA3AF;">
-                © ${new Date().getFullYear()} Leisure Exporting. Todos los derechos reservados.
+                © ${new Date().getFullYear()} Ambitosmax. Todos los derechos reservados.
               </p>
               <p style="margin:0;font-size:12px;color:#6B7280;">
                 Este correo fue enviado a <span style="color:#D97706;">(registrado)</span> porque te registraste en nuestra plataforma.
@@ -435,9 +435,9 @@ export async function POST(request: NextRequest) {
         });
 
         const info = await transporter.sendMail({
-          from: `"Leisure Exporting" <${emailFrom}>`,
+          from: `"Ambitosmax" <${emailFrom}>`,
           to: email,
-          subject: `¡Bienvenido a Leisure Exporting, ${nombre}! 📦`,
+          subject: `¡Bienvenido a Ambitosmax, ${nombre}! 📦`,
           html,
         });
 
@@ -471,7 +471,7 @@ export async function POST(request: NextRequest) {
       await db.emailLog.create({
         data: {
           userEmail: email,
-          asunto: `¡Bienvenido a Leisure Exporting, ${nombre}!`,
+          asunto: `¡Bienvenido a Ambitosmax, ${nombre}!`,
           tipo: 'bienvenida',
           estado,
           error: errorMsg,
