@@ -58,7 +58,7 @@ const DEFAULT_DATA: AparienciaData = {
   theme_accent: '#b45309',
   seo_title: 'Ambitosmax - Envíos y Servicios',
   seo_description: 'Servicios de envíos, bicicletas, cajas y más.',
-  seo_keywords: 'leisure-exporting, envios, cuba, miami',
+  seo_keywords: 'ambitosmax, envios, cuba, miami',
 };
 
 const CONFIG_KEYS = [
@@ -599,7 +599,7 @@ export function AparienciaPanel() {
             <Input
               value={data.seo_keywords}
               onChange={updateField('seo_keywords')}
-              placeholder="envios, cuba, miami, paquetes, leisure-exporting"
+              placeholder="envios, cuba, miami, paquetes, ambitosmax"
             />
             <p className="text-xs text-zinc-400">
               Palabras clave separadas por comas

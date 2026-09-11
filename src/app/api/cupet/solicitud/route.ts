@@ -9,7 +9,7 @@ import { z } from 'zod';
 //   GET  (admin):   listar solicitudes pendientes/todas
 // ═══════════════════════════════════════════════════════════════
 
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'leisure-exporting2024'; // fase 1
+const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024'; // fase 1
 const esAdmin = (r: NextRequest) => r.headers.get('x-admin-password') === CLAVE_ADMIN;
 
 const solicitudSchema = z.object({

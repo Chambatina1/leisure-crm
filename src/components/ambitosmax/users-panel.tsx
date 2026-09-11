@@ -136,7 +136,7 @@ export function UsersPanel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `usuarios-leisure-exporting-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `usuarios-ambitosmax-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success(`${users.length} usuarios exportados a CSV`);

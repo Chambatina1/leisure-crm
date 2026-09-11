@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import ZAI from 'z-ai-web-dev-sdk';
-import { BUSINESS_CONTEXT } from '@/lib/leisure-exporting';
+import { BUSINESS_CONTEXT } from '@/lib/ambitosmax';
 
 // ─── Palabras comunes a excluir al generar keywords ────────────────────
 const STOP_WORDS_ES = new Set([

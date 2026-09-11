@@ -5,7 +5,7 @@ import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 
 // GET /api/cupet/stock (admin) — dónde está la gasolina del distribuidor:
 // estación (nombre+dirección), tipo de combustible, litros y precio.
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'leisure-exporting2024'; // fase 1
+const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024'; // fase 1
 
 export async function GET(request: NextRequest) {
   try {

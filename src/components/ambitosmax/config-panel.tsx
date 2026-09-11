@@ -162,7 +162,7 @@ export function ConfigPanel() {
                 type="email"
                 value={config.email}
                 onChange={updateField('email')}
-                placeholder="info@leisure-exporting.com"
+                placeholder="info@ambitosmax.com"
               />
             </div>
           </div>
@@ -251,7 +251,7 @@ export function ConfigPanel() {
                 id="instagram"
                 value={config.instagram}
                 onChange={updateField('instagram')}
-                placeholder="@leisure-exporting"
+                placeholder="@ambitosmax"
               />
             </div>
           </div>
@@ -261,7 +261,7 @@ export function ConfigPanel() {
               id="facebook"
               value={config.facebook}
               onChange={updateField('facebook')}
-              placeholder="facebook.com/leisure-exporting"
+              placeholder="facebook.com/ambitosmax"
             />
           </div>
         </CardContent>

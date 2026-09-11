@@ -37,7 +37,7 @@ export function CombustibleAdmin() {
   const [procesando, setProcesando] = useState<number | null>(null);
   const [pinCopiado, setPinCopiado] = useState<number | null>(null);
 
-  const clave = 'leisure-exporting2024'; // fase 1 — misma clave del panel
+  const clave = 'ambitosmax2024'; // fase 1 — misma clave del panel
 
   const [stock, setStock] = useState<Array<{ servicenterId: number; estacionNombre: string; direccion: string; combustible: string; amount: number; priceXLiter: number; totalUsd: number; mapsUrl: string }>>([]);
 

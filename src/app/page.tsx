@@ -2,27 +2,27 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useAppStore } from '@/components/leisure-exporting/store';
-import { Navbar } from '@/components/leisure-exporting/navbar';
-import { LoginDialog } from '@/components/leisure-exporting/login-dialog';
-import { RegisterDialog } from '@/components/leisure-exporting/register-dialog';
-import { Home } from '@/components/leisure-exporting/home';
-import { Tienda } from '@/components/leisure-exporting/tienda';
-import { CombustibleCupet } from '@/components/leisure-exporting/combustible-cupet';
-import { FloatingChatButton } from '@/components/leisure-exporting/home';
-import { PedidosList } from '@/components/leisure-exporting/pedidos-list';
-import { PedidoForm } from '@/components/leisure-exporting/pedido-form';
-import { PedidoDetail } from '@/components/leisure-exporting/pedido-detail';
-import { AdminDashboard } from '@/components/leisure-exporting/admin-dashboard';
-import { TrackingUpload } from '@/components/leisure-exporting/tracking-upload';
-import { ConfigPanel } from '@/components/leisure-exporting/config-panel';
-import { Rastreador } from '@/components/leisure-exporting/rastreador';
-import { ChatIA } from '@/components/leisure-exporting/chat-ia';
-import { TiendaAdmin } from '@/components/leisure-exporting/tienda-admin';
-import { CombustibleAdmin } from '@/components/leisure-exporting/combustible-admin';
-import { AITrainingPanel } from '@/components/leisure-exporting/ai-training-panel';
-import { AparienciaPanel } from '@/components/leisure-exporting/apariencia-panel';
-import { UsersPanel } from '@/components/leisure-exporting/users-panel';
+import { useAppStore } from '@/components/ambitosmax/store';
+import { Navbar } from '@/components/ambitosmax/navbar';
+import { LoginDialog } from '@/components/ambitosmax/login-dialog';
+import { RegisterDialog } from '@/components/ambitosmax/register-dialog';
+import { Home } from '@/components/ambitosmax/home';
+import { Tienda } from '@/components/ambitosmax/tienda';
+import { CombustibleCupet } from '@/components/ambitosmax/combustible-cupet';
+import { FloatingChatButton } from '@/components/ambitosmax/home';
+import { PedidosList } from '@/components/ambitosmax/pedidos-list';
+import { PedidoForm } from '@/components/ambitosmax/pedido-form';
+import { PedidoDetail } from '@/components/ambitosmax/pedido-detail';
+import { AdminDashboard } from '@/components/ambitosmax/admin-dashboard';
+import { TrackingUpload } from '@/components/ambitosmax/tracking-upload';
+import { ConfigPanel } from '@/components/ambitosmax/config-panel';
+import { Rastreador } from '@/components/ambitosmax/rastreador';
+import { ChatIA } from '@/components/ambitosmax/chat-ia';
+import { TiendaAdmin } from '@/components/ambitosmax/tienda-admin';
+import { CombustibleAdmin } from '@/components/ambitosmax/combustible-admin';
+import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
+import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
+import { UsersPanel } from '@/components/ambitosmax/users-panel';
 import { Button } from '@/components/ui/button';
 
 // Error-safe component wrapper
@@ -268,12 +268,12 @@ export default function Page() {
           __html: `
             window.addEventListener('error', function(e) {
               try {
-                localStorage.setItem('leisure-exporting-error', JSON.stringify({ msg: e.message, time: Date.now() }));
+                localStorage.setItem('ambitosmax-error', JSON.stringify({ msg: e.message, time: Date.now() }));
               } catch(err) {}
             });
             window.addEventListener('unhandledrejection', function(e) {
               try {
-                localStorage.setItem('leisure-exporting-error', JSON.stringify({ msg: String(e.reason), time: Date.now() }));
+                localStorage.setItem('ambitosmax-error', JSON.stringify({ msg: String(e.reason), time: Date.now() }));
               } catch(err) {}
             });
           `,

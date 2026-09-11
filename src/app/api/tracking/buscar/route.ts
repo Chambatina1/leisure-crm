@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { normalizarCPK, estadoPorTiempo, ETAPAS } from '@/lib/leisure-exporting';
+import { normalizarCPK, estadoPorTiempo, ETAPAS } from '@/lib/ambitosmax';
 
 // Map real estado string to matching ETAPA for timeline display
 function matchEtapa(estado: string) {

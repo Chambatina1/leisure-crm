@@ -15,16 +15,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://leisureexporting.com"),
+  metadataBase: new URL("https://ambitosmax.com"),
   title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
   description:
     "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Ambitosmax LLC.",
   alternates: {
-    canonical: "https://leisureexporting.com",
+    canonical: "https://ambitosmax.com",
   },
   openGraph: {
     type: "website",
-    url: "https://leisureexporting.com",
+    url: "https://ambitosmax.com",
     siteName: "Ambitosmax LLC",
     title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
     description: "Balas de gas, combustible en isotanques, tienda y envíos a Cuba.",

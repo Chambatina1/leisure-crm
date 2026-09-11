@@ -9,7 +9,7 @@ import { cupetPost } from '@/lib/cupet-proxy';
 // CUPET → PIN generado → queda guardado en la solicitud.
 // ═══════════════════════════════════════════════════════════════
 
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'leisure-exporting2024'; // fase 1
+const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024'; // fase 1
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {

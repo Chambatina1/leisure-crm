@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { parsearTrackingTSV, normalizarCPK } from '@/lib/leisure-exporting';
+import { parsearTrackingTSV, normalizarCPK } from '@/lib/ambitosmax';
 
 // GET /api/tracking - List all tracking entries
 export async function GET() {

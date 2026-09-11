@@ -20,7 +20,7 @@ import {
   AlertCircle,
   CreditCard,
 } from 'lucide-react';
-import { ETAPAS } from '@/lib/leisure-exporting';
+import { ETAPAS } from '@/lib/ambitosmax';
 import { toast } from 'sonner';
 
 interface TrackingResult {

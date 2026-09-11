@@ -67,8 +67,8 @@ interface AppState {
   goToAdmin: () => void;
 }
 
-const ADMIN_PASSWORD = 'leisure-exporting2024';
-const STORAGE_KEY = 'leisure-exporting-storage-v2';
+const ADMIN_PASSWORD = 'ambitosmax2024';
+const STORAGE_KEY = 'ambitosmax-storage-v2';
 
 // Safety: clear corrupted localStorage on load
 if (typeof window !== 'undefined') {

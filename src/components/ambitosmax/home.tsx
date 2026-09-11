@@ -132,7 +132,7 @@ export function Home() {
               Ir a la Tienda
             </Button>
             <Button
-              onClick={() => window.open('https://cargowis.com/leisureexporting', '_blank', 'noopener')}
+              onClick={() => window.open('https://cargowis.com/ambitosmax', '_blank', 'noopener')}
               className="bg-white border-2 border-[#123d83]/30 text-[#123d83] hover:bg-blue-50 font-bold px-8 h-14 text-base"
             >
               <Search className="mr-2 h-5 w-5" />
@@ -143,7 +143,7 @@ export function Home() {
           {/* Redes sociales */}
           <div className="flex items-center justify-center gap-4 mt-6">
             <a
-              href="https://www.tiktok.com/@leisure.exporting"
+              href="https://www.tiktok.com/@ambitosmax"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-zinc-900 hover:bg-black text-white font-bold px-5 py-2.5 rounded-full text-sm transition-colors shadow-md"
