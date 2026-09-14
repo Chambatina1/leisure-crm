@@ -36,6 +36,28 @@ export function CombustibleAdmin() {
   const [mensaje, setMensaje] = useState('');
   const [procesando, setProcesando] = useState<number | null>(null);
   const [pinCopiado, setPinCopiado] = useState<number | null>(null);
+  const [enviandoEmail, setEnviandoEmail] = useState<number | null>(null);
+
+  const enviarEmail = async (solicitud: Solicitud) => {
+    setEnviandoEmail(solicitud.id);
+    try {
+      const r = await fetch('/api/cupet/enviar-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': clave },
+        body: JSON.stringify({ solicitudId: solicitud.id }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        setMensaje(`✅ PIN enviado por email a ${solicitud.nombreComprador}`);
+      } else {
+        setMensaje(`⚠️ ${j.error}`);
+      }
+    } catch {
+      setMensaje('Error enviando email');
+    } finally {
+      setEnviandoEmail(null);
+    }
+  };
 
   const clave = 'ambitosmax2024'; // fase 1 — misma clave del panel
 
@@ -199,9 +221,20 @@ Beneficiario: ${s.nombreBeneficiario}`);
                       <p className="text-2xl font-black font-mono text-white tracking-widest">{s.pin}</p>
                     </div>
                     <p className="text-[11px] text-zinc-400 mt-1">Orden CUPET #{s.cupetTransactionId}</p>
-                    <Button variant="outline" size="sm" className="mt-2" onClick={() => copiarPin(s)}>
-                      {pinCopiado === s.id ? <><Check className="w-4 h-4 mr-1" />¡Copiado!</> : <><Copy className="w-4 h-4 mr-1" />Copiar mensaje WhatsApp</>}
-                    </Button>
+                    <div className="flex gap-2 mt-2">
+                      <Button variant="outline" size="sm" onClick={() => copiarPin(s)}>
+                        {pinCopiado === s.id ? <><Check className="w-4 h-4 mr-1" />¡Copiado!</> : <><Copy className="w-4 h-4 mr-1" />WhatsApp</>}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#123d83]/30 text-[#123d83] hover:bg-blue-50"
+                        disabled={enviandoEmail === s.id}
+                        onClick={() => enviarEmail(s)}
+                      >
+                        {enviandoEmail === s.id ? 'Enviando…' : '📧 Enviar email'}
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>

@@ -50,6 +50,7 @@ export function CombustibleCupet() {
   const [ci, setCi] = useState('');
   const [telefono, setTelefono] = useState(''); // teléfono de quien paga
   const [montoPagado, setMontoPagado] = useState('');
+  const [emailCliente, setEmailCliente] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoOrden | null>(null);
   const [solicitud, setSolicitud] = useState<{ numero: string; montoUsd: number; zelle: string; instrucciones: string } | null>(null);
@@ -82,6 +83,7 @@ export function CombustibleCupet() {
         body: JSON.stringify({
           nombreComprador: nombre,
           telefonoComprador: telefono,
+          emailComprador: emailCliente,
           nombreBeneficiario: nombreBeneficiario,
           ciBeneficiario: ci,
           telefonoCuba: telefonoBeneficiario,
@@ -351,6 +353,7 @@ export function CombustibleCupet() {
               <div className="space-y-3">
                 <Input label="Tu nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre y apellidos del que paga" />
                 <Input label="Tu teléfono" value={telefono} onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono de contacto en USA" />
+                <Input label="Tu email (para recibir el PIN)" type="email" value={emailCliente} onChange={(e) => setEmailCliente(e.target.value)} placeholder="tucorreo@gmail.com" />
               </div>
             </div>
 
@@ -380,7 +383,7 @@ export function CombustibleCupet() {
             )}
             <div className="sticky bottom-4 pt-2" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
               <button
-                disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length !== 11 || telefono.length < 5 || telefonoBeneficiario.length < 5 || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))}
+                disabled={enviando || nombre.length < 3 || nombreBeneficiario.length < 5 || ci.length !== 11 || telefono.length < 5 || telefonoBeneficiario.length < 5 || !emailCliente.includes('@') || (totalAuto <= 0 && (!montoPagado || parseFloat(montoPagado) <= 0))}
                 onClick={enviar}
                 className="btn-combustible"
               >

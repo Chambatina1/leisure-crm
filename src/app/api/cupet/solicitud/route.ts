@@ -15,7 +15,7 @@ const esAdmin = (r: NextRequest) => r.headers.get('x-admin-password') === CLAVE_
 const solicitudSchema = z.object({
   nombreComprador: z.string().min(3).max(100),
   telefonoComprador: z.string().min(5).max(20),
-  emailComprador: z.string().email().optional().or(z.literal('')),
+  emailComprador: z.string().email('Email válido requerido'),
   nombreBeneficiario: z.string().min(3).max(100),
   ciBeneficiario: z.string().regex(/^\d{11}$/, 'El carnet debe tener exactamente 11 dígitos'),
   telefonoCuba: z.string().min(5).max(20),
