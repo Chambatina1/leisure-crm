@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { ensureCatalogo } from '@/lib/catalogo-seed';
+import { asegurarProductosNuevos } from '@/lib/productos-nuevos';
 
 // Convierte la imagen guardada (base64 en BD) en una URL ligera por producto.
 // La versión (?v=) cambia cuando el producto se actualiza: si el dueño cambia
@@ -16,6 +17,7 @@ export async function GET() {
   try {
     // Si el catálogo quedó vacío (p. ej. BD reiniciada), auto-restaurar desde la semilla
     await ensureCatalogo();
+    await asegurarProductosNuevos();
 
     const products = await db.tiendaProduct.findMany({
       where: { activo: true },

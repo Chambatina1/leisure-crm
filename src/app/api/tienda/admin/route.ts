@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { asegurarProductosNuevos } from '@/lib/productos-nuevos';
 
 // ─── Esquemas de validación ─────────────────────────────────────────────
 const optionalUrl = z.string().optional().or(z.literal(''));
@@ -47,6 +48,8 @@ export async function GET(request: NextRequest) {
     if (activoParam !== null && activoParam !== '') {
       where.activo = activoParam === 'true';
     }
+
+    await asegurarProductosNuevos();
 
     const products = await db.tiendaProduct.findMany({
       where,
