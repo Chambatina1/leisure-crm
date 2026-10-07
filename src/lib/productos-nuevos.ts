@@ -28,6 +28,26 @@ const ALTAS: AltaProducto[] = [
   },
 ];
 
+// Cambios puntuales a productos ya creados (también de una sola vez).
+interface CambioProducto {
+  id: string;
+  buscarNombre: string; // producto a modificar (si no existe, se ignora)
+  datos: { nombre?: string; descripcion?: string; precio?: number };
+}
+
+const CAMBIOS: CambioProducto[] = [
+  {
+    id: 'cilindro_gas_85_la_lisa',
+    buscarNombre: 'CILINDRO DE GAS (sin entregar vacío)',
+    datos: {
+      nombre: 'CILINDRO DE GAS — Recogida en La Lisa',
+      descripcion:
+        'Cilindro de gas lleno por $85. Se recoge en nuestro punto de venta en La Lisa. No hace falta entregar balita vacía a cambio.',
+      precio: 85,
+    },
+  },
+];
+
 let promesa: Promise<void> | null = null;
 
 async function aplicarAltas(): Promise<void> {
@@ -59,6 +79,19 @@ async function aplicarAltas(): Promise<void> {
       console.log(`[Tienda] Producto agregado: ${alta.nombre}`);
     }
 
+    await db.config.create({ data: { clave, valor: new Date().toISOString() } });
+  }
+
+  for (const cambio of CAMBIOS) {
+    const clave = `cambio_producto_${cambio.id}`;
+    const hecho = await db.config.findUnique({ where: { clave } });
+    if (hecho) continue;
+
+    const producto = await db.tiendaProduct.findFirst({ where: { nombre: cambio.buscarNombre } });
+    if (producto) {
+      await db.tiendaProduct.update({ where: { id: producto.id }, data: cambio.datos });
+      console.log(`[Tienda] Producto actualizado: ${cambio.datos.nombre ?? producto.nombre}`);
+    }
     await db.config.create({ data: { clave, valor: new Date().toISOString() } });
   }
 }
