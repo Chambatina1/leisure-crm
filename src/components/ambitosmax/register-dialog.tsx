@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useAppStore } from './store';
 import {
@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User, Mail, Phone, MapPin, Building2 } from 'lucide-react';
+import { Loader2, User, Mail, Phone, MapPin, Building2, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -41,6 +41,55 @@ export function RegisterDialog() {
   const [form, setForm] = useState<RegisterForm>(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<RegisterForm>>({});
+  // Verificación por código
+  const [paso, setPaso] = useState<'datos' | 'codigo'>('datos');
+  const [codigo, setCodigo] = useState('');
+  const [espera, setEspera] = useState(0);
+  const [honeypot, setHoneypot] = useState('');
+  const [abiertoEn, setAbiertoEn] = useState(0);
+
+  useEffect(() => {
+    if (showRegisterDialog) setAbiertoEn(Date.now());
+  }, [showRegisterDialog]);
+
+  useEffect(() => {
+    if (espera <= 0) return;
+    const id = setTimeout(() => setEspera((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [espera]);
+
+  const pedirCodigo = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/users/register/codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.nombre,
+          email: form.email,
+          website: honeypot,
+          t: abiertoEn,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setPaso('codigo');
+        setCodigo('');
+        setEspera(60);
+        toast.success(`Te enviamos un código a ${form.email}`);
+      } else {
+        if (json.esperaSegundos) {
+          setPaso('codigo');
+          setEspera(json.esperaSegundos);
+        }
+        toast.error(json.error || 'No se pudo enviar el código');
+      }
+    } catch {
+      toast.error('Error de conexión');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validate = (): boolean => {
     const newErrors: Partial<RegisterForm> = {};
@@ -57,14 +106,23 @@ export function RegisterDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (paso === 'datos') {
+      if (!validate()) return;
+      await pedirCodigo();
+      return;
+    }
+
+    if (!/^\d{6}$/.test(codigo)) {
+      toast.error('Escribe los 6 dígitos del código');
+      return;
+    }
 
     setLoading(true);
     try {
       const res = await fetch('/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, codigo, website: honeypot }),
       });
       const json = await res.json();
 
@@ -73,9 +131,11 @@ export function RegisterDialog() {
         toast.success('¡Registro exitoso! Bienvenido/a a Ambitosmax');
         setForm(INITIAL_FORM);
         setErrors({});
+        setPaso('datos');
+        setCodigo('');
         setShowRegisterDialog(false);
       } else {
-        toast.error(json.error || 'Error al registrarse');
+        toast.error(typeof json.error === 'string' ? json.error : 'Error al registrarse');
       }
     } catch {
       toast.error('Error de conexión');
@@ -88,6 +148,8 @@ export function RegisterDialog() {
     if (!open && !loading) {
       setForm(INITIAL_FORM);
       setErrors({});
+      setPaso('datos');
+      setCodigo('');
     }
     setShowRegisterDialog(open);
   };
@@ -129,6 +191,64 @@ export function RegisterDialog() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="mt-2 space-y-4">
+          {/* Campo trampa para bots: invisible para personas */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+            <label htmlFor="reg-website">No llenar</label>
+            <input
+              id="reg-website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+
+          {paso === 'codigo' ? (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 p-3 text-sm text-zinc-700 dark:text-zinc-200">
+                <ShieldCheck className="h-5 w-5 shrink-0 text-[#123d83]" />
+                <span>
+                  Escribe el código de 6 dígitos que enviamos a <strong>{form.email}</strong>. Revisa también la carpeta de spam.
+                </span>
+              </div>
+              <Label htmlFor="reg-codigo" className="text-xs font-medium">
+                Código de verificación
+              </Label>
+              <Input
+                id="reg-codigo"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                placeholder="000000"
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="text-center text-2xl tracking-[0.5em] font-mono h-14"
+                autoFocus
+                disabled={loading}
+              />
+              <div className="flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={() => setPaso('datos')}
+                  className="flex items-center gap-1 text-zinc-500 hover:text-zinc-800"
+                  disabled={loading}
+                >
+                  <ArrowLeft className="h-3 w-3" /> Cambiar datos
+                </button>
+                <button
+                  type="button"
+                  onClick={pedirCodigo}
+                  className="text-[#123d83] font-medium disabled:text-zinc-400"
+                  disabled={loading || espera > 0}
+                >
+                  {espera > 0 ? `Reenviar código en ${espera}s` : 'Reenviar código'}
+                </button>
+              </div>
+            </div>
+          ) : (
+          <>
           {/* Nombre */}
           <div className="space-y-1.5">
             <Label htmlFor="reg-nombre" className="text-xs font-medium">
@@ -230,18 +350,28 @@ export function RegisterDialog() {
             </div>
           </div>
 
+          </>
+          )}
+
           <Button
             type="submit"
-            disabled={loading || !form.nombre.trim() || !form.email.trim() || !form.telefono.trim()}
+            disabled={
+              loading ||
+              (paso === 'datos'
+                ? !form.nombre.trim() || !form.email.trim() || !form.telefono.trim()
+                : codigo.length !== 6)
+            }
             className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-medium mt-2"
           >
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Registrando...
+                {paso === 'datos' ? 'Enviando código...' : 'Verificando...'}
               </>
+            ) : paso === 'datos' ? (
+              'Continuar'
             ) : (
-              'Crear Cuenta'
+              'Verificar y crear cuenta'
             )}
           </Button>
 
