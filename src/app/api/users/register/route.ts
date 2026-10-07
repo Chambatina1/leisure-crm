@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { z } from 'zod';
+import { enviarCorreoBienvenida } from '@/lib/welcome-email';
 
 // ─── Validación con Zod ────────────────────────────────────────────────
 const registerSchema = z.object({
@@ -13,31 +14,6 @@ const registerSchema = z.object({
   direccion: z.string().optional().or(z.literal('')),
   ciudad: z.string().optional().or(z.literal('')),
 });
-
-// ─── Helper: enviar correo de bienvenida ───────────────────────────────
-async function sendWelcomeEmail(user: {
-  id: number;
-  nombre: string;
-  email: string;
-  telefono?: string | null;
-}) {
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-    await fetch(`${baseUrl}/api/email/welcome`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user: {
-          nombre: user.nombre,
-          email: user.email,
-          telefono: user.telefono,
-        },
-      }),
-    });
-  } catch (err) {
-    console.error('[Registro] Error enviando correo de bienvenida:', err);
-  }
-}
 
 // ─── POST /api/users/register ──────────────────────────────────────────
 export async function POST(request: NextRequest) {
@@ -75,7 +51,9 @@ export async function POST(request: NextRequest) {
     });
 
     // ── Enviar correo de bienvenida (fire-and-forget) ───────────────
-    sendWelcomeEmail(user);
+    enviarCorreoBienvenida(user.nombre, user.email).catch((err) =>
+      console.error('[Registro] Error enviando correo de bienvenida:', err)
+    );
 
     // ── Respuesta sin password ───────────────────────────────────────
     const { password: _pw, ...userWithoutPassword } = user;

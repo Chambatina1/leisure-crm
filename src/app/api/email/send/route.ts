@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
@@ -61,6 +62,8 @@ async function createTransporter() {
 
 // ─── POST /api/email/send ──────────────────────────────────────────────
 export async function POST(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const validated = emailSchema.safeParse(body);

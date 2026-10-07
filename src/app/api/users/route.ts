@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
@@ -6,6 +7,8 @@ import { z } from 'zod';
 // Lista paginada de usuarios con conteo de pedidos.
 // Query params: search, page, limit, activo
 export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const search = (searchParams.get('search') || '').trim();
@@ -98,6 +101,8 @@ const toggleSchema = z.object({
 });
 
 export async function PATCH(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const validated = toggleSchema.safeParse(body);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import ZAI from 'z-ai-web-dev-sdk';
@@ -57,6 +58,8 @@ const updateSchema = z.object({
 // ─── GET /api/ai-knowledge ─────────────────────────────────────────────
 // Obtiene todas las entradas. Filtros: ?categoria=X & ?activa=true/false
 export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const categoria = searchParams.get('categoria');
@@ -90,6 +93,8 @@ export async function GET(request: NextRequest) {
 // ─── POST /api/ai-knowledge ────────────────────────────────────────────
 // Crea nueva entrada. Si no se proveen keywords se autogeneran.
 export async function POST(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
 
@@ -137,6 +142,8 @@ export async function POST(request: NextRequest) {
 // ─── PUT /api/ai-knowledge ─────────────────────────────────────────────
 // Actualiza entrada existente.
 export async function PUT(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const validated = updateSchema.safeParse(body);
@@ -189,6 +196,8 @@ export async function PUT(request: NextRequest) {
 
 // ─── DELETE /api/ai-knowledge?id=X ─────────────────────────────────────
 export async function DELETE(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const idParam = searchParams.get('id');

@@ -182,7 +182,14 @@ export default function Page() {
   const mode = useAppStore((s) => s.mode);
   const currentView = useAppStore((s) => s.currentView);
   const adminView = useAppStore((s) => s.adminView);
+  const verifySession = useAppStore((s) => s.verifySession);
   const [hasError, setHasError] = useState(false);
+
+  // La sesión de admin la valida el servidor (cookie httpOnly); si caducó,
+  // se vuelve al modo público en vez de mostrar un panel sin datos.
+  useEffect(() => {
+    verifySession();
+  }, [verifySession, mode]);
   const [errorMsg, setErrorMsg] = useState('');
 
   const viewKey = mode === 'admin' ? `admin-${adminView}` : `public-${currentView}`;

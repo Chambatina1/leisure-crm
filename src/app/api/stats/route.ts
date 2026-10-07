@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 
 // GET /api/stats - Dashboard statistics
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const [
       total,

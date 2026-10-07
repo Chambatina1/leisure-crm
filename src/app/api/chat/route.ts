@@ -108,6 +108,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Mensaje y sessionId son requeridos' }, { status: 400 });
     }
 
+    if (typeof mensaje !== 'string' || typeof sessionId !== 'string' || mensaje.length > 1000 || sessionId.length > 100) {
+      return NextResponse.json({ ok: false, error: 'Mensaje demasiado largo o inválido' }, { status: 400 });
+    }
+
     // Save user message
     await db.chatMessage.create({
       data: { sessionId, role: 'user', content: mensaje },

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
@@ -16,6 +17,8 @@ const pedidoSchema = z.object({
 
 // GET /api/pedidos - List pedidos with pagination, filter, search
 export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const estado = searchParams.get('estado') || '';

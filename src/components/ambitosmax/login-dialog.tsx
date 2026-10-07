@@ -29,15 +29,12 @@ export function LoginDialog() {
     setLoading(true);
     setError('');
 
-    // Small delay for UX feedback
-    await new Promise((r) => setTimeout(r, 400));
-
-    const success = login(password);
-    if (success) {
+    const result = await login(password);
+    if (result.ok) {
       setPassword('');
       setError('');
     } else {
-      setError('Contraseña incorrecta');
+      setError(result.error || 'Contraseña incorrecta');
     }
     setLoading(false);
   };

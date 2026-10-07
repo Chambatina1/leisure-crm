@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { parsearTrackingTSV, normalizarCPK } from '@/lib/ambitosmax';
 
 // GET /api/tracking - List all tracking entries
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const entries = await db.trackingEntry.findMany({
       orderBy: { createdAt: 'desc' },
@@ -17,6 +20,8 @@ export async function GET() {
 
 // POST /api/tracking - Parse and save TSV block
 export async function POST(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const { bloque } = body;
@@ -78,6 +83,8 @@ export async function POST(request: NextRequest) {
 
 // PATCH /api/tracking - Update a single tracking entry (estado, descripcion, etc.)
 export async function PATCH(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const { id, estado, descripcion, consignatario, carnetPrincipal, embarcador, fecha } = body;
@@ -112,7 +119,9 @@ export async function PATCH(request: NextRequest) {
 }
 
 // DELETE /api/tracking - Clear all tracking entries
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     await db.trackingEntry.deleteMany({});
     return NextResponse.json({ ok: true, message: 'Todos los datos de tracking eliminados' });

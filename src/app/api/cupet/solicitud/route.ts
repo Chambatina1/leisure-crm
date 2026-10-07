@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { z } from 'zod';
@@ -9,8 +10,6 @@ import { z } from 'zod';
 //   GET  (admin):   listar solicitudes pendientes/todas
 // ═══════════════════════════════════════════════════════════════
 
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024'; // fase 1
-const esAdmin = (r: NextRequest) => r.headers.get('x-admin-password') === CLAVE_ADMIN;
 
 const solicitudSchema = z.object({
   nombreComprador: z.string().min(3).max(100),
@@ -78,7 +77,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await asegurarTablaSolicitudes();
-    if (!esAdmin(request)) {
+    if (!isAdminRequest(request)) {
       return NextResponse.json({ ok: false, error: 'No autorizado' }, { status: 401 });
     }
     const estado = request.nextUrl.searchParams.get('estado');

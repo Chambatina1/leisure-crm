@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/admin-auth';
 import nodemailer from 'nodemailer';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
@@ -7,11 +8,17 @@ import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 // POST /api/cupet/enviar-pin — Envía el PIN por email automáticamente
 // ═══════════════════════════════════════════════════════════════
 
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024';
+
+const esc = (t: unknown) =>
+  String(t ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
 export async function POST(request: NextRequest) {
   try {
-    if (request.headers.get('x-admin-password') !== CLAVE_ADMIN) {
+    if (!isAdminRequest(request)) {
       return NextResponse.json({ ok: false, error: 'No autorizado' }, { status: 401 });
     }
     await asegurarTablaSolicitudes();
@@ -60,20 +67,20 @@ export async function POST(request: NextRequest) {
         </div>
         <div style="background: white; border-radius: 16px; padding: 30px; margin-top: 16px;">
           <h2 style="color: #071a46; font-size: 18px; margin-bottom: 8px;">¡Tu PIN está listo!</h2>
-          <p style="color: #666; font-size: 14px;">Hola ${sol.nombreComprador},</p>
-          <p style="color: #666; font-size: 14px;">Tu solicitud <strong>${sol.numero}</strong> ha sido confirmada. Aquí están los datos para cargar combustible:</p>
+          <p style="color: #666; font-size: 14px;">Hola ${esc(sol.nombreComprador)},</p>
+          <p style="color: #666; font-size: 14px;">Tu solicitud <strong>${esc(sol.numero)}</strong> ha sido confirmada. Aquí están los datos para cargar combustible:</p>
 
           <div style="background: #071a46; border-radius: 12px; padding: 24px; text-align: center; margin: 20px 0;">
             <p style="color: rgba(255,255,255,0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">PIN DE CARGA</p>
-            <p style="color: #7ed957; font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 6px; margin: 0;">${sol.pin}</p>
+            <p style="color: #7ed957; font-size: 36px; font-weight: 900; font-family: monospace; letter-spacing: 6px; margin: 0;">${esc(sol.pin)}</p>
           </div>
 
           <table style="width: 100%; font-size: 14px; color: #333; border-collapse: collapse;">
             <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Orden:</td><td style="text-align: right;">#${sol.cupetTransactionId}</td></tr>
-            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Combustible:</td><td style="text-align: right;">${sol.typeFuelNombre}</td></tr>
+            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Combustible:</td><td style="text-align: right;">${esc(sol.typeFuelNombre)}</td></tr>
             <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Cantidad:</td><td style="text-align: right;">${sol.litros} litros</td></tr>
-            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Estación:</td><td style="text-align: right;">${sol.servicenterNombre}</td></tr>
-            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Beneficiario:</td><td style="text-align: right;">${sol.nombreBeneficiario}</td></tr>
+            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Estación:</td><td style="text-align: right;">${esc(sol.servicenterNombre)}</td></tr>
+            <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee; font-weight: bold;">Beneficiario:</td><td style="text-align: right;">${esc(sol.nombreBeneficiario)}</td></tr>
             <tr><td style="padding: 8px 0; font-weight: bold;">Válido hasta:</td><td style="text-align: right;">${sol.expiracionPin ? new Date(sol.expiracionPin).toLocaleDateString('es-ES') : 'Consultar'}</td></tr>
           </table>
 

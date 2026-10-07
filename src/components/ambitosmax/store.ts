@@ -23,7 +23,8 @@ interface AppState {
   // Auth - Admin
   isAdmin: boolean;
   isLoggedIn: boolean;
-  login: (password: string) => boolean;
+  login: (password: string) => Promise<{ ok: boolean; error?: string }>;
+  verifySession: () => Promise<void>;
   logout: () => void;
 
   // Auth - User registration
@@ -67,7 +68,6 @@ interface AppState {
   goToAdmin: () => void;
 }
 
-const ADMIN_PASSWORD = 'ambitosmax2024';
 const STORAGE_KEY = 'ambitosmax-storage-v2';
 
 // Safety: clear corrupted localStorage on load
@@ -91,8 +91,17 @@ export const useAppStore = create<AppState>()(
       // Auth - Admin
       isAdmin: false,
       isLoggedIn: false,
-      login: (password: string) => {
-        if (password === ADMIN_PASSWORD) {
+      login: async (password: string) => {
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) {
+            return { ok: false, error: json.error || 'Contraseña incorrecta' };
+          }
           const pending = get().pendingAdminView;
           set({
             isLoggedIn: true,
@@ -102,11 +111,25 @@ export const useAppStore = create<AppState>()(
             showLoginDialog: false,
             pendingAdminView: null,
           });
-          return true;
+          return { ok: true };
+        } catch {
+          return { ok: false, error: 'No se pudo conectar con el servidor' };
         }
-        return false;
+      },
+      verifySession: async () => {
+        if (!get().isLoggedIn) return;
+        try {
+          const res = await fetch('/api/auth/me');
+          const json = await res.json();
+          if (!json.isAdmin) {
+            set({ isLoggedIn: false, isAdmin: false, mode: 'public', adminView: 'dashboard' });
+          }
+        } catch {
+          /* sin conexión: no cambiar estado */
+        }
       },
       logout: () => {
+        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
         set({
           isLoggedIn: false,
           isAdmin: false,

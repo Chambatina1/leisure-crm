@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { cupetPost } from '@/lib/cupet-proxy';
@@ -9,11 +10,10 @@ import { cupetPost } from '@/lib/cupet-proxy';
 // CUPET → PIN generado → queda guardado en la solicitud.
 // ═══════════════════════════════════════════════════════════════
 
-const CLAVE_ADMIN = process.env.ADMIN_PASSWORD || 'ambitosmax2024'; // fase 1
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (request.headers.get('x-admin-password') !== CLAVE_ADMIN) {
+    if (!isAdminRequest(request)) {
       return NextResponse.json({ ok: false, error: 'No autorizado' }, { status: 401 });
     }
     await asegurarTablaSolicitudes();

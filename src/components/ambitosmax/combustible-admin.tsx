@@ -43,7 +43,7 @@ export function CombustibleAdmin() {
     try {
       const r = await fetch('/api/cupet/enviar-pin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-password': clave },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ solicitudId: solicitud.id }),
       });
       const j = await r.json();
@@ -59,13 +59,11 @@ export function CombustibleAdmin() {
     }
   };
 
-  const clave = 'ambitosmax2024'; // fase 1 — misma clave del panel
-
   const [stock, setStock] = useState<Array<{ servicenterId: number; estacionNombre: string; direccion: string; combustible: string; amount: number; priceXLiter: number; totalUsd: number; mapsUrl: string }>>([]);
 
   const cargarStock = useCallback(async () => {
     try {
-      const r = await fetch('/api/cupet/stock', { headers: { 'x-admin-password': clave } });
+      const r = await fetch('/api/cupet/stock');
       const j = await r.json();
       if (j.ok) setStock(j.data);
     } catch { /* silencioso */ }
@@ -74,7 +72,7 @@ export function CombustibleAdmin() {
   const cargar = useCallback(async () => {
     setCargando(true);
     try {
-      const r = await fetch('/api/cupet/solicitud', { headers: { 'x-admin-password': clave } });
+      const r = await fetch('/api/cupet/solicitud');
       const j = await r.json();
       if (j.ok) setSolicitudes(j.data);
     } catch {
@@ -92,7 +90,6 @@ export function CombustibleAdmin() {
     try {
       const r = await fetch(`/api/cupet/solicitud/${id}/confirmar`, {
         method: 'POST',
-        headers: { 'x-admin-password': clave },
       });
       const j = await r.json();
       if (j.ok) {

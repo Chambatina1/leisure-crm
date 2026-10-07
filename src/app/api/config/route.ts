@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 
 const DEFAULTS: Record<string, string> = {
@@ -16,6 +17,13 @@ const DEFAULTS: Record<string, string> = {
   instagram: '',
   facebook: '',
 };
+
+function esClavePublica(clave: string): boolean {
+  return (
+    Object.prototype.hasOwnProperty.call(DEFAULTS, clave) ||
+    /^custom_[a-z0-9_]{1,60}$/i.test(clave)
+  );
+}
 
 async function getOrCreate(clave: string): Promise<string> {
   const existing = await db.config.findUnique({ where: { clave } });
@@ -40,10 +48,15 @@ export async function GET(request: NextRequest) {
     const keys = searchParams.get('keys');
 
     if (keys) {
-      const keyList = keys.split(',');
+      // Solo claves públicas: nunca devolver SMTP_* ni otras claves internas
+      const keyList = keys
+        .split(',')
+        .map((k) => k.trim())
+        .filter((k) => esClavePublica(k))
+        .slice(0, 50);
       const entries: Record<string, string> = {};
       for (const k of keyList) {
-        entries[k.trim()] = await getOrCreate(k.trim());
+        entries[k] = await getOrCreate(k);
       }
       return NextResponse.json({ ok: true, data: entries });
     }
@@ -63,6 +76,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/config - Update config values
 export async function POST(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const { configs } = body;

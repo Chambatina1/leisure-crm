@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
@@ -30,6 +31,8 @@ const updateSchema = z.object({
 // ─── GET /api/tienda/admin ─────────────────────────────────────────────
 // Obtiene todos los productos. Filtros: ?categoria=X & ?activo=true/false
 export async function GET(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const categoria = searchParams.get('categoria');
@@ -75,6 +78,8 @@ export async function GET(request: NextRequest) {
 // ─── POST /api/tienda/admin ────────────────────────────────────────────
 // Crea un nuevo producto.
 export async function POST(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const validated = createSchema.safeParse(body);
@@ -114,6 +119,8 @@ export async function POST(request: NextRequest) {
 // ─── PUT /api/tienda/admin ─────────────────────────────────────────────
 // Actualiza un producto existente.
 export async function PUT(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const validated = updateSchema.safeParse(body);
@@ -168,6 +175,8 @@ export async function PUT(request: NextRequest) {
 // ─── DELETE /api/tienda/admin?id=X ─────────────────────────────────────
 // Elimina un producto por ID.
 export async function DELETE(request: NextRequest) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const idParam = searchParams.get('id');
