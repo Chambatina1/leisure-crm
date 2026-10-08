@@ -226,16 +226,33 @@ export function Tienda() {
                 {product.descripcion && <CardDescription className="text-xs line-clamp-2">{product.descripcion}</CardDescription>}
               </CardHeader>
               <CardContent className="pt-0 space-y-2">
-                <div className="text-xs text-emerald-600 font-medium">
-                  ✓ Entrega en {province}
-                </div>
-                <Button
-                  className="w-full bg-[#123d83] hover:bg-[#071a46] text-white text-sm"
-                  onClick={() => addToCart(product)}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-1.5" />
-                  Añadir al carrito
-                </Button>
+                {product.categoria === 'combustible' ? (
+                  <>
+                    <div className="text-xs text-emerald-600 font-medium">
+                      {/CILINDRO/i.test(product.nombre) ? '✓ Recogida en Los Avioncitos, La Lisa' : '✓ Carga en el servicentro'}
+                    </div>
+                    <Button
+                      className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
+                      onClick={() => handleComprar(product)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1.5" />
+                      {/CILINDRO/i.test(product.nombre) ? 'Reservar cilindro' : 'Comprar combustible'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-xs text-emerald-600 font-medium">
+                      ✓ Entrega en {province}
+                    </div>
+                    <Button
+                      className="w-full bg-[#123d83] hover:bg-[#071a46] text-white text-sm"
+                      onClick={() => addToCart(product)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1.5" />
+                      Añadir al carrito
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           );

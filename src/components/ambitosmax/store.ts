@@ -192,6 +192,14 @@ export const useAppStore = create<AppState>()(
           set({ selectedProduct: product, currentView: 'reserva-cilindro' });
           return;
         }
+        // Diésel / gasolina: se venden en el sistema de Combustible (botón "Comprar combustible")
+        if (
+          get().mode !== 'admin' &&
+          (/DI[EÉ]SEL|GASOLINA|COMBUSTIBLE/i.test(product.nombre) || product.categoria === 'combustible')
+        ) {
+          set({ selectedProduct: null, currentView: 'combustible' });
+          return;
+        }
         set({ selectedProduct: product, selectedPedidoId: null });
         const currentMode = get().mode;
         if (currentMode === 'admin') {
