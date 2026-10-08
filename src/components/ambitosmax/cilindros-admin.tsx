@@ -21,6 +21,7 @@ interface Reserva {
   estado: 'pendiente_pago' | 'pagada' | 'entregada' | 'anulada';
   pin: string | null;
   lote: string;
+  notas: string | null;
   createdAt: string;
 }
 
@@ -30,6 +31,7 @@ interface Datos {
   cerradoHoy: boolean;
   hoyCuba: string;
   reservas: Reserva[];
+  pendientesTodas: Reserva[];
   lotes: { lote: string; n: number }[];
   resumen: { total: number; pendientes: number; confirmadas: number; entregadas: number; cilindros: number; usd: number };
 }
@@ -75,10 +77,20 @@ export function CilindrosAdmin() {
   useEffect(() => { cargar(); }, [cargar]);
 
   const confirmar = async (r: Reserva) => {
-    if (!confirm(`¿Confirmar el pago de $${r.montoUsd.toFixed(2)} de ${r.nombreComprador} (${r.numero})?`)) return;
+    const referencia = window.prompt(
+      `Confirmar pago de $${r.montoUsd.toFixed(2)} de ${r.nombreComprador} (${r.numero}).\n\n` +
+        'Revisa en tu banco que llegó el Zelle con la referencia ' + r.numero + '.\n' +
+        'Escribe el número de confirmación de Zelle (opcional) y pulsa Aceptar:',
+      ''
+    );
+    if (referencia === null) return; // canceló
     setOcupado(r.id);
     try {
-      const res = await fetch(`/api/cilindros/${r.id}/confirmar`, { method: 'POST' });
+      const res = await fetch(`/api/cilindros/${r.id}/confirmar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referenciaZelle: referencia }),
+      });
       const j = await res.json();
       if (j.ok) {
         const extra =
@@ -209,6 +221,32 @@ export function CilindrosAdmin() {
         </CardContent>
       </Card>
 
+      {datos && datos.pendientesTodas.length > 0 && (
+        <Card className="border-0 shadow-md border-l-4 border-l-amber-400">
+          <CardContent className="p-4">
+            <p className="font-bold text-amber-900 mb-1">Pagos por confirmar ({datos.pendientesTodas.length})</p>
+            <p className="text-xs text-zinc-500 mb-3">Cuando veas el Zelle en el banco, pulsa “Confirmar pago”: se genera el PIN y el cliente pasa al listado de recogida.</p>
+            <div className="space-y-2">
+              {datos.pendientesTodas.map((x) => (
+                <div key={x.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50 rounded-lg p-3 text-sm">
+                  <div>
+                    <span className="font-mono font-bold">{x.numero}</span> · <b>${x.montoUsd.toFixed(2)}</b> · {x.cantidad} cil.
+                    <span className="text-zinc-500"> · paga {x.nombreComprador} ({x.telefonoComprador}) · recoge {x.nombreRecoge}</span>
+                    <span className="text-zinc-400"> · reservó {new Date(x.createdAt).toLocaleString('es-ES', { timeZone: 'America/Havana', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button size="sm" disabled={ocupado === x.id} onClick={() => confirmar(x)} className="bg-[#55b949] hover:bg-[#3f9a35] text-white text-xs h-8">
+                      {ocupado === x.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Confirmar pago'}
+                    </Button>
+                    <Button size="sm" variant="ghost" disabled={ocupado === x.id} onClick={() => anular(x)} className="text-xs h-8 text-red-600">Anular</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {r && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
@@ -247,7 +285,7 @@ export function CilindrosAdmin() {
                       <td className="p-3 text-center">{x.cantidad}</td>
                       <td className="p-3 text-xs">{x.nombreComprador}<br /><span className="text-zinc-400">{x.telefonoComprador}</span></td>
                       <td className="p-3"><span className={`text-[11px] font-bold px-2 py-1 rounded-full ${ESTADO[x.estado].cls}`}>{ESTADO[x.estado].txt}</span></td>
-                      <td className="p-3 font-mono font-bold">{x.pin || '—'}</td>
+                      <td className="p-3 font-mono font-bold">{x.pin || '—'}{x.notas && <div className="text-[10px] font-normal text-zinc-400 font-sans">{x.notas}</div>}</td>
                       <td className="p-3 whitespace-nowrap">
                         {x.estado === 'pendiente_pago' && (
                           <Button size="sm" disabled={ocupado === x.id} onClick={() => confirmar(x)} className="bg-[#55b949] hover:bg-[#3f9a35] text-white text-xs h-8">

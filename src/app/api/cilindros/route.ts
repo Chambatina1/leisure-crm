@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
     const lotes = await db.$queryRawUnsafe<{ lote: string; n: number }[]>(
       `SELECT "lote", COUNT(*)::int AS n FROM "ReservaCilindro" GROUP BY "lote" ORDER BY "lote" DESC LIMIT 30`
     );
+    const pendientesTodas = await db.$queryRawUnsafe<unknown[]>(
+      `SELECT * FROM "ReservaCilindro" WHERE "estado"='pendiente_pago' ORDER BY "id" DESC LIMIT 200`
+    );
     const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
     const { dia, hora } = ahoraEnCuba();
     return NextResponse.json({
@@ -25,6 +28,7 @@ export async function GET(request: NextRequest) {
         cerradoHoy: hora >= HORA_CIERRE,
         hoyCuba: dia,
         reservas,
+        pendientesTodas,
         lotes,
         resumen: {
           total: reservas.length,

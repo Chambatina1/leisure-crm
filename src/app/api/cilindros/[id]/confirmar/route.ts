@@ -21,6 +21,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     await asegurarTablaReservas();
     const id = parseInt((await params).id, 10);
+    const body = await request.json().catch(() => ({}));
+    const referencia = String(body.referenciaZelle || '').trim().slice(0, 100);
     const filas = await db.$queryRawUnsafe<Reserva[]>(`SELECT * FROM "ReservaCilindro" WHERE "id" = $1`, id);
     const r = filas[0];
     if (!r) return NextResponse.json({ ok: false, error: 'Reserva no encontrada' }, { status: 404 });
@@ -35,11 +37,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const pin = nuevoPin();
     const act = await db.$queryRawUnsafe<Reserva[]>(
-      `UPDATE "ReservaCilindro" SET "estado"='pagada', "pin"=$2, "pagadaEn"=NOW(), "lote"=$3
+      `UPDATE "ReservaCilindro" SET "estado"='pagada', "pin"=$2, "pagadaEn"=NOW(), "lote"=$3,
+         "notas" = CASE WHEN $4::text = '' THEN "notas" ELSE 'Zelle: ' || $4::text END
        WHERE "id"=$1 AND "estado"='pendiente_pago' RETURNING *`,
       id,
       pin,
-      lote
+      lote,
+      referencia
     );
     const reserva = act[0];
     if (!reserva) return NextResponse.json({ ok: false, error: 'La reserva cambió; recarga' }, { status: 409 });
