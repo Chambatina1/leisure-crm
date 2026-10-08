@@ -58,8 +58,8 @@ function PublicNavbar() {
               onClick={() => handleNav('home')}
               className="flex items-center gap-3 hover:opacity-90 transition-opacity"
             >
-              <div className="w-10 h-10 flex items-center justify-center drop-shadow-sm">
-                <Image src="/icon.svg" alt="Ambitosmax" width={40} height={40} className="object-contain" priority />
+              <div className="w-12 h-12 flex items-center justify-center drop-shadow-sm">
+                <Image src="/logo-ambitos.png" alt="Ambitosmax" width={48} height={48} className="object-contain" priority />
               </div>
               <div>
                 <span className="block text-lg font-black text-[#071a46] tracking-wide">AMBITOSMAX</span>
@@ -125,7 +125,7 @@ function PublicNavbar() {
                   <div className="p-4 border-b border-zinc-100">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center overflow-hidden">
-                        <Image src="/icon.svg" alt="Ambitosmax" width={36} height={36} className="object-contain" />
+                        <Image src="/logo-ambitos.png" alt="Ambitosmax" width={36} height={36} className="object-contain" />
                       </div>
                       <div>
                         <h2 className="text-lg font-bold text-zinc-900">AMBITOSMAX</h2>
@@ -249,7 +249,7 @@ function AdminNavbar() {
             {/* Logo + Admin Badge */}
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-white/95 flex items-center justify-center overflow-hidden shadow-sm">
-                <Image src="/icon.svg" alt="Ambitosmax" width={36} height={36} className="object-contain" />
+                <Image src="/logo-ambitos.png" alt="Ambitosmax" width={36} height={36} className="object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ function AdminNavbar() {
                   <div className="p-4 border-b border-white/10">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center overflow-hidden">
-                        <Image src="/icon.svg" alt="Ambitosmax" width={32} height={32} className="object-contain" />
+                        <Image src="/logo-ambitos.png" alt="Ambitosmax" width={32} height={32} className="object-contain" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">

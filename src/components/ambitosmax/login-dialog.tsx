@@ -52,8 +52,7 @@ export function LoginDialog() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center sm:text-center items-center">
           <div className="mx-auto mb-3 flex flex-col items-center gap-2">
-            <Image src="/icon.svg" alt="Ambitosmax" width={64} height={64} className="h-16 w-16 rounded-2xl shadow-lg shadow-blue-500/20" priority />
-            <span className="text-lg font-black tracking-widest text-[#071a46]">AMBITOSMAX</span>
+            <Image src="/logo-ambitos.png" alt="Ambitos" width={112} height={112} className="h-28 w-28 object-contain" priority />
           </div>
           <DialogTitle className="text-xl">Acceso Administrativo</DialogTitle>
           <DialogDescription>
