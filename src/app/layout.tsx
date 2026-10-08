@@ -18,13 +18,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://ambitosmax.com"),
   title: {
-    default: "Ambitosmax — Cilindros de gas, combustible y envíos a Cuba",
+    default: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
     template: "%s | Ambitosmax",
   },
   description:
-    "Compra desde EE.UU. y tu familia recibe en Cuba: cilindro de gas lleno en La Habana por $85, diésel y gasolina, electrodomésticos, motos y envíos a Cuba con rastreo.",
+    "Balitas de gas en Cuba por $85 (sin entregar el vacío), diésel y gasolina en Cuba, electrodomésticos, motos y envíos a Cuba. Compra desde EE.UU. y tu familia recibe en Cuba.",
   keywords: [
-    "cilindro de gas La Habana", "balita de gas Cuba", "gas licuado Cuba", "comprar gas para Cuba",
+    "balitas de gas en Cuba", "balita de gas Cuba", "diésel y gasolina en Cuba", "gasolina en Cuba", "diésel en Cuba", "cilindro de gas La Habana", "gas licuado Cuba", "comprar gas para Cuba",
     "combustible Cuba", "diésel Cuba", "gasolina Cuba", "envíos a Cuba", "tienda online Cuba",
     "electrodomésticos para Cuba", "motos eléctricas Cuba", "plantas eléctricas Cuba", "Ambitosmax",
   ],
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
     siteName: "Ambitosmax",
     locale: "es_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Ambitosmax" }],
-    title: "Ambitosmax — Cilindros de gas, combustible y envíos a Cuba",
-    description: "Cilindro de gas lleno en La Habana por $85, combustible en Cuba, tienda online y envíos a Cuba.",
+    title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
+    description: "Balitas de gas en Cuba por $85, diésel y gasolina en Cuba, tienda online y envíos a Cuba.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ambitosmax — Gas, combustible y envíos a Cuba",
-    description: "Cilindro de gas en La Habana, combustible en Cuba, tienda y envíos.",
+    title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
+    description: "Balitas de gas en Cuba, diésel y gasolina en Cuba, tienda y envíos.",
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   category: "shopping",

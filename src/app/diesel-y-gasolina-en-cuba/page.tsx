@@ -2,25 +2,25 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
 
-const T = 'Combustible en Cuba desde EE.UU. — Diésel y gasolina';
+const T = 'Diésel y gasolina en Cuba — Compra combustible desde EE.UU.';
 const D =
-  'Compra diésel y gasolina para tu familia en Cuba desde Estados Unidos. Diésel a $2.37/litro en Servicentro Perla Negra, Bayamo, Granma. Pago por Zelle y PIN de carga.';
+  'Diésel y gasolina en Cuba: compra combustible para tu familia desde Estados Unidos. Diésel a $2.37/litro en Servicentro Perla Negra, Bayamo, Granma. Pago por Zelle y PIN de carga.';
 
 export const metadata: Metadata = {
   title: T,
   description: D,
-  keywords: ['combustible Cuba', 'diésel Cuba', 'gasolina Cuba', 'comprar combustible para Cuba', 'diésel Bayamo', 'Perla Negra Granma'],
-  alternates: { canonical: '/combustible-en-cuba' },
-  openGraph: { url: '/combustible-en-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  keywords: ['diésel y gasolina en Cuba', 'diésel en Cuba', 'gasolina en Cuba', 'combustible en Cuba', 'comprar gasolina para Cuba', 'comprar diésel para Cuba', 'diésel Bayamo', 'Perla Negra Granma'],
+  alternates: { canonical: '/diesel-y-gasolina-en-cuba' },
+  openGraph: { url: '/diesel-y-gasolina-en-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
-      ruta="/combustible-en-cuba"
-      titulo="Combustible en Cuba: diésel y gasolina"
+      ruta="/diesel-y-gasolina-en-cuba"
+      titulo="Diésel y gasolina en Cuba"
       subtitulo="Paga desde EE.UU. y tu familiar carga en el servicentro con un PIN"
-      descripcion="Con Ambitosmax compras combustible para Cuba desde Estados Unidos. Eliges el servicentro y los litros, pagas por Zelle y, al confirmar el pago, recibes un PIN de carga. El beneficiario presenta su carnet y el PIN en el surtidor. Diésel disponible en Servicentro Perla Negra (Carretera Central vía Las Tunas Km 1 1/2, Bayamo, Granma) a $2.37 USD por litro."
+      descripcion="Compra diésel y gasolina en Cuba para tu familia desde Estados Unidos con Ambitosmax. Eliges el servicentro y los litros, pagas por Zelle y, al confirmar el pago, recibes un PIN de carga. El beneficiario presenta su carnet y el PIN en el surtidor. Diésel disponible en Servicentro Perla Negra (Carretera Central vía Las Tunas Km 1 1/2, Bayamo, Granma) a $2.37 USD por litro."
       beneficios={[
         'Diésel a $2.37 USD por litro',
         'Servicentro Perla Negra, Bayamo, Granma',
@@ -30,10 +30,11 @@ export default function Page() {
         'Confirmación por correo',
       ]}
       faqs={[
+        { q: '¿Venden gasolina además de diésel?', a: 'Sí. Según la disponibilidad de cada servicentro hay gasolina regular y especial; los precios por litro se muestran al comprar.' },
         { q: '¿Cuánto cuesta el diésel?', a: '$2.37 USD por litro en Servicentro Perla Negra, Bayamo. El precio puede variar según disponibilidad.' },
         { q: '¿Cómo recibe el combustible mi familiar?', a: 'Al confirmar tu pago se genera un PIN. Tu familiar va al servicentro, presenta su carnet de identidad y el PIN en el surtidor.' },
         { q: '¿Dónde está el Servicentro Perla Negra?', a: 'En la Carretera Central vía Las Tunas, Km 1 1/2, municipio Bayamo, provincia Granma.' },
-        { q: '¿También venden cilindros de gas?', a: 'Sí: cilindro de gas lleno en La Habana por $85, sin entregar vacío.' },
+        { q: '¿También venden balitas de gas?', a: 'Sí: balita (cilindro) de gas llena en La Habana por $85, sin entregar la vacía.' },
       ]}
     >
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-12 text-center">

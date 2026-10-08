@@ -59,11 +59,11 @@ export function SeoPage({ titulo, subtitulo, descripcion, beneficios, faqs, ruta
             <Link href="/?v=tienda" className="inline-flex items-center bg-[#55b949] hover:bg-[#348f39] text-white font-bold px-8 py-4 rounded-md">
               <ShoppingCart className="mr-2 h-5 w-5" /> Ver productos
             </Link>
-            <Link href="/?v=combustible" className="inline-flex items-center bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-bold px-8 py-4 rounded-md">
-              <Fuel className="mr-2 h-5 w-5" /> Comprar combustible
+            <Link href="/diesel-y-gasolina-en-cuba" className="inline-flex items-center bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-bold px-8 py-4 rounded-md">
+              <Fuel className="mr-2 h-5 w-5" /> Diésel y gasolina
             </Link>
-            <Link href="/cilindro-de-gas-la-habana" className="inline-flex items-center bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-bold px-8 py-4 rounded-md">
-              <Flame className="mr-2 h-5 w-5" /> Cilindro de gas
+            <Link href="/balitas-de-gas-en-cuba" className="inline-flex items-center bg-white/10 border-2 border-white/30 text-white hover:bg-white/20 font-bold px-8 py-4 rounded-md">
+              <Flame className="mr-2 h-5 w-5" /> Balitas de gas
             </Link>
           </div>
         </div>

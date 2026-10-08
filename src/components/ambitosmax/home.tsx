@@ -76,15 +76,9 @@ export function Home() {
       <section className="relative h-[60vh] min-h-[380px] md:h-[70vh] overflow-hidden">
         <video
           autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover hero-video-1"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="/videos/malecon4.mp4" type="video/mp4" />
-        </video>
-        <video
-          autoPlay muted loop playsInline
-          className="absolute inset-0 w-full h-full object-cover hero-video-2"
-        >
-          <source src="/videos/malecon2.mp4" type="video/mp4" />
         </video>
         {/* Sombra muy sutil abajo */}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)" }} />
@@ -175,17 +169,17 @@ export function Home() {
       {/* ═══ TEXTO PARA BUSCADORES + ENLACES INTERNOS ═══ */}
       <section className="max-w-4xl mx-auto px-6 mt-12">
         <h1 className="text-2xl md:text-3xl font-black text-[#071a46] leading-tight">
-          Cilindros de gas, combustible y envíos a Cuba
+          Balitas de gas, diésel y gasolina en Cuba
         </h1>
         <p className="text-zinc-600 mt-3 leading-relaxed">
-          En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: cilindro de gas lleno sin entrega de vacío
-          con recogida en La Habana, diésel y gasolina en servicentros de Cuba, electrodomésticos, motos, plantas eléctricas,
+          En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: balitas de gas en Cuba (cilindro lleno sin entregar el vacío)
+          con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo), electrodomésticos, motos, plantas eléctricas,
           alimentos y envíos marítimos y aéreos con rastreo.
         </p>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
           {[
-            ['/cilindro-de-gas-la-habana', 'Cilindro de gas en La Habana'],
-            ['/combustible-en-cuba', 'Combustible en Cuba'],
+            ['/balitas-de-gas-en-cuba', 'Balitas de gas en Cuba'],
+            ['/diesel-y-gasolina-en-cuba', 'Diésel y gasolina en Cuba'],
             ['/tienda-cuba', 'Tienda para Cuba'],
             ['/envios-a-cuba', 'Envíos a Cuba'],
             ['/electrodomesticos-para-cuba', 'Electrodomésticos'],

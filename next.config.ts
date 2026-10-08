@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
     root: process.cwd(),
   },
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: '/cilindro-de-gas-la-habana', destination: '/balitas-de-gas-en-cuba', permanent: true },
+      { source: '/combustible-en-cuba', destination: '/diesel-y-gasolina-en-cuba', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
