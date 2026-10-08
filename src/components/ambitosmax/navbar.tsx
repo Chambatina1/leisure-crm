@@ -24,6 +24,7 @@ import {
   Users,
   UserPlus,
   Zap,
+  Flame,
 } from 'lucide-react';
 
 // ---- PUBLIC NAV ----
@@ -218,6 +219,7 @@ const adminNavItems: { view: AdminView; label: string; icon: typeof BarChart3 }[
   { view: 'tracking', label: 'Tracking', icon: Database },
   { view: 'tienda-admin', label: 'Tienda', icon: Store },
   { view: 'combustible-admin', label: 'Combustible', icon: Zap },
+  { view: 'cilindros', label: 'Cilindros', icon: Flame },
   { view: 'ai-training', label: 'IA Chat', icon: Brain },
   { view: 'apariencia', label: 'Apariencia', icon: Palette },
   { view: 'users', label: 'Usuarios', icon: Users },

@@ -20,6 +20,8 @@ import { Rastreador } from '@/components/ambitosmax/rastreador';
 import { ChatIA } from '@/components/ambitosmax/chat-ia';
 import { TiendaAdmin } from '@/components/ambitosmax/tienda-admin';
 import { CombustibleAdmin } from '@/components/ambitosmax/combustible-admin';
+import { CilindrosAdmin } from '@/components/ambitosmax/cilindros-admin';
+import { ReservaCilindro } from '@/components/ambitosmax/reserva-cilindro';
 import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
 import { UsersPanel } from '@/components/ambitosmax/users-panel';
@@ -203,6 +205,7 @@ export default function Page() {
         case 'rastreador': return <Rastreador />;
         case 'chat': return <ChatIA />;
         case 'pedido-public': return <PedidoForm />;
+        case 'reserva-cilindro': return <ReservaCilindro />;
         default: return <Home />;
       }
     } else {
@@ -216,6 +219,7 @@ export default function Page() {
         case 'config': return <ConfigPanel />;
         case 'tienda-admin': return <TiendaAdmin />;
         case 'combustible-admin': return <CombustibleAdmin />;
+        case 'cilindros': return <CilindrosAdmin />;
         case 'ai-training': return <AITrainingPanel />;
         case 'apariencia': return <AparienciaPanel />;
         case 'users': return <UsersPanel />;

@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type PublicView = 'home' | 'tienda' | 'combustible' | 'rastreador' | 'chat' | 'registro' | 'pedido-public';
-export type AdminView = 'dashboard' | 'pedidos' | 'tracking' | 'config' | 'pedido-detail' | 'pedido-form' | 'pedido-edit' | 'tienda-admin' | 'combustible-admin' | 'ai-training' | 'apariencia' | 'users' | 'emails';
+export type PublicView = 'home' | 'tienda' | 'combustible' | 'rastreador' | 'chat' | 'registro' | 'pedido-public' | 'reserva-cilindro';
+export type AdminView = 'dashboard' | 'pedidos' | 'tracking' | 'config' | 'pedido-detail' | 'pedido-form' | 'pedido-edit' | 'tienda-admin' | 'combustible-admin' | 'ai-training' | 'apariencia' | 'users' | 'emails' | 'cilindros';
 export type AppMode = 'public' | 'admin';
 
 interface UserData {
@@ -187,6 +187,11 @@ export const useAppStore = create<AppState>()(
         }
       },
       goToComprar: (product) => {
+        // El cilindro de gas tiene su propio flujo de reserva con PIN y cierre diario
+        if (/CILINDRO/i.test(product.nombre) && get().mode !== 'admin') {
+          set({ selectedProduct: product, currentView: 'reserva-cilindro' });
+          return;
+        }
         set({ selectedProduct: product, selectedPedidoId: null });
         const currentMode = get().mode;
         if (currentMode === 'admin') {
