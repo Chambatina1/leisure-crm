@@ -22,7 +22,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Plus, Pencil, Trash2, Loader2, Store, ExternalLink, ImageIcon, Save, Check, Upload, X, Camera,
+  Plus, Pencil, Trash2, Loader2, Store, ExternalLink, ImageIcon, Save, Check, Upload, X, Camera, Link2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -88,6 +88,51 @@ export function TiendaAdmin() {
   const [deleting, setDeleting] = useState(false);
   const [filterCat, setFilterCat] = useState<string>('all');
   const [uploadingImage, setUploadingImage] = useState(false);
+  // Importar desde link de TikTok / Amazon
+  const [linkImportar, setLinkImportar] = useState('');
+  const [importando, setImportando] = useState(false);
+  const [precioOrigen, setPrecioOrigen] = useState<number | null>(null);
+
+  const importarDesdeLink = async () => {
+    const url = linkImportar.trim();
+    if (!url) return;
+    setImportando(true);
+    try {
+      const res = await fetch('/api/tienda/importar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const json = await res.json();
+      if (!json.ok) {
+        toast.error(json.error || 'No se pudo leer el link');
+        // Abrir igualmente el formulario con el link puesto, para rellenar a mano
+        setEditingId(null);
+        setPrecioOrigen(null);
+        setForm({ ...EMPTY_FORM, tiktokUrl: url });
+        setDialogOpen(true);
+        return;
+      }
+      const d = json.data;
+      setEditingId(null);
+      setPrecioOrigen(d.precioReferencia ?? null);
+      setForm({
+        ...EMPTY_FORM,
+        nombre: d.nombre || '',
+        descripcion: d.descripcion || '',
+        precio: d.precioReferencia ? String(d.precioReferencia) : '',
+        imagenUrl: d.imagenUrl || '',
+        tiktokUrl: d.tiktokUrl || url,
+      });
+      setDialogOpen(true);
+      setLinkImportar('');
+      toast.success('Datos cargados. Revisa el precio y la categoría, y guarda.');
+    } catch {
+      toast.error('Error de conexión');
+    } finally {
+      setImportando(false);
+    }
+  };
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -104,10 +149,11 @@ export function TiendaAdmin() {
 
   useEffect(() => { loadProducts(); }, [loadProducts]);
 
-  const openCreate = () => { setEditingId(null); setForm(EMPTY_FORM); setDialogOpen(true); };
+  const openCreate = () => { setEditingId(null); setPrecioOrigen(null); setForm(EMPTY_FORM); setDialogOpen(true); };
 
   const openEdit = (product: Product) => {
     setEditingId(product.id);
+    setPrecioOrigen(null);
     setForm({
       nombre: product.nombre, descripcion: product.descripcion || '',
       precio: String(product.precio), categoria: product.categoria,
@@ -228,6 +274,29 @@ export function TiendaAdmin() {
         <Button onClick={openCreate} className="bg-[#123d83] hover:bg-[#071a46] text-white font-semibold"><Plus className="h-4 w-4 mr-2" />Nuevo Producto</Button>
       </div>
 
+      <Card className="border-0 shadow-sm">
+        <CardContent className="p-3 sm:p-4">
+          <form
+            onSubmit={(e) => { e.preventDefault(); importarDesdeLink(); }}
+            className="flex flex-col sm:flex-row gap-2"
+          >
+            <div className="relative flex-1">
+              <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+              <Input
+                value={linkImportar}
+                onChange={(e) => setLinkImportar(e.target.value)}
+                placeholder="Pega un link de TikTok o Amazon para crear el producto"
+                className="pl-10"
+                disabled={importando}
+              />
+            </div>
+            <Button type="submit" disabled={importando || !linkImportar.trim()} className="bg-[#123d83] hover:bg-[#071a46] text-white font-semibold">
+              {importando ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Leyendo link...</> : 'Importar producto'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total Productos', value: products.length, bg: 'bg-blue-50' },
@@ -324,7 +393,7 @@ export function TiendaAdmin() {
             <div className="space-y-2"><Label className="text-xs font-medium">Nombre *</Label><Input value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} placeholder="Nombre del producto" /></div>
             <div className="space-y-2"><Label className="text-xs font-medium">Descripción</Label><Textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Descripción del producto" rows={3} /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2"><Label className="text-xs font-medium">Precio *</Label><Input type="number" step="0.01" min="0" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} placeholder="0.00" /></div>
+              <div className="space-y-2"><Label className="text-xs font-medium">Precio *</Label><Input type="number" step="0.01" min="0" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} placeholder="0.00" />{precioOrigen !== null && <p className="text-[11px] text-amber-700">Precio en la tienda de origen: ${precioOrigen.toFixed(2)}. Pon tu precio de venta.</p>}</div>
               <div className="space-y-2"><Label className="text-xs font-medium">Orden</Label><Input type="number" value={form.orden} onChange={(e) => setForm({ ...form, orden: e.target.value })} placeholder="0" /></div>
             </div>
             <div className="space-y-2">
