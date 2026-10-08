@@ -14,6 +14,7 @@ interface AltaProducto {
   categoria: string;
   orden: number;
   copiarImagenDe?: string; // nombre de un producto existente para reutilizar su foto
+  imagenUrl?: string; // o una imagen fija de /public
 }
 
 const ALTAS: AltaProducto[] = [
@@ -25,6 +26,16 @@ const ALTAS: AltaProducto[] = [
     categoria: 'combustible',
     orden: 0,
     copiarImagenDe: 'BALA DE GAS',
+  },
+  {
+    id: 'diesel_perla_negra_bayamo',
+    nombre: 'DIÉSEL — Servicentro Perla Negra, Bayamo (precio por litro)',
+    descripcion:
+      'Precio: 2.37 USD por litro. Indica en el pedido cuántos litros quieres. Carga en Servicentro Perla Negra: Carretera Central vía Las Tunas Km 1 1/2, municipio Bayamo, provincia Granma.',
+    precio: 2.37,
+    categoria: 'combustible',
+    orden: 0,
+    imagenUrl: '/carrusel/surtidor.png',
   },
 ];
 
@@ -83,7 +94,7 @@ async function aplicarAltas(): Promise<void> {
           categoria: alta.categoria,
           orden: alta.orden,
           activo: true,
-          imagenUrl: origen?.imagenUrl ?? null,
+          imagenUrl: origen?.imagenUrl ?? alta.imagenUrl ?? null,
         },
       });
       console.log(`[Tienda] Producto agregado: ${alta.nombre}`);

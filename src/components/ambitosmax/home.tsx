@@ -22,6 +22,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { AnimatedSeaBackground } from './hero-illustrations';
+import { CarruselProductos } from './carrusel-productos';
 
 const SLIDES = [
   {
@@ -168,32 +169,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* ═══ VITRINA DE PRODUCTOS — carrusel horizontal ═══ */}
-      <section className="bg-zinc-50 py-8 border-b border-zinc-100">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest text-center mb-5">Nuestros productos</h2>
-          <div className="flex gap-4 overflow-x-auto pb-3 px-1" style={{ scrollbarWidth: 'thin' }}>
-            {[
-              { img: '/api/tienda/imagen/1', titulo: 'Balas de Gas', sub: 'Entrega a domicilio', view: 'tienda' },
-              { img: '/api/tienda/imagen/105', titulo: 'Energía Solar', sub: 'Inversores y plantas', view: 'tienda' },
-              { img: '/api/tienda/imagen/81', titulo: 'Motos', sub: 'Entrega armada en Cuba', view: 'tienda' },
-              { img: '/api/tienda/imagen/15', titulo: 'Cocinas', sub: 'Electrodomésticos', view: 'tienda' },
-            ].map((prod, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentView(prod.view as never)}
-                className="flex-shrink-0 w-[170px] sm:w-[200px] group"
-              >
-                <div className="h-[130px] sm:h-[150px] rounded-2xl overflow-hidden border border-zinc-200 shadow-sm bg-white group-hover:shadow-xl group-hover:-translate-y-1 transition-all">
-                  <img src={prod.img} alt={prod.titulo} className="w-full h-full object-cover" loading="lazy" />
-                </div>
-                <p className="text-sm font-bold text-zinc-900 mt-2 text-center">{prod.titulo}</p>
-                <p className="text-xs text-zinc-400 text-center">{prod.sub}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ═══ VITRINA DE PRODUCTOS — carrusel con los productos reales de la tienda ═══ */}
+      <CarruselProductos />
 
       {/* ═══ BUSCADOR DE RASTREO ═══ */}
       <section className="max-w-2xl mx-auto px-6 mt-12">
