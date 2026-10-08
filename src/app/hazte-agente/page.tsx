@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Hazte Agente — Únete a la Red Ambitosmax",
   description: "Genera ingresos enviando paquetes a Cuba desde tu ciudad",
   alternates: { canonical: '/hazte-agente' },
-  openGraph: { url: '/hazte-agente', title: "Hazte Agente — Únete a la Red Ambitosmax", description: "Genera ingresos enviando paquetes a Cuba desde tu ciudad", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/hazte-agente', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Hazte Agente — Únete a la Red Ambitosmax", description: "Genera ingresos enviando paquetes a Cuba desde tu ciudad", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

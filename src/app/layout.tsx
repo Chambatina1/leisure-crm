@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "Ambitosmax",
     locale: "es_US",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Ambitosmax" }],
     title: "Ambitosmax — Cilindros de gas, combustible y envíos a Cuba",
     description: "Cilindro de gas lleno en La Habana por $85, combustible en Cuba, tienda online y envíos a Cuba.",
   },

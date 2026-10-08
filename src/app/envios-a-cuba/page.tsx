@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Envíos a Cuba desde Miami — Rápidos y Seguros",
   description: "Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega",
   alternates: { canonical: '/envios-a-cuba' },
-  openGraph: { url: '/envios-a-cuba', title: "Envíos a Cuba desde Miami — Rápidos y Seguros", description: "Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/envios-a-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Envíos a Cuba desde Miami — Rápidos y Seguros", description: "Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

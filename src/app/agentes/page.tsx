@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Agentes de Ambitosmax — Nuestra Red en Cuba",
   description: "Conoce nuestros agentes y agencias en toda la isla",
   alternates: { canonical: '/agentes' },
-  openGraph: { url: '/agentes', title: "Agentes de Ambitosmax — Nuestra Red en Cuba", description: "Conoce nuestros agentes y agencias en toda la isla", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/agentes', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Agentes de Ambitosmax — Nuestra Red en Cuba", description: "Conoce nuestros agentes y agencias en toda la isla", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

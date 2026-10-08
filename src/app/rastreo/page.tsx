@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Rastreo de Envíos — Sigue Tu Paquete en Tiempo Real",
   description: "Ingresa tu número CPK y conoce el estado de tu envío",
   alternates: { canonical: '/rastreo' },
-  openGraph: { url: '/rastreo', title: "Rastreo de Envíos — Sigue Tu Paquete en Tiempo Real", description: "Ingresa tu número CPK y conoce el estado de tu envío", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/rastreo', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Rastreo de Envíos — Sigue Tu Paquete en Tiempo Real", description: "Ingresa tu número CPK y conoce el estado de tu envío", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

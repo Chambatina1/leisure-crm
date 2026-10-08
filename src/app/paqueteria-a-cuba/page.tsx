@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Paquetería a Cuba — Servicio de Paquetes desde EE.UU.",
   description: "Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas",
   alternates: { canonical: '/paqueteria-a-cuba' },
-  openGraph: { url: '/paqueteria-a-cuba', title: "Paquetería a Cuba — Servicio de Paquetes desde EE.UU.", description: "Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/paqueteria-a-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Paquetería a Cuba — Servicio de Paquetes desde EE.UU.", description: "Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

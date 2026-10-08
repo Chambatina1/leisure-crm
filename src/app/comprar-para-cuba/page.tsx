@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Comprar para Cuba — Tienda Online con Entrega",
   description: "Compra online y nosotros lo entregamos en Cuba",
   alternates: { canonical: '/comprar-para-cuba' },
-  openGraph: { url: '/comprar-para-cuba', title: "Comprar para Cuba — Tienda Online con Entrega", description: "Compra online y nosotros lo entregamos en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/comprar-para-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Comprar para Cuba — Tienda Online con Entrega", description: "Compra online y nosotros lo entregamos en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

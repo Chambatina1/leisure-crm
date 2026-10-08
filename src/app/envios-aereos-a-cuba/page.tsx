@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Envíos Aéreos a Cuba — La Opción Más Rápida",
   description: "Tu paquete en Cuba en 3-7 días hábiles",
   alternates: { canonical: '/envios-aereos-a-cuba' },
-  openGraph: { url: '/envios-aereos-a-cuba', title: "Envíos Aéreos a Cuba — La Opción Más Rápida", description: "Tu paquete en Cuba en 3-7 días hábiles", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/envios-aereos-a-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Envíos Aéreos a Cuba — La Opción Más Rápida", description: "Tu paquete en Cuba en 3-7 días hábiles", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

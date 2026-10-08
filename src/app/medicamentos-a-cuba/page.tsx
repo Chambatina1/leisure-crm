@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Medicamentos a Cuba — Envío Rápido y Seguro",
   description: "Envía medicamentos con nuestro servicio aéreo prioritario",
   alternates: { canonical: '/medicamentos-a-cuba' },
-  openGraph: { url: '/medicamentos-a-cuba', title: "Medicamentos a Cuba — Envío Rápido y Seguro", description: "Envía medicamentos con nuestro servicio aéreo prioritario", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/medicamentos-a-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Medicamentos a Cuba — Envío Rápido y Seguro", description: "Envía medicamentos con nuestro servicio aéreo prioritario", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

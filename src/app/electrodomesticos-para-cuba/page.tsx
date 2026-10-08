@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Electrodomésticos para Cuba — Neveras, Cocinas y Más",
   description: "Los mejores precios en electrodomésticos con entrega en Cuba",
   alternates: { canonical: '/electrodomesticos-para-cuba' },
-  openGraph: { url: '/electrodomesticos-para-cuba', title: "Electrodomésticos para Cuba — Neveras, Cocinas y Más", description: "Los mejores precios en electrodomésticos con entrega en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/electrodomesticos-para-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Electrodomésticos para Cuba — Neveras, Cocinas y Más", description: "Los mejores precios en electrodomésticos con entrega en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

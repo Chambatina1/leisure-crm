@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: D,
   keywords: ['cilindro de gas La Habana', 'balita de gas Cuba', 'gas licuado La Habana', 'comprar gas para Cuba', 'gas sin entregar vacío', 'La Lisa'],
   alternates: { canonical: '/cilindro-de-gas-la-habana' },
-  openGraph: { url: '/cilindro-de-gas-la-habana', title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/cilindro-de-gas-la-habana', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 const producto = {

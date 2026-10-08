@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Recogida a Domicilio en Miami — Servicio de Pickup",
   description: "Recogemos tus paquetes en tu casa u oficina",
   alternates: { canonical: '/recogida-a-domicilio' },
-  openGraph: { url: '/recogida-a-domicilio', title: "Recogida a Domicilio en Miami — Servicio de Pickup", description: "Recogemos tus paquetes en tu casa u oficina", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/recogida-a-domicilio', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Recogida a Domicilio en Miami — Servicio de Pickup", description: "Recogemos tus paquetes en tu casa u oficina", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

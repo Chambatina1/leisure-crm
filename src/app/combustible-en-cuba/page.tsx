@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: D,
   keywords: ['combustible Cuba', 'diésel Cuba', 'gasolina Cuba', 'comprar combustible para Cuba', 'diésel Bayamo', 'Perla Negra Granma'],
   alternates: { canonical: '/combustible-en-cuba' },
-  openGraph: { url: '/combustible-en-cuba', title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/combustible-en-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {

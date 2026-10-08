@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: D,
   keywords: ['tienda online Cuba', 'comprar para Cuba', 'electrodomésticos Cuba', 'plantas eléctricas Cuba', 'motos eléctricas Cuba', 'regalos para Cuba'],
   alternates: { canonical: '/tienda-cuba' },
-  openGraph: { url: '/tienda-cuba', title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/tienda-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 const ETIQUETAS: Record<string, string> = {

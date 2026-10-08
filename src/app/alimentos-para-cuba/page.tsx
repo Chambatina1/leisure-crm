@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Alimentos para Cuba — Envía Comida a Tu Familia",
   description: "Desde misceláneas hasta paquetes de comida completa",
   alternates: { canonical: '/alimentos-para-cuba' },
-  openGraph: { url: '/alimentos-para-cuba', title: "Alimentos para Cuba — Envía Comida a Tu Familia", description: "Desde misceláneas hasta paquetes de comida completa", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
+  openGraph: { url: '/alimentos-para-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: "Alimentos para Cuba — Envía Comida a Tu Familia", description: "Desde misceláneas hasta paquetes de comida completa", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
