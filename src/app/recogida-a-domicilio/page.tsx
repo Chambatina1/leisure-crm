@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Recogida a Domicilio en Miami — Servicio de Pickup",
   description: "Recogemos tus paquetes en tu casa u oficina",
+  alternates: { canonical: '/recogida-a-domicilio' },
+  openGraph: { url: '/recogida-a-domicilio', title: "Recogida a Domicilio en Miami — Servicio de Pickup", description: "Recogemos tus paquetes en tu casa u oficina", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/recogida-a-domicilio"
       titulo="Recogida a Domicilio en Miami — Servicio de Pickup"
       subtitulo="Recogemos tus paquetes en tu casa u oficina"
       descripcion="No necesitas venir a nuestra oficina. Recogemos tus paquetes a domicilio en Miami y áreas circundantes. Programa tu recogida hoy."

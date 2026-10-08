@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Agentes de Ambitosmax — Nuestra Red en Cuba",
   description: "Conoce nuestros agentes y agencias en toda la isla",
+  alternates: { canonical: '/agentes' },
+  openGraph: { url: '/agentes', title: "Agentes de Ambitosmax — Nuestra Red en Cuba", description: "Conoce nuestros agentes y agencias en toda la isla", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/agentes"
       titulo="Agentes de Ambitosmax — Nuestra Red en Cuba"
       subtitulo="Conoce nuestros agentes y agencias en toda la isla"
       descripcion="Nuestra red de agentes cubre toda Cuba con agencias en La Habana, Matanzas, Villa Clara, Camagüey, Holguín y más. Cada agente está autorizado y certificado."

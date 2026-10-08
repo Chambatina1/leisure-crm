@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Comprar para Cuba — Tienda Online con Entrega",
   description: "Compra online y nosotros lo entregamos en Cuba",
+  alternates: { canonical: '/comprar-para-cuba' },
+  openGraph: { url: '/comprar-para-cuba', title: "Comprar para Cuba — Tienda Online con Entrega", description: "Compra online y nosotros lo entregamos en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/comprar-para-cuba"
       titulo="Comprar para Cuba — Tienda Online con Entrega"
       subtitulo="Compra online y nosotros lo entregamos en Cuba"
       descripcion="Con Ambitosmax puedes comprar online desde Estados Unidos y nosotros nos encargamos de todo: envío, aduana y entrega a domicilio en Cuba. Tu familia recibe sin moverse de casa."

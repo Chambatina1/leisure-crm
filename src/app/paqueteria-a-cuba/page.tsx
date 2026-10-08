@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Paquetería a Cuba — Servicio de Paquetes desde EE.UU.",
   description: "Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas",
+  alternates: { canonical: '/paqueteria-a-cuba' },
+  openGraph: { url: '/paqueteria-a-cuba', title: "Paquetería a Cuba — Servicio de Paquetes desde EE.UU.", description: "Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/paqueteria-a-cuba"
       titulo="Paquetería a Cuba — Servicio de Paquetes desde EE.UU."
       subtitulo="Envía paquetes de cualquier tamaño a Cuba con tarifas competitivas"
       descripcion="Nuestro servicio de paquetería a Cuba maneja paquetes de todos los tamaños: desde sobras y cajas pequeñas hasta envíos comerciales. Con tarifas por libra competitivas y garantía de entrega en toda la isla."

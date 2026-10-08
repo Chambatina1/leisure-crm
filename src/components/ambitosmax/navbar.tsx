@@ -62,7 +62,7 @@ function PublicNavbar() {
                 <Image src="/icon.svg" alt="Ambitosmax" width={40} height={40} className="object-contain" priority />
               </div>
               <div>
-                <h1 className="text-lg font-black text-[#071a46] tracking-wide">AMBITOSMAX</h1>
+                <span className="block text-lg font-black text-[#071a46] tracking-wide">AMBITOSMAX</span>
               </div>
             </button>
 
@@ -253,7 +253,7 @@ function AdminNavbar() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-bold text-white tracking-wide">AMBITOSMAX</h1>
+                  <span className="block text-lg font-bold text-white tracking-wide">AMBITOSMAX</span>
                   <span className="text-[10px] bg-white/20 text-blue-100 px-2 py-0.5 rounded font-semibold tracking-wide">
                     ADMIN
                   </span>

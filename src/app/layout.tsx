@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { ORGANIZACION_JSONLD } from "@/lib/seo-paginas";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,19 +17,36 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ambitosmax.com"),
-  title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
-  description:
-    "Balas de gas, combustible en isotanques y tambores, electrodomésticos, motos y envíos a Cuba. Todo desde Ambitosmax LLC.",
-  alternates: {
-    canonical: "https://ambitosmax.com",
+  title: {
+    default: "Ambitosmax — Cilindros de gas, combustible y envíos a Cuba",
+    template: "%s | Ambitosmax",
   },
+  description:
+    "Compra desde EE.UU. y tu familia recibe en Cuba: cilindro de gas lleno en La Habana por $85, diésel y gasolina, electrodomésticos, motos y envíos a Cuba con rastreo.",
+  keywords: [
+    "cilindro de gas La Habana", "balita de gas Cuba", "gas licuado Cuba", "comprar gas para Cuba",
+    "combustible Cuba", "diésel Cuba", "gasolina Cuba", "envíos a Cuba", "tienda online Cuba",
+    "electrodomésticos para Cuba", "motos eléctricas Cuba", "plantas eléctricas Cuba", "Ambitosmax",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    url: "https://ambitosmax.com",
-    siteName: "Ambitosmax LLC",
-    title: "Ambitosmax LLC — Gas, Combustible y Envíos a Cuba",
-    description: "Balas de gas, combustible en isotanques, tienda y envíos a Cuba.",
+    url: "/",
+    siteName: "Ambitosmax",
+    locale: "es_US",
+    title: "Ambitosmax — Cilindros de gas, combustible y envíos a Cuba",
+    description: "Cilindro de gas lleno en La Habana por $85, combustible en Cuba, tienda online y envíos a Cuba.",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ambitosmax — Gas, combustible y envíos a Cuba",
+    description: "Cilindro de gas en La Habana, combustible en Cuba, tienda y envíos.",
+  },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+  category: "shopping",
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "32x32", type: "image/png" },
@@ -68,6 +86,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="Ambitosmax" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([ORGANIZACION_JSONLD, { "@context": "https://schema.org", "@type": "WebSite", name: "Ambitosmax", url: "https://ambitosmax.com", inLanguage: "es" }]) }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}

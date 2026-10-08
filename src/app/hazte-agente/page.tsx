@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Hazte Agente — Únete a la Red Ambitosmax",
   description: "Genera ingresos enviando paquetes a Cuba desde tu ciudad",
+  alternates: { canonical: '/hazte-agente' },
+  openGraph: { url: '/hazte-agente', title: "Hazte Agente — Únete a la Red Ambitosmax", description: "Genera ingresos enviando paquetes a Cuba desde tu ciudad", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/hazte-agente"
       titulo="Hazte Agente — Únete a la Red Ambitosmax"
       subtitulo="Genera ingresos enviando paquetes a Cuba desde tu ciudad"
       descripcion="Conviértete en agente autorizado de Ambitosmax y genera ingresos ayudando a tu comunidad a enviar paquetes a Cuba. Capacitación completa y soporte incluido."

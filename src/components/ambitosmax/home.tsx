@@ -172,6 +172,36 @@ export function Home() {
       {/* ═══ VITRINA DE PRODUCTOS — carrusel con los productos reales de la tienda ═══ */}
       <CarruselProductos />
 
+      {/* ═══ TEXTO PARA BUSCADORES + ENLACES INTERNOS ═══ */}
+      <section className="max-w-4xl mx-auto px-6 mt-12">
+        <h1 className="text-2xl md:text-3xl font-black text-[#071a46] leading-tight">
+          Cilindros de gas, combustible y envíos a Cuba
+        </h1>
+        <p className="text-zinc-600 mt-3 leading-relaxed">
+          En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: cilindro de gas lleno sin entrega de vacío
+          con recogida en La Habana, diésel y gasolina en servicentros de Cuba, electrodomésticos, motos, plantas eléctricas,
+          alimentos y envíos marítimos y aéreos con rastreo.
+        </p>
+        <ul className="flex flex-wrap gap-2 mt-4 text-sm">
+          {[
+            ['/cilindro-de-gas-la-habana', 'Cilindro de gas en La Habana'],
+            ['/combustible-en-cuba', 'Combustible en Cuba'],
+            ['/tienda-cuba', 'Tienda para Cuba'],
+            ['/envios-a-cuba', 'Envíos a Cuba'],
+            ['/electrodomesticos-para-cuba', 'Electrodomésticos'],
+            ['/alimentos-para-cuba', 'Alimentos'],
+            ['/medicamentos-a-cuba', 'Medicamentos'],
+            ['/rastreo', 'Rastreo de envíos'],
+          ].map(([href, txt]) => (
+            <li key={href}>
+              <a href={href} className="inline-block bg-white border border-zinc-200 rounded-full px-3 py-1.5 text-[#123d83] font-semibold hover:bg-blue-50">
+                {txt}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* ═══ BUSCADOR DE RASTREO ═══ */}
       <section className="max-w-2xl mx-auto px-6 mt-12">
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">

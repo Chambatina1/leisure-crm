@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Electrodomésticos para Cuba — Neveras, Cocinas y Más",
   description: "Los mejores precios en electrodomésticos con entrega en Cuba",
+  alternates: { canonical: '/electrodomesticos-para-cuba' },
+  openGraph: { url: '/electrodomesticos-para-cuba', title: "Electrodomésticos para Cuba — Neveras, Cocinas y Más", description: "Los mejores precios en electrodomésticos con entrega en Cuba", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/electrodomesticos-para-cuba"
       titulo="Electrodomésticos para Cuba — Neveras, Cocinas y Más"
       subtitulo="Los mejores precios en electrodomésticos con entrega en Cuba"
       descripcion="Envía neveras, cocinas, lavadoras, secadoras, ventiladores y más a Cuba. Todos con garantía y entrega a domicilio. Precios desde $250."

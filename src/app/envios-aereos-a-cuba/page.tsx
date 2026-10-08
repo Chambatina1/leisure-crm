@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Envíos Aéreos a Cuba — La Opción Más Rápida",
   description: "Tu paquete en Cuba en 3-7 días hábiles",
+  alternates: { canonical: '/envios-aereos-a-cuba' },
+  openGraph: { url: '/envios-aereos-a-cuba', title: "Envíos Aéreos a Cuba — La Opción Más Rápida", description: "Tu paquete en Cuba en 3-7 días hábiles", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/envios-aereos-a-cuba"
       titulo="Envíos Aéreos a Cuba — La Opción Más Rápida"
       subtitulo="Tu paquete en Cuba en 3-7 días hábiles"
       descripcion="Cuando la urgencia importa, el envío aéreo es tu mejor opción. Perfecto para medicamentos, documentos, alimentos no perecederos y artículos urgentes. Llegada garantizada en 3-7 días hábiles."

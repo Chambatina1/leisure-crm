@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Envíos a Cuba desde Miami — Rápidos y Seguros",
   description: "Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega",
+  alternates: { canonical: '/envios-a-cuba' },
+  openGraph: { url: '/envios-a-cuba', title: "Envíos a Cuba desde Miami — Rápidos y Seguros", description: "Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/envios-a-cuba"
       titulo="Envíos a Cuba desde Miami — Rápidos y Seguros"
       subtitulo="Envía paquetes, comida, electrodomésticos y más a tu familia en Cuba con garantía de entrega"
       descripcion="Ambitosmax es tu agencia de envíos a Cuba desde Miami. Ofrecemos envíos marítimos y aéreos con garantía de entrega en toda la isla. Desde balas de gas hasta motos, enviamos todo lo que tu familia necesita. Nuestro servicio incluye recogida a domicilio, tracking en tiempo real y entrega garantizada."

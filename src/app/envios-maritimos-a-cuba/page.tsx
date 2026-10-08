@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Envíos Marítimos a Cuba — La Opción Más Económica",
   description: "Envía grandes volúmenes por mar con las mejores tarifas",
+  alternates: { canonical: '/envios-maritimos-a-cuba' },
+  openGraph: { url: '/envios-maritimos-a-cuba', title: "Envíos Marítimos a Cuba — La Opción Más Económica", description: "Envía grandes volúmenes por mar con las mejores tarifas", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/envios-maritimos-a-cuba"
       titulo="Envíos Marítimos a Cuba — La Opción Más Económica"
       subtitulo="Envía grandes volúmenes por mar con las mejores tarifas"
       descripcion="El envío marítimo es la opción más económica para enviar a Cuba. Ideal para electrodomésticos, muebles, motos y grandes volúmenes. Tiempo de tránsito: 15-30 días con llegada programada mensual."

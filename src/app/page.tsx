@@ -187,6 +187,18 @@ export default function Page() {
   const verifySession = useAppStore((s) => s.verifySession);
   const [hasError, setHasError] = useState(false);
 
+  // Enlaces desde las páginas de aterrizaje: /?v=tienda, /?v=combustible…
+  const setCurrentView = useAppStore((s) => s.setCurrentView);
+  useEffect(() => {
+    const v = new URLSearchParams(window.location.search).get('v');
+    const permitidas = ['tienda', 'combustible', 'rastreador', 'chat', 'reserva-cilindro', 'home'];
+    if (v && permitidas.includes(v)) {
+      useAppStore.setState({ mode: 'public' });
+      setCurrentView(v as never);
+      window.history.replaceState(null, '', '/');
+    }
+  }, [setCurrentView]);
+
   // La sesión de admin la valida el servidor (cookie httpOnly); si caducó,
   // se vuelve al modo público en vez de mostrar un panel sin datos.
   useEffect(() => {

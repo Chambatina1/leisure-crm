@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
-import { getCurrentView } from '@/components/ambitosmax/seo-helpers';
 
 export const metadata: Metadata = {
   title: "Alimentos para Cuba — Envía Comida a Tu Familia",
   description: "Desde misceláneas hasta paquetes de comida completa",
+  alternates: { canonical: '/alimentos-para-cuba' },
+  openGraph: { url: '/alimentos-para-cuba', title: "Alimentos para Cuba — Envía Comida a Tu Familia", description: "Desde misceláneas hasta paquetes de comida completa", type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
 export default function Page() {
   return (
     <SeoPage
+      ruta="/alimentos-para-cuba"
       titulo="Alimentos para Cuba — Envía Comida a Tu Familia"
       subtitulo="Desde misceláneas hasta paquetes de comida completa"
       descripcion="Envía alimentos a Cuba fácilmente. Tenemos desde misceláneas y canastas familiares hasta productos específicos. Todos los alimentos llegan frescos y en perfect estado."
