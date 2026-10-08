@@ -149,13 +149,15 @@ export function informeHtml(lote: string, reservas: Reserva[]): string {
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center">${r.cantidad}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace">${esc(r.numero)}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(r.telefonoRecoge || '')}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(r.nombreComprador)}<br><span style="color:#6b7280">${esc(r.telefonoComprador)}</span></td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right">$${r.montoUsd.toFixed(2)}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb">${r.estado === 'entregada' ? 'Entregado' : ''}</td>
       </tr>`
     )
     .join('');
 
   return `
-  <div style="font-family:Arial,sans-serif;max-width:820px;margin:0 auto;color:#111827">
+  <div style="font-family:Arial,sans-serif;max-width:980px;margin:0 auto;color:#111827">
     <h2 style="color:#071a46;margin:0">Listado de recogida de cilindros</h2>
     <p style="margin:4px 0 16px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}.<br>
     Punto de recogida: ${esc(PUNTO_RECOGIDA)}</p>
@@ -165,7 +167,7 @@ export function informeHtml(lote: string, reservas: Reserva[]): string {
         ? `<table style="width:100%;border-collapse:collapse;font-size:14px">
         <thead><tr style="background:#071a46;color:#fff;text-align:left">
           <th style="padding:8px">#</th><th style="padding:8px">Recoge</th><th style="padding:8px">Carnet</th>
-          <th style="padding:8px">Cant.</th><th style="padding:8px">Reserva</th><th style="padding:8px">Teléfono</th><th style="padding:8px">Firma / entregado</th>
+          <th style="padding:8px">Cant.</th><th style="padding:8px">Reserva</th><th style="padding:8px">Tel. recoge</th><th style="padding:8px">Comprador</th><th style="padding:8px">Pagó</th><th style="padding:8px">Firma / entregado</th>
         </tr></thead><tbody>${filas}</tbody></table>`
         : '<p>No hubo reservas confirmadas en este cierre.</p>'
     }

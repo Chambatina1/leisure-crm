@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         text: [
           `Listado de recogida de cilindros — ${lote}`,
           ...reservas.map(
-            (r, i) => `${i + 1}. ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · ${r.cantidad} cil. · ${r.numero}`
+            (r, i) => `${i + 1}. Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
           ),
         ].join('\n'),
       });
