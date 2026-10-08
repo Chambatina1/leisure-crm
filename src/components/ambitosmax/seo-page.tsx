@@ -43,7 +43,6 @@ export function SeoPage({ titulo, subtitulo, descripcion, beneficios, faqs, ruta
           <div className="flex gap-4 text-sm font-semibold text-zinc-600">
             <Link href="/?v=tienda" className="hover:text-[#123d83]">Tienda</Link>
             <Link href="/?v=combustible" className="hover:text-[#123d83]">Combustible</Link>
-            <Link href="/?v=rastreador" className="hover:text-[#123d83]">Rastrear</Link>
           </div>
         </div>
       </nav>

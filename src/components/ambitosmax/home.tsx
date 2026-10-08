@@ -126,13 +126,6 @@ export function Home() {
               <ShoppingCart className="mr-2 h-5 w-5" />
               Ir a la Tienda
             </Button>
-            <Button
-              onClick={() => window.open('https://cargowis.com/ambitosmax', '_blank', 'noopener')}
-              className="bg-white border-2 border-[#123d83]/30 text-[#123d83] hover:bg-blue-50 font-bold px-8 h-14 text-base"
-            >
-              <Search className="mr-2 h-5 w-5" />
-              Rastrear pedido
-            </Button>
           </div>
 
           {/* Redes sociales */}
@@ -174,7 +167,7 @@ export function Home() {
         <p className="text-zinc-600 mt-3 leading-relaxed">
           En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: balitas de gas en Cuba (cilindro lleno sin entregar el vacío)
           con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo), electrodomésticos, motos, plantas eléctricas,
-          alimentos y envíos marítimos y aéreos con rastreo.
+          alimentos y envíos marítimos y aéreos a toda Cuba.
         </p>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
           {[
@@ -185,7 +178,6 @@ export function Home() {
             ['/electrodomesticos-para-cuba', 'Electrodomésticos'],
             ['/alimentos-para-cuba', 'Alimentos'],
             ['/medicamentos-a-cuba', 'Medicamentos'],
-            ['/rastreo', 'Rastreo de envíos'],
           ].map(([href, txt]) => (
             <li key={href}>
               <a href={href} className="inline-block bg-white border border-zinc-200 rounded-full px-3 py-1.5 text-[#123d83] font-semibold hover:bg-blue-50">
@@ -194,31 +186,6 @@ export function Home() {
             </li>
           ))}
         </ul>
-      </section>
-
-      {/* ═══ BUSCADOR DE RASTREO ═══ */}
-      <section className="max-w-2xl mx-auto px-6 mt-12">
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <Search className="w-5 h-5 text-[#123d83]" />
-            Rastrear tu pedido
-          </h3>
-          <div className="flex gap-2">
-            <Input
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-              placeholder="CPK-XXXXXXX o nombre..."
-              className="flex-1"
-              onKeyDown={e => { if (e.key === 'Enter') setCurrentView('rastreador'); }}
-            />
-            <Button
-              onClick={() => setCurrentView('rastreador')}
-              className="bg-[#123d83] hover:bg-[#071a46] text-white font-bold px-6"
-            >
-              Buscar
-            </Button>
-          </div>
-        </div>
       </section>
 
       {/* ═══ CONTACTO ═══ */}

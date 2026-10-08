@@ -73,6 +73,10 @@ export function CombustibleCupet() {
   }, []);
 
   const enviar = async () => {
+    if (!useAppStore.getState().currentUser) {
+      useAppStore.getState().pedirRegistro({ tipo: 'vista', vista: 'combustible' });
+      return;
+    }
     setEnviando(true);
     setError('');
     try {
@@ -100,6 +104,7 @@ export function CombustibleCupet() {
         setSolicitud(json.data);
         setPaso(4);
       } else {
+        if (json.requiereRegistro) useAppStore.getState().pedirRegistro({ tipo: 'vista', vista: 'combustible' });
         setError(json.error || 'No se pudo crear la solicitud');
       }
     } catch {

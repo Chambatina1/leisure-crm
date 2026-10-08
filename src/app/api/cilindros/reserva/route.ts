@@ -13,6 +13,7 @@ import {
   type Reserva,
 } from '@/lib/cilindros';
 import { db } from '@/lib/db';
+import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cilindros/reserva
@@ -46,6 +47,8 @@ const schema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const cliente = await getCliente(request);
+  if (!cliente) return respuestaSinRegistro();
   try {
     if (!permitido(`res:${ipDe(request)}`, 10)) {
       return NextResponse.json({ ok: false, error: 'Demasiadas reservas. Espera unos minutos.' }, { status: 429 });
@@ -74,7 +77,7 @@ export async function POST(request: NextRequest) {
           numero,
           d.nombreComprador,
           d.telefonoComprador,
-          d.emailComprador || null,
+          d.emailComprador || cliente.email,
           d.nombreRecoge,
           d.carnetRecoge,
           d.telefonoRecoge || null,

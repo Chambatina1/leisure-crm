@@ -107,6 +107,10 @@ export function PedidoForm() {
         body: JSON.stringify(data),
       });
       const json = await res.json();
+      if (!json.ok && json.requiereRegistro) {
+        useAppStore.getState().pedirRegistro({ tipo: 'pedido' });
+        return;
+      }
       if (json.ok) {
         toast.success(isEdit ? 'Pedido actualizado' : 'Pedido creado correctamente');
         setSelectedProduct(null);

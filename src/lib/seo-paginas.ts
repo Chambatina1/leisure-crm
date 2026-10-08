@@ -9,7 +9,6 @@ export const PAGINAS_SEO: { url: string; titulo: string; prioridad: number; frec
   { url: '/paqueteria-a-cuba', titulo: 'Paquetería a Cuba', prioridad: 0.9, frecuencia: 'weekly' },
   { url: '/comprar-para-cuba', titulo: 'Comprar para Cuba', prioridad: 0.9, frecuencia: 'weekly' },
   { url: '/medicamentos-a-cuba', titulo: 'Medicamentos a Cuba', prioridad: 0.9, frecuencia: 'weekly' },
-  { url: '/rastreo', titulo: 'Rastreo de envíos', prioridad: 0.9, frecuencia: 'daily' },
   { url: '/envios-maritimos-a-cuba', titulo: 'Envíos marítimos a Cuba', prioridad: 0.8, frecuencia: 'weekly' },
   { url: '/envios-aereos-a-cuba', titulo: 'Envíos aéreos a Cuba', prioridad: 0.8, frecuencia: 'weekly' },
   { url: '/alimentos-para-cuba', titulo: 'Alimentos para Cuba', prioridad: 0.8, frecuencia: 'weekly' },

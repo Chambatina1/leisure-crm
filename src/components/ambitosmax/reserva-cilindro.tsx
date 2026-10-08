@@ -66,6 +66,10 @@ export function ReservaCilindro() {
 
   const reservar = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!useAppStore.getState().currentUser) {
+      useAppStore.getState().pedirRegistro({ tipo: 'vista', vista: 'reserva-cilindro' });
+      return;
+    }
     const datos = mismoQueRecoge
       ? { ...form, nombreRecoge: form.nombreComprador, telefonoRecoge: form.telefonoComprador }
       : form;
@@ -82,6 +86,7 @@ export function ReservaCilindro() {
       });
       const json = await res.json();
       if (json.ok) setResultado(json.data);
+      else if (json.requiereRegistro) useAppStore.getState().pedirRegistro({ tipo: 'vista', vista: 'reserva-cilindro' });
       else toast.error(json.error || 'No se pudo reservar');
     } catch {
       toast.error('Error de conexión');

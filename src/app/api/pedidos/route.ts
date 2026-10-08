@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/admin-auth';
+import { requireAdmin, isAdminRequest } from '@/lib/admin-auth';
+import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
@@ -70,6 +71,11 @@ export async function GET(request: NextRequest) {
 
 // POST /api/pedidos - Create new pedido
 export async function POST(request: NextRequest) {
+  // Solo clientes registrados (o el administrador desde el panel)
+  if (!isAdminRequest(request)) {
+    const cliente = await getCliente(request);
+    if (!cliente) return respuestaSinRegistro();
+  }
   try {
     const body = await request.json();
     const validated = pedidoSchema.safeParse(body);

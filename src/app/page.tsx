@@ -191,13 +191,17 @@ export default function Page() {
   const setCurrentView = useAppStore((s) => s.setCurrentView);
   useEffect(() => {
     const v = new URLSearchParams(window.location.search).get('v');
-    const permitidas = ['tienda', 'combustible', 'rastreador', 'chat', 'reserva-cilindro', 'home'];
+    const permitidas = ['tienda', 'combustible', 'chat', 'reserva-cilindro', 'home'];
     if (v && permitidas.includes(v)) {
       useAppStore.setState({ mode: 'public' });
       setCurrentView(v as never);
       window.history.replaceState(null, '', '/');
     }
   }, [setCurrentView]);
+
+  // Sesión de cliente: la decide el servidor (cookie); sincronizar al abrir
+  const syncCliente = useAppStore((s) => s.syncCliente);
+  useEffect(() => { syncCliente(); }, [syncCliente]);
 
   // La sesión de admin la valida el servidor (cookie httpOnly); si caducó,
   // se vuelve al modo público en vez de mostrar un panel sin datos.
@@ -214,7 +218,7 @@ export default function Page() {
         case 'home': return <Home />;
         case 'tienda': return <Tienda />;
         case 'combustible': return <CombustibleCupet />;
-        case 'rastreador': return <Rastreador />;
+        case 'rastreador': return <Home />; // rastreo desactivado por ahora
         case 'chat': return <ChatIA />;
         case 'pedido-public': return <PedidoForm />;
         case 'reserva-cilindro': return <ReservaCilindro />;

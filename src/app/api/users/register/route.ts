@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { enviarCorreoBienvenida } from '@/lib/welcome-email';
 import { clientIp } from '@/lib/admin-auth';
 import { verificarCodigo, limiteIp } from '@/lib/verificacion-email';
+import { setClienteCookie } from '@/lib/cliente-auth';
 
 // ─── Validación con Zod ────────────────────────────────────────────────
 const registerSchema = z.object({
@@ -83,10 +84,12 @@ export async function POST(request: NextRequest) {
     // ── Respuesta sin password ───────────────────────────────────────
     const { password: _pw, ...userWithoutPassword } = user;
 
-    return NextResponse.json(
+    const res = NextResponse.json(
       { ok: true, data: userWithoutPassword },
       { status: 201 }
     );
+    setClienteCookie(res, user.id); // queda con la sesión iniciada
+    return res;
   } catch (error) {
     console.error('[Registro] Error al registrar usuario:', error);
     return NextResponse.json(

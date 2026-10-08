@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
     return [
       { source: '/cilindro-de-gas-la-habana', destination: '/balitas-de-gas-en-cuba', permanent: true },
       { source: '/combustible-en-cuba', destination: '/diesel-y-gasolina-en-cuba', permanent: true },
+      // Rastreo desactivado por ahora (redirección temporal)
+      { source: '/rastreo', destination: '/', permanent: false },
     ];
   },
   async headers() {

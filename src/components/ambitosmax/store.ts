@@ -32,6 +32,12 @@ interface AppState {
   setCurrentUser: (user: UserData | null) => void;
   showRegisterDialog: boolean;
   setShowRegisterDialog: (show: boolean) => void;
+  // Compra que se retoma después de registrarse / iniciar sesión
+  compraPendiente: { tipo: 'producto'; producto: ProductPreview } | { tipo: 'pedido' } | { tipo: 'vista'; vista: PublicView } | null;
+  pedirRegistro: (pendiente: AppState['compraPendiente']) => void;
+  continuarCompra: () => void;
+  syncCliente: () => Promise<void>;
+  logoutCliente: () => void;
 
   // Mode
   mode: AppMode;
@@ -145,6 +151,29 @@ export const useAppStore = create<AppState>()(
       setCurrentUser: (user) => set({ currentUser: user }),
       showRegisterDialog: false,
       setShowRegisterDialog: (show) => set({ showRegisterDialog: show }),
+      compraPendiente: null,
+      pedirRegistro: (pendiente) => set({ compraPendiente: pendiente, showRegisterDialog: true }),
+      continuarCompra: () => {
+        const p = get().compraPendiente;
+        set({ compraPendiente: null, showRegisterDialog: false });
+        if (!p) return;
+        if (p.tipo === 'producto') get().goToComprar(p.producto);
+        else if (p.tipo === 'pedido') get().goToNuevoPedido();
+        else set({ currentView: p.vista });
+      },
+      syncCliente: async () => {
+        try {
+          const r = await fetch('/api/users/me');
+          const j = await r.json();
+          set({ currentUser: j?.data ?? null });
+        } catch {
+          /* sin conexión: no tocar */
+        }
+      },
+      logoutCliente: () => {
+        fetch('/api/users/logout', { method: 'POST' }).catch(() => {});
+        set({ currentUser: null });
+      },
 
       // Mode
       mode: 'public',
@@ -178,6 +207,10 @@ export const useAppStore = create<AppState>()(
       goToPedidoEdit: (id) =>
         set({ adminView: 'pedido-edit', selectedPedidoId: id }),
       goToNuevoPedido: () => {
+        if (get().mode !== 'admin' && !get().currentUser) {
+          get().pedirRegistro({ tipo: 'pedido' });
+          return;
+        }
         set({ selectedProduct: null });
         const currentMode = get().mode;
         if (currentMode === 'admin') {
@@ -187,6 +220,11 @@ export const useAppStore = create<AppState>()(
         }
       },
       goToComprar: (product) => {
+        // Nadie compra sin estar registrado (el servidor también lo exige)
+        if (get().mode !== 'admin' && !get().currentUser) {
+          get().pedirRegistro({ tipo: 'producto', producto: product });
+          return;
+        }
         // El cilindro de gas tiene su propio flujo de reserva con PIN y cierre diario
         if (/CILINDRO/i.test(product.nombre) && get().mode !== 'admin') {
           set({ selectedProduct: product, currentView: 'reserva-cilindro' });

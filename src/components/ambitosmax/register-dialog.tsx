@@ -37,6 +37,9 @@ export function RegisterDialog() {
   const showRegisterDialog = useAppStore((s) => s.showRegisterDialog);
   const setShowRegisterDialog = useAppStore((s) => s.setShowRegisterDialog);
   const setCurrentUser = useAppStore((s) => s.setCurrentUser);
+  const continuarCompra = useAppStore((s) => s.continuarCompra);
+  const compraPendiente = useAppStore((s) => s.compraPendiente);
+  const [modo, setModo] = useState<'registro' | 'entrar'>('registro');
 
   const [form, setForm] = useState<RegisterForm>(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
@@ -133,7 +136,7 @@ export function RegisterDialog() {
         setErrors({});
         setPaso('datos');
         setCodigo('');
-        setShowRegisterDialog(false);
+        continuarCompra(); // cierra el diálogo y retoma la compra si la había
       } else {
         toast.error(typeof json.error === 'string' ? json.error : 'Error al registrarse');
       }
@@ -145,6 +148,7 @@ export function RegisterDialog() {
   };
 
   const handleClose = (open: boolean) => {
+    if (!open) useAppStore.setState({ compraPendiente: null });
     if (!open && !loading) {
       setForm(INITIAL_FORM);
       setErrors({});
@@ -184,11 +188,35 @@ export function RegisterDialog() {
               className="object-contain"
             />
           </motion.div>
-          <DialogTitle className="text-xl">Crear Cuenta</DialogTitle>
+          <DialogTitle className="text-xl">{modo === 'registro' ? 'Crear cuenta' : 'Entrar'}</DialogTitle>
           <DialogDescription className="text-sm text-center max-w-xs">
-            Regístrate en Ambitosmax y accede a todos nuestros servicios
+            {compraPendiente
+              ? 'Para comprar necesitas una cuenta. Es gratis y tarda un minuto.'
+              : modo === 'registro'
+                ? 'Regístrate en Ambitosmax y accede a todos nuestros servicios'
+                : 'Te enviamos un código a tu correo para entrar, sin contraseña'}
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex gap-2 mt-1">
+          <button
+            type="button"
+            onClick={() => setModo('registro')}
+            className={`flex-1 py-2 rounded-lg text-sm font-bold ${modo === 'registro' ? 'bg-[#123d83] text-white' : 'bg-zinc-100 text-zinc-600'}`}
+          >Crear cuenta</button>
+          <button
+            type="button"
+            onClick={() => setModo('entrar')}
+            className={`flex-1 py-2 rounded-lg text-sm font-bold ${modo === 'entrar' ? 'bg-[#123d83] text-white' : 'bg-zinc-100 text-zinc-600'}`}
+          >Ya tengo cuenta</button>
+        </div>
+
+        {modo === 'entrar' ? (
+          <EntrarConCodigo
+            onListo={(u) => { setCurrentUser(u); toast.success(`¡Hola de nuevo, ${u.nombre}!`); continuarCompra(); }}
+            onSinCuenta={(email) => { setModo('registro'); setForm((f) => ({ ...f, email })); }}
+          />
+        ) : (
 
         <form onSubmit={handleSubmit} className="mt-2 space-y-4">
           {/* Campo trampa para bots: invisible para personas */}
@@ -379,7 +407,120 @@ export function RegisterDialog() {
             Al registrarte aceptas nuestros términos de servicio
           </p>
         </form>
+        )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+
+function EntrarConCodigo({
+  onListo,
+  onSinCuenta,
+}: {
+  onListo: (u: { id: number; nombre: string; email: string; telefono?: string }) => void;
+  onSinCuenta: (email: string) => void;
+}) {
+  const [email, setEmail] = useState('');
+  const [codigo, setCodigo] = useState('');
+  const [paso, setPaso] = useState<'email' | 'codigo'>('email');
+  const [cargando, setCargando] = useState(false);
+  const [espera, setEspera] = useState(0);
+
+  useEffect(() => {
+    if (espera <= 0) return;
+    const id = setTimeout(() => setEspera((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [espera]);
+
+  const pedir = async () => {
+    setCargando(true);
+    try {
+      const r = await fetch('/api/users/login/codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const j = await r.json();
+      if (j.ok) {
+        setPaso('codigo');
+        setEspera(60);
+        toast.success(`Te enviamos un código a ${email}`);
+      } else {
+        toast.error(j.error || 'No se pudo enviar el código');
+        if (j.noExiste) onSinCuenta(email);
+        if (j.esperaSegundos) { setPaso('codigo'); setEspera(j.esperaSegundos); }
+      }
+    } catch {
+      toast.error('Error de conexión');
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const entrar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (paso === 'email') {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast.error('Correo no válido'); return; }
+      await pedir();
+      return;
+    }
+    setCargando(true);
+    try {
+      const r = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, codigo }),
+      });
+      const j = await r.json();
+      if (j.ok) onListo(j.data);
+      else toast.error(j.error || 'Código incorrecto');
+    } catch {
+      toast.error('Error de conexión');
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  return (
+    <form onSubmit={entrar} className="mt-2 space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="login-email" className="text-xs font-medium">Correo electrónico</Label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Input id="login-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@ejemplo.com" className="pl-10" disabled={cargando || paso === 'codigo'} autoFocus />
+        </div>
+      </div>
+      {paso === 'codigo' && (
+        <div className="space-y-2">
+          <Label htmlFor="login-codigo" className="text-xs font-medium">Código de 6 dígitos</Label>
+          <Input
+            id="login-codigo"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            placeholder="000000"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            className="text-center text-2xl tracking-[0.5em] font-mono h-14"
+            autoFocus
+            disabled={cargando}
+          />
+          <div className="flex justify-between text-xs">
+            <button type="button" onClick={() => { setPaso('email'); setCodigo(''); }} className="text-zinc-500">Cambiar correo</button>
+            <button type="button" onClick={pedir} disabled={cargando || espera > 0} className="text-[#123d83] font-medium disabled:text-zinc-400">
+              {espera > 0 ? `Reenviar en ${espera}s` : 'Reenviar código'}
+            </button>
+          </div>
+        </div>
+      )}
+      <Button
+        type="submit"
+        disabled={cargando || (paso === 'codigo' && codigo.length !== 6) || !email}
+        className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-medium"
+      >
+        {cargando ? <Loader2 className="h-4 w-4 animate-spin" /> : paso === 'email' ? 'Enviarme el código' : 'Entrar'}
+      </Button>
+    </form>
   );
 }

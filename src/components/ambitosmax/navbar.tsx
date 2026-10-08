@@ -33,12 +33,11 @@ const publicNavItems: { view: PublicView; label: string; icon: typeof Home }[] =
   { view: 'home', label: 'Inicio', icon: Home },
   { view: 'tienda', label: 'Tienda', icon: ShoppingBag },
   { view: 'combustible', label: 'Combustible', icon: Zap },
-  { view: 'rastreador', label: 'Rastreador', icon: Search },
   { view: 'chat', label: 'Chat IA', icon: MessageCircle },
 ];
 
 function PublicNavbar() {
-  const { currentView, setCurrentView, goToAdmin, currentUser, setShowRegisterDialog } = useAppStore();
+  const { currentView, setCurrentView, goToAdmin, currentUser, setShowRegisterDialog, logoutCliente } = useAppStore();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleNav = (view: PublicView) => {
@@ -94,11 +93,12 @@ function PublicNavbar() {
                   className="ml-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 >
                   <UserPlus className="h-4 w-4 mr-1" />
-                  Registrarse
+                  Entrar / Registrarse
                 </Button>
               ) : (
-                <span className="ml-2 text-sm text-zinc-500 hidden lg:inline">
-                  {currentUser.nombre}
+                <span className="ml-2 text-sm text-zinc-500 flex items-center gap-2">
+                  <span className="hidden lg:inline">{currentUser.nombre}</span>
+                  <button onClick={logoutCliente} className="text-xs text-zinc-400 hover:text-red-600 underline">Salir</button>
                 </span>
               )}
               <Button

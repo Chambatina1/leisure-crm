@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminRequest } from '@/lib/admin-auth';
+import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { z } from 'zod';
@@ -27,6 +28,8 @@ const solicitudSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const cliente = await getCliente(request);
+  if (!cliente) return respuestaSinRegistro();
   try {
     await asegurarTablaSolicitudes();
     const body = solicitudSchema.parse(await request.json());
