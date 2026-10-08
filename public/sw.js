@@ -2,7 +2,7 @@
 // v2: conservador — solo cachea assets estáticos con hash.
 // NUNCA cachea el HTML ni /api/*. Al activarse, elimina TODOS los cachés viejos
 // (incluidos los de versiones anteriores que congelaban la app en navegadores).
-const CACHE_NAME = 'leisure-v2';
+const CACHE_NAME = 'ambitosmax-v3';
 
 self.addEventListener('install', (e) => { self.skipWaiting(); });
 

@@ -148,7 +148,7 @@ export function CombustibleCupet() {
         autoPlay muted loop playsInline
         className="fixed inset-0 w-full h-full object-cover pointer-events-none"
       >
-        <source src="/videos/malecon.mp4" type="video/mp4" />
+        <source src="/videos/malecon2.mp4" type="video/mp4" />
       </video>
       <div className="fixed inset-0 pointer-events-none bg-gradient-to-b from-black/20 via-black/8 to-black/35" />
       {/* Encabezado */}
