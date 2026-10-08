@@ -141,7 +141,7 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   background: oklch(0.7 0.1 55);
 }
 
-/* ═══ Hero animado Leisure (olas + partículas) ═══ */
+/* ═══ Hero animado Ambitosmax (olas + partículas) ═══ */
 @keyframes waveSlide {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

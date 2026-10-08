@@ -49,9 +49,6 @@
 
   <!-- Texto -->
   <g fontFamily="'Segoe UI', Arial, sans-serif">
-    <text x="132" y="48" fontSize="34" fontWeight="900" fill="url(#textGrad)" letterSpacing="0.5">LEISURE</text>
-    <text x="133" y="74" fontSize="22" fontWeight="700" fill="#ffffff" letterSpacing="2.5">EXPORTING</text>
-    <rect x="133" y="82" width="120" height="1.5" fill="#55b949" opacity="0.5"/>
-    <text x="133" y="104" fontSize="15" fontWeight="400" fill="#8ea9d8" letterSpacing="6" fontFamily="'Segoe UI', Arial, sans-serif">L L C</text>
+    <text x="132" y="62" fontSize="32" fontWeight="900" fill="url(#textGrad)" letterSpacing="1">AMBITOSMAX</text>
   </g>
 </svg>

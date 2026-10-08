@@ -420,7 +420,7 @@ export async function enviarCorreoBienvenida(nombre: string, email: string) {
       });
 
       const info = await transporter.sendMail({
-        from: `"Ambitosmax" <${emailFrom}>`,
+        from: emailFrom.includes('<') ? emailFrom : `"Ambitosmax" <${emailFrom}>`,
         to: email,
         subject: `¡Bienvenido a Ambitosmax, ${nombre}! 📦`,
         html,

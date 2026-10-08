@@ -72,6 +72,12 @@ const CAMBIOS: CambioProducto[] = [
 let promesa: Promise<void> | null = null;
 
 async function aplicarAltas(): Promise<void> {
+  // La marca es solo Ambitosmax: corregir el nombre del negocio si quedó el anterior
+  const nombre = await db.config.findUnique({ where: { clave: 'nombre_negocio' } });
+  if (nombre && /leisure/i.test(nombre.valor)) {
+    await db.config.update({ where: { clave: 'nombre_negocio' }, data: { valor: 'Ambitosmax' } });
+  }
+
   for (const alta of ALTAS) {
     const clave = `alta_producto_${alta.id}`;
     const hecha = await db.config.findUnique({ where: { clave } });

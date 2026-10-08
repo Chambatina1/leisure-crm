@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     `;
 
     await transporter.sendMail({
-      from: `"AMBITOSMAX" <${user}>`,
+      from: (() => { const f = process.env.EMAIL_FROM || user; return f.includes('<') ? f : `"AMBITOSMAX" <${f}>`; })(),
       to: emailDestino,
       subject: `PIN de carga: ${sol.pin} — ${sol.litros} litros de ${sol.typeFuelNombre}`,
       text: `Tu PIN: ${sol.pin}. ${sol.litros} litros de ${sol.typeFuelNombre} en ${sol.servicenterNombre}. Orden #${sol.cupetTransactionId}. Válido hasta ${sol.expiracionPin || 'consultar'}.`,
