@@ -46,6 +46,16 @@ const CAMBIOS: CambioProducto[] = [
       precio: 85,
     },
   },
+  {
+    id: 'cilindro_gas_85_los_avioncitos',
+    buscarNombre: 'CILINDRO DE GAS — Recogida en La Lisa',
+    datos: {
+      nombre: 'CILINDRO LLENO SIN ENTREGA DE VACÍO',
+      descripcion:
+        'Precio: 85 USD. Recogida en "LOS AVIONCITOS": Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana.',
+      precio: 85,
+    },
+  },
 ];
 
 let promesa: Promise<void> | null = null;
