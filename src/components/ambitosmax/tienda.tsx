@@ -85,12 +85,13 @@ export function Tienda() {
   const cartTotal = cart.reduce((s, i) => s + i.product.precio * i.qty, 0);
 
   // Filtrar por categoría activa y búsqueda
-  const [activeCat, setActiveCat] = useState('gas');
+  // Al abrir la tienda se ven TODOS los productos; las categorías filtran
+  const [activeCat, setActiveCat] = useState('todos');
   const filtered = useMemo(() => {
-    let list = grouped[activeCat] || [];
+    let list = activeCat === 'todos' ? products : grouped[activeCat] || [];
     if (search) list = list.filter(p => p.nombre.toLowerCase().includes(search.toLowerCase()));
     return list;
-  }, [grouped, activeCat, search]);
+  }, [products, grouped, activeCat, search]);
 
   function addToCart(p: Product) {
     setCart(prev => {
@@ -127,7 +128,10 @@ export function Tienda() {
   );
 
   const categories = Object.keys(grouped);
-  const tabConfigs = categories.map(cat => ({ value: cat, config: CATEGORY_CONFIG[cat] || DEFAULT_CONFIG }));
+  const tabConfigs = [
+    { value: 'todos', config: { ...DEFAULT_CONFIG, label: 'Todos' } },
+    ...categories.map(cat => ({ value: cat, config: CATEGORY_CONFIG[cat] || DEFAULT_CONFIG })),
+  ];
 
   return (
     <motion.div {...fadeIn} transition={{ duration: 0.4 }} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -184,7 +188,7 @@ export function Tienda() {
               <Icon className="h-4 w-4" />
               {config.label}
               <span className={`text-xs ml-1 ${activeCat === value ? 'text-white/70' : 'text-zinc-400'}`}>
-                ({(grouped[value] || []).length})
+                ({value === 'todos' ? products.length : (grouped[value] || []).length})
               </span>
             </button>
           );
