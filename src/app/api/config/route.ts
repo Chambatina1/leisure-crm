@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 
 const DEFAULTS: Record<string, string> = {
   nombre_negocio: 'Ambitosmax',
-  direccion: '7523 Aloma Ave, Winter Park, FL 32792, Suite 112',
+  direccion: '6800 N Florida Ave, Tampa, FL 33604',
   telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',

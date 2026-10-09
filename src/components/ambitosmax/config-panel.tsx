@@ -29,7 +29,7 @@ interface ConfigData {
 
 const DEFAULT_CONFIG: ConfigData = {
   nombre_negocio: 'Ambitosmax',
-  direccion: '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792',
+  direccion: '6800 N Florida Ave, Tampa, FL 33604',
   telefono1: '727-506-1845',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',

@@ -77,6 +77,11 @@ async function aplicarAltas(): Promise<void> {
   if (nombre && /leisure/i.test(nombre.valor)) {
     await db.config.update({ where: { clave: 'nombre_negocio' }, data: { valor: 'Ambitosmax' } });
   }
+  // Dirección del negocio: Tampa (la de Winter Park era antigua)
+  const dir = await db.config.findUnique({ where: { clave: 'direccion' } });
+  if (dir && /winter park/i.test(dir.valor)) {
+    await db.config.update({ where: { clave: 'direccion' }, data: { valor: '6800 N Florida Ave, Tampa, FL 33604' } });
+  }
 
   for (const alta of ALTAS) {
     const clave = `alta_producto_${alta.id}`;

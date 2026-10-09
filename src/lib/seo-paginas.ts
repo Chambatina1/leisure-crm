@@ -30,7 +30,14 @@ export const ORGANIZACION_JSONLD = {
     'Balitas de gas, diésel y gasolina en Cuba, tienda online y envíos a Cuba desde Estados Unidos. Recogida en La Habana y entrega en toda la isla.',
   telephone: '+1-727-506-1845',
   areaServed: [{ '@type': 'Country', name: 'Cuba' }, { '@type': 'Country', name: 'United States' }],
-  address: { '@type': 'PostalAddress', addressRegion: 'FL', addressCountry: 'US' },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '6800 N Florida Ave',
+    addressLocality: 'Tampa',
+    addressRegion: 'FL',
+    postalCode: '33604',
+    addressCountry: 'US',
+  },
   contactPoint: [
     { '@type': 'ContactPoint', telephone: '+1-727-506-1845', contactType: 'customer service', availableLanguage: ['Spanish', 'English'] },
   ],

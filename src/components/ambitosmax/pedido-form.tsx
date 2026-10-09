@@ -38,7 +38,7 @@ const defaultData: PedidoData = {
   notas: '',
 };
 
-const AMBITOSMAX_ADDRESS = '2234 A Winter Woods Blvd, Winter Park, Unit 1000, FL 32792';
+const AMBITOSMAX_ADDRESS = '6800 N Florida Ave, Tampa, FL 33604';
 
 export function PedidoForm() {
   const { selectedPedidoId, selectedProduct, setAdminView, adminView, mode, setCurrentView, setSelectedProduct } = useAppStore();

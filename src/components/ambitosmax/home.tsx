@@ -207,8 +207,8 @@ export function Home() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900">Tampa, Florida</h4>
-              <p className="text-sm text-gray-500">Ambitosmax LLC</p>
-              <p className="text-sm text-gray-500">EE.UU.</p>
+              <p className="text-sm text-gray-500">6800 N Florida Ave</p>
+              <p className="text-sm text-gray-500">Tampa, FL 33604</p>
             </div>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-100 flex items-start gap-4">
