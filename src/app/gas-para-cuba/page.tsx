@@ -40,7 +40,7 @@ const COMPARACION: [string, string][] = [
 
 const FAQS = [
   { q: '¿De verdad no tengo que entregar la balita vacía?', a: 'No. Pagas $85 y tu familiar se lleva un cilindro de gas lleno. No hace falta cambiar un vacío.' },
-  { q: '¿Dónde se recoge?', a: 'Tienes dos puntos en La Lisa, La Habana, y eliges uno al reservar: "LOS AVIONCITOS" (Calle 210 / calle 31 y 33, Alturas de la Coronela) o el punto de gas "BAR MADERA" en Arroyo Arenas.' },
+  { q: '¿Dónde se recoge?', a: 'En el punto de gas "BAR MADERA", en Arroyo Arenas, municipio La Lisa, La Habana.' },
   { q: '¿Cuándo puede recoger mi familia?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Si reservas antes, tu balita entra en el listado de hoy; si reservas después, en el de mañana.' },
   { q: '¿Cómo sé que mi dinero está seguro?', a: 'Somos una empresa en 6800 N Florida Ave, Tampa, FL. La balita solo se entrega a la persona que registraste, con su carnet de identidad y el PIN que te enviamos al confirmar el pago.' },
   { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el número de Zelle y tu número de reserva para usarlo como referencia.' },
@@ -107,7 +107,7 @@ export default function Page() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-20 grid md:grid-cols-[1.4fr_1fr] gap-10 items-center">
           <div>
             <p className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider">
-              <MapPin className="h-3.5 w-3.5" /> 2 puntos de recogida en La Habana
+              <MapPin className="h-3.5 w-3.5" /> Recogida en Arroyo Arenas, La Habana
             </p>
             <h1 className="text-4xl md:text-6xl font-black leading-[1.05] mt-5">
               Que tu familia cocine hoy, <span className="text-[#7ee06f]">sin colas y sin entregar la balita vacía.</span>
@@ -205,7 +205,7 @@ export default function Page() {
             <ul className="space-y-3 mt-6">
               {[
                 'Cilindro lleno, sin entregar el vacío',
-                'Recogida en Los Avioncitos o Bar Madera (Arroyo Arenas), La Lisa',
+                'Recogida en Bar Madera, Arroyo Arenas, La Lisa',
                 'PIN de seguridad a nombre de quien recoge',
                 'Confirmación de tu reserva al momento',
                 'Hasta 4 balitas en la misma reserva',

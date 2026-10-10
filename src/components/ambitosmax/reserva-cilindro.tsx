@@ -11,7 +11,6 @@ import { toast } from 'sonner';
 const PRECIO = 85;
 // Mismos puntos que PUNTOS_RECOGIDA en src/lib/cilindros.ts
 const PUNTOS = [
-  { id: 'avioncitos', nombre: 'Los Avioncitos', direccion: 'Calle 210 / calle 31 y 33, Alturas de la Coronela, La Lisa' },
   { id: 'bar-madera', nombre: 'Bar Madera', direccion: 'Arroyo Arenas, La Lisa' },
 ] as const;
 type Punto = (typeof PUNTOS)[number]['id'];
@@ -56,7 +55,7 @@ export function ReservaCilindro() {
   const [form, setForm] = useState({
     nombreComprador: '', telefonoComprador: '', emailComprador: '',
     nombreRecoge: '', carnetRecoge: '', telefonoRecoge: '', cantidad: 1,
-    punto: 'avioncitos' as Punto,
+    punto: PUNTOS[0].id as Punto,
   });
   const [mismoQueRecoge, setMismoQueRecoge] = useState(false);
   const [honeypot, setHoneypot] = useState('');
@@ -137,7 +136,7 @@ export function ReservaCilindro() {
         <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
         <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
         <div className="mt-3 space-y-1.5 text-sm text-white/80">
-          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en La Habana: {PUNTOS.map((p) => p.nombre).join(' o ')} (eliges al reservar)</p>
+          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en {PUNTOS.map((p) => `${p.nombre} (${p.direccion})`).join(' o ')}</p>
           <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Las reservas pagadas antes del cierre entran en el listado de recogida de ese día.</p>
         </div>
       </div>
@@ -241,6 +240,7 @@ export function ReservaCilindro() {
             />
           </div>
 
+          {PUNTOS.length > 1 && (<>
           <p className="text-xs font-black text-[#b45309] uppercase tracking-wide pt-2">3. Dónde recoge</p>
           <div className="grid sm:grid-cols-2 gap-2" role="radiogroup" aria-label="Punto de recogida">
             {PUNTOS.map((p) => (
@@ -260,6 +260,7 @@ export function ReservaCilindro() {
               </label>
             ))}
           </div>
+          </>)}
 
           <div className="flex items-center justify-between pt-2">
             <Label className="text-sm font-bold">Cantidad de cilindros</Label>

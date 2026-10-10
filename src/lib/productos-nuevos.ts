@@ -63,7 +63,7 @@ const CAMBIOS: CambioProducto[] = [
     datos: {
       nombre: 'CILINDRO LLENO SIN ENTREGA DE VACÍO',
       descripcion:
-        'Precio: 85 USD. Recogida en "LOS AVIONCITOS": Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana.',
+        'Precio: 85 USD. Recogida en el punto de gas "BAR MADERA": Arroyo Arenas, municipio La Lisa, La Habana.',
       precio: 85,
     },
   },

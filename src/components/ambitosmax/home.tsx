@@ -172,7 +172,7 @@ export function Home() {
         <div className="grid md:grid-cols-3 gap-6 mt-8 text-sm text-zinc-600 leading-relaxed">
           <div>
             <h2 className="text-lg font-black text-[#071a46] mb-2">Balitas de gas en La Habana</h2>
-            <p>Balita de gas llena por $85, sin entregar el cilindro vacío. Tu familiar la recoge en La Lisa, en Arroyo Arenas (Bar Madera) o en Alturas de la Coronela (Los Avioncitos), con su carnet y un PIN de 6 dígitos.</p>
+            <p>Balita de gas llena por $85, sin entregar el cilindro vacío. Tu familiar la recoge en el punto de gas Bar Madera, en Arroyo Arenas (La Lisa), con su carnet y un PIN de 6 dígitos.</p>
           </div>
           <div>
             <h2 className="text-lg font-black text-[#071a46] mb-2">Diésel y gasolina en Cuba</h2>

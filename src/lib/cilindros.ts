@@ -1,5 +1,5 @@
 // ============================================================
-// Reservas de cilindros de gas (recogida en Los Avioncitos o Bar Madera)
+// Reservas de cilindros de gas (recogida en Bar Madera, Arroyo Arenas)
 // ------------------------------------------------------------
 // - Las ventas cierran todos los días a las 8:00 PM hora de Cuba.
 //   Una reserva hecha antes de las 8 PM entra en el listado de ese día;
@@ -17,20 +17,17 @@ export const PRECIO_CILINDRO = 85;
 export const MAX_POR_RESERVA = 4;
 export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || '727-598-6802';
 
-// Puntos de recogida. El cliente elige uno al reservar; las reservas
-// antiguas (sin punto guardado) son de Los Avioncitos.
+// Puntos de recogida. Si hay más de uno, el cliente elige al reservar.
+// Una reserva con un punto que ya no existe (p. ej. el antiguo Los
+// Avioncitos) se recoge en el punto por defecto.
 export const PUNTOS_RECOGIDA = {
-  avioncitos: {
-    nombre: 'Los Avioncitos',
-    direccion: '"LOS AVIONCITOS" — Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana',
-  },
   'bar-madera': {
     nombre: 'Bar Madera',
     direccion: 'Punto de gas "BAR MADERA" — Arroyo Arenas, municipio La Lisa, La Habana',
   },
 } as const;
 export type PuntoRecogida = keyof typeof PUNTOS_RECOGIDA;
-export const PUNTO_POR_DEFECTO: PuntoRecogida = 'avioncitos';
+export const PUNTO_POR_DEFECTO: PuntoRecogida = 'bar-madera';
 
 export function esPunto(p: unknown): p is PuntoRecogida {
   return typeof p === 'string' && p in PUNTOS_RECOGIDA;
