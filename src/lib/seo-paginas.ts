@@ -3,6 +3,7 @@ export const SITIO = 'https://ambitosmax.com';
 
 export const PAGINAS_SEO: { url: string; titulo: string; prioridad: number; frecuencia: 'daily' | 'weekly' | 'monthly' }[] = [
   { url: '/balitas-de-gas-en-cuba', titulo: 'Balitas de gas en Cuba', prioridad: 1.0, frecuencia: 'daily' },
+  { url: '/gas-para-cuba', titulo: 'Balita de gas para tu familia en La Habana — $85', prioridad: 0.95, frecuencia: 'daily' },
   { url: '/diesel-y-gasolina-en-cuba', titulo: 'Diésel y gasolina en Cuba', prioridad: 1.0, frecuencia: 'daily' },
   { url: '/tienda-cuba', titulo: 'Tienda online para Cuba', prioridad: 0.95, frecuencia: 'daily' },
   { url: '/envios-a-cuba', titulo: 'Envíos a Cuba', prioridad: 0.9, frecuencia: 'weekly' },
