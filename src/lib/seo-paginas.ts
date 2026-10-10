@@ -4,6 +4,7 @@ export const SITIO = 'https://ambitosmax.com';
 export const PAGINAS_SEO: { url: string; titulo: string; prioridad: number; frecuencia: 'daily' | 'weekly' | 'monthly' }[] = [
   { url: '/balitas-de-gas-en-cuba', titulo: 'Balitas de gas en Cuba', prioridad: 1.0, frecuencia: 'daily' },
   { url: '/gas-para-cuba', titulo: 'Balita de gas para tu familia en La Habana — $85', prioridad: 0.95, frecuencia: 'daily' },
+  { url: '/gas-en-la-lisa', titulo: 'Gas en La Lisa (Arroyo Arenas y Alturas de la Coronela)', prioridad: 0.9, frecuencia: 'weekly' },
   { url: '/diesel-y-gasolina-en-cuba', titulo: 'Diésel y gasolina en Cuba', prioridad: 1.0, frecuencia: 'daily' },
   { url: '/tienda-cuba', titulo: 'Tienda online para Cuba', prioridad: 0.95, frecuencia: 'daily' },
   { url: '/envios-a-cuba', titulo: 'Envíos a Cuba', prioridad: 0.9, frecuencia: 'weekly' },
@@ -30,6 +31,7 @@ export const ORGANIZACION_JSONLD = {
   description:
     'Balitas de gas, diésel y gasolina en Cuba, tienda online y envíos a Cuba desde Estados Unidos. Recogida en La Habana y entrega en toda la isla.',
   telephone: '+1-727-506-1845',
+  sameAs: ['https://www.tiktok.com/@ambitosmax'],
   areaServed: [{ '@type': 'Country', name: 'Cuba' }, { '@type': 'Country', name: 'United States' }],
   address: {
     '@type': 'PostalAddress',

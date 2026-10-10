@@ -119,3 +119,20 @@ export function SeoPage({ titulo, subtitulo, descripcion, beneficios, faqs, ruta
     </div>
   );
 }
+
+// Bloques de texto largos para las páginas de aterrizaje: cada uno con su
+// subtítulo (h2) para que Google entienda de qué trata cada parte.
+export function ContenidoSeo({ secciones }: { secciones: { h2: string; p: React.ReactNode[] }[] }) {
+  return (
+    <div className="space-y-10 mb-12">
+      {secciones.map((s) => (
+        <section key={s.h2}>
+          <h2 className="text-2xl font-black text-[#071a46] mb-3">{s.h2}</h2>
+          <div className="space-y-3 text-zinc-700 leading-relaxed">
+            {s.p.map((parrafo, i) => <p key={i}>{parrafo}</p>)}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
