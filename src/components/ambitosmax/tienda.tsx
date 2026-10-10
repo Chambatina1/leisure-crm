@@ -229,7 +229,7 @@ export function Tienda() {
                 {product.categoria === 'combustible' ? (
                   <>
                     <div className="text-xs text-emerald-600 font-medium">
-                      {/CILINDRO/i.test(product.nombre) ? '✓ Recogida en Los Avioncitos, La Lisa' : '✓ Carga en el servicentro'}
+                      {/CILINDRO/i.test(product.nombre) ? '✓ Recogida en Bar Madera, Arroyo Arenas' : '✓ Carga en el servicentro'}
                     </div>
                     <Button
                       className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"

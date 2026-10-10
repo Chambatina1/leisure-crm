@@ -169,9 +169,24 @@ export function Home() {
           con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo), electrodomésticos, motos, plantas eléctricas,
           alimentos y envíos marítimos y aéreos a toda Cuba.
         </p>
+        <div className="grid md:grid-cols-3 gap-6 mt-8 text-sm text-zinc-600 leading-relaxed">
+          <div>
+            <h2 className="text-lg font-black text-[#071a46] mb-2">Balitas de gas en La Habana</h2>
+            <p>Balita de gas llena por $85, sin entregar el cilindro vacío. Tu familiar la recoge en el punto de gas Bar Madera, en Arroyo Arenas (La Lisa), con su carnet y un PIN de 6 dígitos.</p>
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-[#071a46] mb-2">Diésel y gasolina en Cuba</h2>
+            <p>Eliges el servicentro, el combustible y los litros; pagas por Zelle y tu familiar carga con un PIN. Diésel a $2.37 el litro en el Servicentro Perla Negra, Bayamo, Granma.</p>
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-[#071a46] mb-2">Compra desde Estados Unidos</h2>
+            <p>Ambitosmax tiene su dirección en 6800 N Florida Ave, Tampa, Florida. Pagas desde tu banco en EE.UU. y te atendemos en español por WhatsApp o al +1 (727) 506-1845.</p>
+          </div>
+        </div>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
           {[
             ['/balitas-de-gas-en-cuba', 'Balitas de gas en Cuba'],
+            ['/gas-en-la-lisa', 'Gas en La Lisa'],
             ['/diesel-y-gasolina-en-cuba', 'Diésel y gasolina en Cuba'],
             ['/tienda-cuba', 'Tienda para Cuba'],
             ['/envios-a-cuba', 'Envíos a Cuba'],

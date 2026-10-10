@@ -7,7 +7,10 @@ import {
   PRECIO_CILINDRO,
   MAX_POR_RESERVA,
   ZELLE_CILINDROS,
-  PUNTO_RECOGIDA,
+  PUNTOS_RECOGIDA,
+  PUNTO_POR_DEFECTO,
+  puntoDe,
+  type PuntoRecogida,
   ahoraEnCuba,
   HORA_CIERRE,
   type Reserva,
@@ -43,6 +46,9 @@ const schema = z.object({
   carnetRecoge: z.string().trim().regex(/^\d{11}$/, 'El carnet debe tener 11 dígitos'),
   telefonoRecoge: z.string().trim().max(20).optional().or(z.literal('')),
   cantidad: z.coerce.number().int().min(1).max(MAX_POR_RESERVA),
+  punto: z
+    .enum(Object.keys(PUNTOS_RECOGIDA) as [PuntoRecogida, ...PuntoRecogida[]], { message: 'Elige el punto de recogida' })
+    .default(PUNTO_POR_DEFECTO),
   website: z.string().optional(), // trampa anti-bots
 });
 
@@ -72,8 +78,8 @@ export async function POST(request: NextRequest) {
       try {
         await db.$executeRawUnsafe(
           `INSERT INTO "ReservaCilindro"
-            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote")
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","punto")
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
           numero,
           d.nombreComprador,
           d.telefonoComprador,
@@ -83,7 +89,8 @@ export async function POST(request: NextRequest) {
           d.telefonoRecoge || null,
           d.cantidad,
           monto,
-          lote
+          lote,
+          d.punto
         );
         break;
       } catch (e) {
@@ -102,7 +109,7 @@ export async function POST(request: NextRequest) {
           zelle: ZELLE_CILINDROS,
           lote,
           despuesDelCierre: hora >= HORA_CIERRE,
-          puntoRecogida: PUNTO_RECOGIDA,
+          puntoRecogida: puntoDe(d.punto).direccion,
           instrucciones: `Paga $${monto.toFixed(2)} por Zelle al ${ZELLE_CILINDROS} y pon la referencia ${numero}. Al confirmar el pago recibirás tu PIN de recogida.`,
         },
       },
@@ -144,7 +151,7 @@ export async function GET(request: NextRequest) {
         lote: r.lote,
         nombreRecoge: r.nombreRecoge,
         pin: r.estado === 'pagada' ? r.pin : null,
-        puntoRecogida: PUNTO_RECOGIDA,
+        puntoRecogida: puntoDe(r.punto).direccion,
       },
     });
   } catch (e) {

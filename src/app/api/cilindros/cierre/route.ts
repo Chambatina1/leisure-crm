@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'crypto';
 import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
-import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga } from '@/lib/cilindros';
+import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, puntoDe } from '@/lib/cilindros';
 
 // ═══════════════════════════════════════════════════════════════
 // POST /api/cilindros/cierre — cierre diario de ventas de cilindros
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         text: [
           `Listado de recogida de cilindros — ${lote}`,
           ...reservas.map(
-            (r, i) => `${i + 1}. Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
+            (r, i) => `${i + 1}. [${puntoDe(r.punto).nombre}] Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
           ),
         ].join('\n'),
       });

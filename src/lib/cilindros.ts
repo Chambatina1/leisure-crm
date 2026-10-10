@@ -1,5 +1,5 @@
 // ============================================================
-// Reservas de cilindros de gas (recogida en Los Avioncitos)
+// Reservas de cilindros de gas (recogida en Bar Madera, Arroyo Arenas)
 // ------------------------------------------------------------
 // - Las ventas cierran todos los días a las 8:00 PM hora de Cuba.
 //   Una reserva hecha antes de las 8 PM entra en el listado de ese día;
@@ -16,8 +16,27 @@ export const HORA_CIERRE = 20; // 8:00 PM
 export const PRECIO_CILINDRO = 85;
 export const MAX_POR_RESERVA = 4;
 export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || '727-598-6802';
-export const PUNTO_RECOGIDA =
-  '"LOS AVIONCITOS" — Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana';
+
+// Puntos de recogida. Si hay más de uno, el cliente elige al reservar.
+// Una reserva con un punto que ya no existe (p. ej. el antiguo Los
+// Avioncitos) se recoge en el punto por defecto.
+export const PUNTOS_RECOGIDA = {
+  'bar-madera': {
+    nombre: 'Bar Madera',
+    direccion: 'Punto de gas "BAR MADERA" — Arroyo Arenas, municipio La Lisa, La Habana',
+  },
+} as const;
+export type PuntoRecogida = keyof typeof PUNTOS_RECOGIDA;
+export const PUNTO_POR_DEFECTO: PuntoRecogida = 'bar-madera';
+
+export function esPunto(p: unknown): p is PuntoRecogida {
+  return typeof p === 'string' && p in PUNTOS_RECOGIDA;
+}
+
+/** Dirección completa del punto de una reserva. */
+export function puntoDe(p: string | null | undefined) {
+  return PUNTOS_RECOGIDA[esPunto(p) ? p : PUNTO_POR_DEFECTO];
+}
 
 export type EstadoReserva = 'pendiente_pago' | 'pagada' | 'entregada' | 'anulada';
 
@@ -35,6 +54,7 @@ export interface Reserva {
   estado: EstadoReserva;
   pin: string | null;
   lote: string; // YYYY-MM-DD: día del listado de recogida
+  punto: PuntoRecogida;
   pagadaEn: Date | null;
   entregadaEn: Date | null;
   notas: string | null;
@@ -67,6 +87,9 @@ export async function asegurarTablaReservas() {
     );
   `);
   await db.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ReservaCilindro_lote_idx" ON "ReservaCilindro" ("lote")`);
+  await db.$executeRawUnsafe(
+    `ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "punto" TEXT NOT NULL DEFAULT '${PUNTO_POR_DEFECTO}'`
+  );
   tablaLista = true;
 }
 
@@ -113,7 +136,7 @@ export async function reservasDelLote(lote: string, soloPagadas = false): Promis
   return db.$queryRawUnsafe<Reserva[]>(
     `SELECT * FROM "ReservaCilindro" WHERE "lote" = $1 ${
       soloPagadas ? `AND "estado" IN ('pagada','entregada')` : ''
-    } ORDER BY "nombreRecoge" ASC, "id" ASC`,
+    } ORDER BY "punto" ASC, "nombreRecoge" ASC, "id" ASC`,
     lote
   );
 }
@@ -135,14 +158,12 @@ export function fechaLarga(dia: string): string {
   });
 }
 
-/** HTML del informe diario de recogida (para correo e impresión). */
+/** HTML del informe diario de recogida (para correo e impresión), una tabla por punto. */
 export function informeHtml(lote: string, reservas: Reserva[]): string {
   const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
   const totalCil = confirmadas.reduce((s, r) => s + r.cantidad, 0);
   const totalUsd = confirmadas.reduce((s, r) => s + r.montoUsd, 0);
-  const filas = confirmadas
-    .map(
-      (r, i) => `<tr>
+  const fila = (r: Reserva, i: number) => `<tr>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb">${i + 1}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb"><b>${esc(r.nombreRecoge)}</b></td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace">${esc(r.carnetRecoge)}</td>
@@ -152,25 +173,30 @@ export function informeHtml(lote: string, reservas: Reserva[]): string {
         <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(r.nombreComprador)}<br><span style="color:#6b7280">${esc(r.telefonoComprador)}</span></td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right">$${r.montoUsd.toFixed(2)}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb">${r.estado === 'entregada' ? 'Entregado' : ''}</td>
-      </tr>`
-    )
+      </tr>`;
+
+  const secciones = (Object.keys(PUNTOS_RECOGIDA) as PuntoRecogida[])
+    .map((p) => {
+      const delPunto = confirmadas.filter((r) => puntoDe(r.punto) === PUNTOS_RECOGIDA[p]);
+      if (!delPunto.length) return '';
+      const cil = delPunto.reduce((s, r) => s + r.cantidad, 0);
+      return `
+    <h3 style="color:#071a46;margin:24px 0 4px">${esc(PUNTOS_RECOGIDA[p].nombre)} · ${delPunto.length} reservas · ${cil} cilindros</h3>
+    <p style="margin:0 0 8px;color:#4b5563">${esc(PUNTOS_RECOGIDA[p].direccion)}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <thead><tr style="background:#071a46;color:#fff;text-align:left">
+          <th style="padding:8px">#</th><th style="padding:8px">Recoge</th><th style="padding:8px">Carnet</th>
+          <th style="padding:8px">Cant.</th><th style="padding:8px">Reserva</th><th style="padding:8px">Tel. recoge</th><th style="padding:8px">Comprador</th><th style="padding:8px">Pagó</th><th style="padding:8px">Firma / entregado</th>
+        </tr></thead><tbody>${delPunto.map(fila).join('')}</tbody></table>`;
+    })
     .join('');
 
   return `
   <div style="font-family:Arial,sans-serif;max-width:980px;margin:0 auto;color:#111827">
     <h2 style="color:#071a46;margin:0">Listado de recogida de cilindros</h2>
-    <p style="margin:4px 0 16px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}.<br>
-    Punto de recogida: ${esc(PUNTO_RECOGIDA)}</p>
+    <p style="margin:4px 0 16px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}.</p>
     <p style="margin:0 0 12px"><b>${confirmadas.length}</b> reservas confirmadas · <b>${totalCil}</b> cilindros · <b>$${totalUsd.toFixed(2)}</b> USD</p>
-    ${
-      confirmadas.length
-        ? `<table style="width:100%;border-collapse:collapse;font-size:14px">
-        <thead><tr style="background:#071a46;color:#fff;text-align:left">
-          <th style="padding:8px">#</th><th style="padding:8px">Recoge</th><th style="padding:8px">Carnet</th>
-          <th style="padding:8px">Cant.</th><th style="padding:8px">Reserva</th><th style="padding:8px">Tel. recoge</th><th style="padding:8px">Comprador</th><th style="padding:8px">Pagó</th><th style="padding:8px">Firma / entregado</th>
-        </tr></thead><tbody>${filas}</tbody></table>`
-        : '<p>No hubo reservas confirmadas en este cierre.</p>'
-    }
+    ${confirmadas.length ? secciones : '<p>No hubo reservas confirmadas en este cierre.</p>'}
     <p style="margin-top:16px;color:#6b7280;font-size:12px">El cliente debe presentar su carnet de identidad y decir su PIN de recogida. El PIN se comprueba en el panel (Cilindros → Entregar).</p>
   </div>`;
 }

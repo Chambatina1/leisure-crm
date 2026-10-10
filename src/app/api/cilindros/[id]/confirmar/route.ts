@@ -8,7 +8,7 @@ import {
   nuevoPin,
   ahoraEnCuba,
   HORA_CIERRE,
-  PUNTO_RECOGIDA,
+  puntoDe,
   esc,
   fechaLarga,
   type Reserva,
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await enviarCorreo({
           to: reserva.emailComprador,
           subject: `Tu PIN de recogida: ${pin} — Reserva ${reserva.numero}`,
-          text: `Pago confirmado. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${PUNTO_RECOGIDA}. Debe presentar el carnet y decir el PIN.`,
+          text: `Pago confirmado. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${puntoDe(reserva.punto).direccion}. Debe presentar el carnet y decir el PIN.`,
           html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
             <h2 style="color:#071a46">Pago confirmado</h2>
             <p>Hola ${esc(reserva.nombreComprador)}, tu reserva <b>${esc(reserva.numero)}</b> está pagada.</p>
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             <p><b>${reserva.cantidad}</b> cilindro(s) lleno(s), sin entrega de vacío.<br>
             Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)}<br>
             Listado del ${esc(fechaLarga(reserva.lote))}<br>
-            Lugar: ${esc(PUNTO_RECOGIDA)}</p>
+            Lugar: ${esc(puntoDe(reserva.punto).direccion)}</p>
             <p style="color:#6b7280;font-size:13px">Al llegar, presenta el carnet de identidad y di este PIN.</p>
           </div>`,
         });

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SeoPage } from '@/components/ambitosmax/seo-page';
+import { SeoPage, ContenidoSeo } from '@/components/ambitosmax/seo-page';
 
 const T = 'Diésel y gasolina en Cuba — Compra combustible desde EE.UU.';
 const D =
@@ -37,6 +37,42 @@ export default function Page() {
         { q: '¿También venden balitas de gas?', a: 'Sí: balita (cilindro) de gas llena en La Habana por $85, sin entregar la vacía.' },
       ]}
     >
+      <ContenidoSeo
+        secciones={[
+          {
+            h2: 'Cómo comprar diésel o gasolina en Cuba desde Estados Unidos',
+            p: [
+              'En la sección de combustible de Ambitosmax eliges la gasolinera (servicentro) donde tu familiar va a cargar. Para cada una verás qué combustible hay disponible, cuántos litros quedan y el precio por litro en dólares.',
+              'Luego eliges el tipo de combustible y cuántos litros quieres, y escribes los datos de la persona que va a cargar en Cuba. Pagas por Zelle desde Estados Unidos y, al confirmar el pago, se genera un PIN de carga. Tu familiar va al servicentro, presenta su carnet de identidad y el PIN en el surtidor.',
+            ],
+          },
+          {
+            h2: 'Precio del diésel en Cuba: $2.37 USD por litro en Bayamo',
+            p: [
+              'En el Servicentro Perla Negra, en la Carretera Central vía Las Tunas, Km 1 1/2, municipio Bayamo, provincia Granma, el diésel cuesta $2.37 USD por litro. Tú decides cuántos litros comprar: el total se calcula al momento, antes de pagar.',
+              'Los precios y la disponibilidad pueden cambiar según el servicentro. Por eso la web muestra siempre los litros disponibles y el precio actualizado antes de que pagues.',
+            ],
+          },
+          {
+            h2: 'Gasolina regular y especial',
+            p: [
+              'Además de diésel, según la disponibilidad de cada servicentro hay gasolina regular y gasolina especial. Si el combustible que buscas no aparece en una gasolinera, prueba otra o escríbenos por WhatsApp.',
+            ],
+          },
+          {
+            h2: 'Combustible para carros, motos, plantas eléctricas y trabajo',
+            p: [
+              'El diésel sirve para la planta eléctrica de la casa durante los apagones, para un camión, un tractor o un negocio; la gasolina, para la moto o el carro. Con Ambitosmax pagas tú desde fuera y tu familiar solo tiene que ir al servicentro con su carnet y el PIN.',
+            ],
+          },
+          {
+            h2: '¿Necesitas también gas para cocinar?',
+            p: [
+              <>Vendemos balitas de gas llenas en La Habana por $85, sin entregar la balita vacía. Mira cómo funciona en <Link href="/balitas-de-gas-en-cuba" className="text-[#123d83] font-semibold underline">balitas de gas en Cuba</Link>.</>,
+            ],
+          },
+        ]}
+      />
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-12 text-center">
         <p className="text-sm font-bold text-amber-900 uppercase tracking-wide">Diésel · Perla Negra, Bayamo</p>
         <p className="text-4xl font-black text-[#071a46] mt-1">$2.37 <span className="text-lg">USD / litro</span></p>

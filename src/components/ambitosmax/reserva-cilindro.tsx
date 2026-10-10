@@ -9,7 +9,11 @@ import { ArrowLeft, Flame, Loader2, MapPin, Clock, CheckCircle2, Search, Copy } 
 import { toast } from 'sonner';
 
 const PRECIO = 85;
-const PUNTO = '"LOS AVIONCITOS" — Calle 210 / calle 31 y 33, Alturas de la Coronela, La Lisa, La Habana';
+// Mismos puntos que PUNTOS_RECOGIDA en src/lib/cilindros.ts
+const PUNTOS = [
+  { id: 'bar-madera', nombre: 'Bar Madera', direccion: 'Arroyo Arenas, La Lisa' },
+] as const;
+type Punto = (typeof PUNTOS)[number]['id'];
 
 interface Resultado {
   numero: string;
@@ -18,6 +22,7 @@ interface Resultado {
   zelle: string;
   lote: string;
   despuesDelCierre: boolean;
+  puntoRecogida: string;
   instrucciones: string;
 }
 
@@ -29,6 +34,7 @@ interface Consulta {
   lote: string;
   nombreRecoge: string;
   pin: string | null;
+  puntoRecogida: string;
 }
 
 const ESTADO_TXT: Record<Consulta['estado'], string> = {
@@ -49,6 +55,7 @@ export function ReservaCilindro() {
   const [form, setForm] = useState({
     nombreComprador: '', telefonoComprador: '', emailComprador: '',
     nombreRecoge: '', carnetRecoge: '', telefonoRecoge: '', cantidad: 1,
+    punto: PUNTOS[0].id as Punto,
   });
   const [mismoQueRecoge, setMismoQueRecoge] = useState(false);
   const [honeypot, setHoneypot] = useState('');
@@ -129,7 +136,7 @@ export function ReservaCilindro() {
         <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
         <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
         <div className="mt-3 space-y-1.5 text-sm text-white/80">
-          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />{PUNTO}</p>
+          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en {PUNTOS.map((p) => `${p.nombre} (${p.direccion})`).join(' o ')}</p>
           <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Las reservas pagadas antes del cierre entran en el listado de recogida de ese día.</p>
         </div>
       </div>
@@ -165,6 +172,7 @@ export function ReservaCilindro() {
               <p><b>{consulta.numero}</b> · {consulta.cantidad} cilindro(s) · ${consulta.montoUsd.toFixed(2)}</p>
               <p>Estado: <b>{ESTADO_TXT[consulta.estado]}</b></p>
               <p>Recoge: {consulta.nombreRecoge} · Listado del {fechaBonita(consulta.lote)}</p>
+              <p className="flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-zinc-400" />{consulta.puntoRecogida}</p>
               {consulta.pin && (
                 <div className="bg-[#071a46] rounded-xl p-4 text-center mt-2">
                   <p className="text-[11px] text-white/60 uppercase tracking-widest">PIN de recogida</p>
@@ -193,6 +201,7 @@ export function ReservaCilindro() {
               ? ` Como reservaste después de las 8 PM, entras en el listado del ${fechaBonita(resultado.lote)}.`
               : ` Si pagas antes de las 8 PM de hoy, entras en el listado de hoy.`}
           </p>
+          <p className="text-sm text-zinc-600 flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-zinc-400" />Recoge en: <b>{resultado.puntoRecogida}</b></p>
           <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya reservé”.</p>
           <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra reserva</Button>
         </div>
@@ -230,6 +239,28 @@ export function ReservaCilindro() {
               required
             />
           </div>
+
+          {PUNTOS.length > 1 && (<>
+          <p className="text-xs font-black text-[#b45309] uppercase tracking-wide pt-2">3. Dónde recoge</p>
+          <div className="grid sm:grid-cols-2 gap-2" role="radiogroup" aria-label="Punto de recogida">
+            {PUNTOS.map((p) => (
+              <label
+                key={p.id}
+                className={`flex gap-2 rounded-xl border p-3 cursor-pointer text-sm ${form.punto === p.id ? 'border-[#55b949] bg-green-50' : 'border-zinc-200'}`}
+              >
+                <input
+                  type="radio"
+                  name="punto"
+                  value={p.id}
+                  checked={form.punto === p.id}
+                  onChange={() => setForm((f) => ({ ...f, punto: p.id }))}
+                  className="mt-1"
+                />
+                <span><b>{p.nombre}</b><br /><span className="text-xs text-zinc-500">{p.direccion}</span></span>
+              </label>
+            ))}
+          </div>
+          </>)}
 
           <div className="flex items-center justify-between pt-2">
             <Label className="text-sm font-bold">Cantidad de cilindros</Label>
