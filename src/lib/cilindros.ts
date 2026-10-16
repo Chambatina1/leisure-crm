@@ -56,6 +56,8 @@ export interface Reserva {
   lote: string; // YYYY-MM-DD: día del listado de recogida
   punto: PuntoRecogida;
   pagadaEn: Date | null;
+  qboInvoiceId: string | null;
+  qboPagoUrl: string | null;
   entregadaEn: Date | null;
   notas: string | null;
   createdAt: Date;
@@ -90,6 +92,8 @@ export async function asegurarTablaReservas() {
   await db.$executeRawUnsafe(
     `ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "punto" TEXT NOT NULL DEFAULT '${PUNTO_POR_DEFECTO}'`
   );
+  await db.$executeRawUnsafe(`ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "qboInvoiceId" TEXT`);
+  await db.$executeRawUnsafe(`ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "qboPagoUrl" TEXT`);
   tablaLista = true;
 }
 

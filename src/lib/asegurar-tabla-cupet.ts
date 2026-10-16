@@ -33,6 +33,8 @@ export async function asegurarTablaSolicitudes(): Promise<void> {
         "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
     `);
+    await db.$executeRawUnsafe(`ALTER TABLE "SolicitudCombustible" ADD COLUMN IF NOT EXISTS "qboInvoiceId" TEXT`);
+    await db.$executeRawUnsafe(`ALTER TABLE "SolicitudCombustible" ADD COLUMN IF NOT EXISTS "qboPagoUrl" TEXT`);
     YA_CREATADA.ok = true;
   } catch (e) {
     console.error('[solicitudes] No se pudo asegurar la tabla:', e);

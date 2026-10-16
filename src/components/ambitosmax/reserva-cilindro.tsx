@@ -19,7 +19,8 @@ interface Resultado {
   numero: string;
   cantidad: number;
   montoUsd: number;
-  zelle: string;
+  pagoUrl: string | null;
+  zelle: string | null;
   lote: string;
   despuesDelCierre: boolean;
   puntoRecogida: string;
@@ -34,6 +35,7 @@ interface Consulta {
   lote: string;
   nombreRecoge: string;
   pin: string | null;
+  pagoUrl: string | null;
   puntoRecogida: string;
 }
 
@@ -173,6 +175,12 @@ export function ReservaCilindro() {
               <p>Estado: <b>{ESTADO_TXT[consulta.estado]}</b></p>
               <p>Recoge: {consulta.nombreRecoge} · Listado del {fechaBonita(consulta.lote)}</p>
               <p className="flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-zinc-400" />{consulta.puntoRecogida}</p>
+              {consulta.pagoUrl && (
+                <a href={consulta.pagoUrl} target="_blank" rel="noopener noreferrer"
+                  className="block text-center rounded-xl bg-[#2ca01c] hover:bg-[#238016] text-white font-bold py-3">
+                  Pagar ${consulta.montoUsd.toFixed(2)} con tarjeta o banco
+                </a>
+              )}
               {consulta.pin && (
                 <div className="bg-[#071a46] rounded-xl p-4 text-center mt-2">
                   <p className="text-[11px] text-white/60 uppercase tracking-widest">PIN de recogida</p>
@@ -188,13 +196,22 @@ export function ReservaCilindro() {
           <div className="flex items-center gap-2 text-[#1f6b3a] font-bold">
             <CheckCircle2 className="h-5 w-5" /> Reserva creada: {resultado.numero}
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm space-y-2">
-            <p className="font-bold text-amber-900">Paga ${resultado.montoUsd.toFixed(2)} por Zelle</p>
-            <p className="flex items-center gap-2">Zelle: <b className="font-mono">{resultado.zelle}</b>
-              <button onClick={() => copiar(resultado.zelle)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
-            <p className="flex items-center gap-2">Referencia: <b className="font-mono">{resultado.numero}</b>
-              <button onClick={() => copiar(resultado.numero)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
-          </div>
+          {resultado.pagoUrl ? (
+            <a href={resultado.pagoUrl} target="_blank" rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#2ca01c] hover:bg-[#238016] text-white font-bold py-4 text-lg">
+              Pagar ${resultado.montoUsd.toFixed(2)} con tarjeta o banco
+            </a>
+          ) : resultado.zelle ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm space-y-2">
+              <p className="font-bold text-amber-900">Paga ${resultado.montoUsd.toFixed(2)} por Zelle</p>
+              <p className="flex items-center gap-2">Zelle: <b className="font-mono">{resultado.zelle}</b>
+                <button onClick={() => copiar(resultado.zelle!)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
+              <p className="flex items-center gap-2">Referencia: <b className="font-mono">{resultado.numero}</b>
+                <button onClick={() => copiar(resultado.numero)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
+            </div>
+          ) : (
+            <p className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900">{resultado.instrucciones}</p>
+          )}
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
             {resultado.despuesDelCierre
@@ -277,7 +294,7 @@ export function ReservaCilindro() {
           </div>
 
           <Button type="submit" disabled={enviando} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
-            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Reservar y pagar por Zelle'}
+            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Reservar y pagar'}
           </Button>
         </form>
       )}

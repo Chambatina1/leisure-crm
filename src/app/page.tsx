@@ -21,6 +21,7 @@ import { ChatIA } from '@/components/ambitosmax/chat-ia';
 import { TiendaAdmin } from '@/components/ambitosmax/tienda-admin';
 import { CombustibleAdmin } from '@/components/ambitosmax/combustible-admin';
 import { CilindrosAdmin } from '@/components/ambitosmax/cilindros-admin';
+import { ContabilidadPanel } from '@/components/ambitosmax/contabilidad-panel';
 import { ReservaCilindro } from '@/components/ambitosmax/reserva-cilindro';
 import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
@@ -199,6 +200,12 @@ export default function Page() {
     }
   }, [setCurrentView]);
 
+  // Vuelta de la conexión con QuickBooks → abrir Contabilidad en el panel
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has('qbo')) return;
+    if (useAppStore.getState().isAdmin) useAppStore.setState({ mode: 'admin', adminView: 'contabilidad' });
+  }, []);
+
   // Sesión de cliente: la decide el servidor (cookie); sincronizar al abrir
   const syncCliente = useAppStore((s) => s.syncCliente);
   useEffect(() => { syncCliente(); }, [syncCliente]);
@@ -236,6 +243,7 @@ export default function Page() {
         case 'tienda-admin': return <TiendaAdmin />;
         case 'combustible-admin': return <CombustibleAdmin />;
         case 'cilindros': return <CilindrosAdmin />;
+        case 'contabilidad': return <ContabilidadPanel />;
         case 'ai-training': return <AITrainingPanel />;
         case 'apariencia': return <AparienciaPanel />;
         case 'users': return <UsersPanel />;

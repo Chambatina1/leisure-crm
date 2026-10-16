@@ -4,6 +4,8 @@ import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { z } from 'zod';
+import { facturarSolicitud } from '@/lib/pagos-qbo';
+import { qboConectado } from '@/lib/quickbooks';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cupet/solicitud — Solicitudes de combustible (FASE 1)
@@ -50,17 +52,30 @@ export async function POST(request: NextRequest) {
       data: { ...body, emailComprador: body.emailComprador || null, numero },
     });
 
+    // Pago con QuickBooks (tarjeta o banco); si no está conectado, Zelle
+    const conQbo = await qboConectado();
+    let pagoUrl: string | null = null;
+    try {
+      pagoUrl = await facturarSolicitud(sol);
+    } catch (e) {
+      console.error('[qbo] No se pudo crear la factura de', sol.numero, e instanceof Error ? e.message : e);
+    }
+
     return NextResponse.json(
       {
         ok: true,
         data: {
           numero: sol.numero,
           montoUsd: sol.montoUsd,
-          zelle: '727-598-6802',
-          instrucciones:
-            'Paga por Zelle al 727-598-6802 el monto exacto y usa la referencia ' +
-            numero +
-            '. Al confirmar tu pago te enviaremos el PIN de carga.',
+          pagoUrl,
+          zelle: conQbo ? null : '727-598-6802',
+          instrucciones: pagoUrl
+            ? `Paga $${sol.montoUsd.toFixed(2)} con tarjeta o cuenta de banco en el enlace seguro de QuickBooks. En cuanto QuickBooks confirme el pago te enviaremos el PIN de carga.`
+            : conQbo
+            ? 'Tu solicitud quedó registrada. En unos minutos te llegará por correo el enlace de pago de QuickBooks.'
+            : 'Paga por Zelle al 727-598-6802 el monto exacto y usa la referencia ' +
+              numero +
+              '. Al confirmar tu pago te enviaremos el PIN de carga.',
         },
       },
       { status: 201 }
