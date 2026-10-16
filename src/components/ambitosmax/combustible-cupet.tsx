@@ -53,7 +53,7 @@ export function CombustibleCupet() {
   const [emailCliente, setEmailCliente] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<ResultadoOrden | null>(null);
-  const [solicitud, setSolicitud] = useState<{ numero: string; montoUsd: number; zelle: string; instrucciones: string } | null>(null);
+  const [solicitud, setSolicitud] = useState<{ numero: string; montoUsd: number; pagoUrl: string | null; zelle: string | null; instrucciones: string } | null>(null);
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
@@ -400,7 +400,7 @@ export function CombustibleCupet() {
         </Card>
       )}
 
-      {/* PASO 4: SOLICITUD CREADA — pagar por Zelle */}
+      {/* PASO 4: SOLICITUD CREADA — pagar (QuickBooks o Zelle) */}
       {paso === 4 && solicitud && (
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
           <Card className="border-2 border-[#123d83]">
@@ -413,20 +413,35 @@ export function CombustibleCupet() {
                 {tipo?.typeFuelName} · {litros} litros · {estacion?.servicenterName}
               </p>
 
-              <div className="bg-gradient-to-br from-[#071a46] to-[#123d83] rounded-2xl p-6 mb-4">
-                <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Paga por Zelle</p>
-                <p className="text-3xl font-black text-white font-mono">{solicitud.zelle}</p>
-                <p className="text-2xl font-black text-[#7ed957] mt-2">
-                  ${solicitud.montoUsd.toFixed(2)} USD
-                </p>
-              </div>
-
-              <p className="text-sm text-zinc-600 mb-2">
-                <b>Importante:</b> usa la referencia <b className="font-mono">{solicitud.numero}</b> en tu pago.
-              </p>
-              <p className="text-sm text-zinc-500 mb-6">
-                Al confirmar tu pago te enviaremos el <b>PIN de carga</b> por WhatsApp.
-              </p>
+              {solicitud.pagoUrl ? (
+                <>
+                  <a href={solicitud.pagoUrl} target="_blank" rel="noopener noreferrer"
+                    className="block rounded-2xl bg-[#2ca01c] hover:bg-[#238016] text-white font-black py-5 text-xl mb-4">
+                    Pagar ${solicitud.montoUsd.toFixed(2)} USD con tarjeta o banco
+                  </a>
+                  <p className="text-sm text-zinc-500 mb-6">
+                    En cuanto se confirme tu pago te enviaremos el <b>PIN de carga</b>.
+                  </p>
+                </>
+              ) : solicitud.zelle ? (
+                <>
+                  <div className="bg-gradient-to-br from-[#071a46] to-[#123d83] rounded-2xl p-6 mb-4">
+                    <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Paga por Zelle</p>
+                    <p className="text-3xl font-black text-white font-mono">{solicitud.zelle}</p>
+                    <p className="text-2xl font-black text-[#7ed957] mt-2">
+                      ${solicitud.montoUsd.toFixed(2)} USD
+                    </p>
+                  </div>
+                  <p className="text-sm text-zinc-600 mb-2">
+                    <b>Importante:</b> usa la referencia <b className="font-mono">{solicitud.numero}</b> en tu pago.
+                  </p>
+                  <p className="text-sm text-zinc-500 mb-6">
+                    Al confirmar tu pago te enviaremos el <b>PIN de carga</b> por WhatsApp.
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-zinc-600 mb-6">{solicitud.instrucciones}</p>
+              )}
 
               <Button variant="outline" onClick={() => { setPaso(1); setSolicitud(null); setLitros(''); setTipo(null); setEstacion(null); setMontoPagado(''); setNombreBeneficiario(''); setTelefonoBeneficiario(''); }}>
                 Nueva solicitud

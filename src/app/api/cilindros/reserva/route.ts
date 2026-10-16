@@ -17,6 +17,8 @@ import {
 } from '@/lib/cilindros';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
+import { facturarReserva, confirmarReserva } from '@/lib/pagos-qbo';
+import { qboConectado, facturaPagada } from '@/lib/quickbooks';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cilindros/reserva
@@ -98,6 +100,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Pago con QuickBooks (tarjeta o banco); si no está conectado, Zelle
+    const conQbo = await qboConectado();
+    let pagoUrl: string | null = null;
+    try {
+      const filas = await db.$queryRawUnsafe<Reserva[]>(`SELECT * FROM "ReservaCilindro" WHERE "numero" = $1`, numero);
+      if (filas[0]) pagoUrl = await facturarReserva(filas[0]);
+    } catch (e) {
+      console.error('[qbo] No se pudo crear la factura de', numero, e instanceof Error ? e.message : e);
+    }
+
     const { hora } = ahoraEnCuba();
     return NextResponse.json(
       {
@@ -106,11 +118,16 @@ export async function POST(request: NextRequest) {
           numero,
           cantidad: d.cantidad,
           montoUsd: monto,
-          zelle: ZELLE_CILINDROS,
+          pagoUrl,
+          zelle: conQbo ? null : ZELLE_CILINDROS,
           lote,
           despuesDelCierre: hora >= HORA_CIERRE,
           puntoRecogida: puntoDe(d.punto).direccion,
-          instrucciones: `Paga $${monto.toFixed(2)} por Zelle al ${ZELLE_CILINDROS} y pon la referencia ${numero}. Al confirmar el pago recibirás tu PIN de recogida.`,
+          instrucciones: pagoUrl
+            ? `Paga $${monto.toFixed(2)} con tarjeta o cuenta de banco en el enlace seguro de QuickBooks. En cuanto QuickBooks confirme el pago recibirás tu PIN de recogida.`
+            : conQbo
+            ? 'Tu reserva quedó registrada. En unos minutos te llegará por correo el enlace de pago de QuickBooks.'
+            : `Paga $${monto.toFixed(2)} por Zelle al ${ZELLE_CILINDROS} y pon la referencia ${numero}. Al confirmar el pago recibirás tu PIN de recogida.`,
         },
       },
       { status: 201 }
@@ -136,15 +153,27 @@ export async function GET(request: NextRequest) {
       `SELECT * FROM "ReservaCilindro" WHERE "numero" = $1`,
       numero
     );
-    const r = filas[0];
+    let r = filas[0];
     // Mismo mensaje si no existe o si el teléfono no coincide (no revelar reservas ajenas)
     if (!r || r.telefonoComprador.replace(/\D/g, '').slice(-7) !== telefono.slice(-7)) {
       return NextResponse.json({ ok: false, error: 'No encontramos esa reserva con ese teléfono' }, { status: 404 });
+    }
+    // Si QuickBooks ya cobró la factura, se confirma al momento y sale el PIN
+    if (r.estado === 'pendiente_pago' && r.qboInvoiceId) {
+      try {
+        if (await facturaPagada(r.qboInvoiceId)) {
+          const c = await confirmarReserva(r.id);
+          if (c.ok) r = c.data.reserva;
+        }
+      } catch (e) {
+        console.error('[qbo] No se pudo verificar el pago de', r.numero, e instanceof Error ? e.message : e);
+      }
     }
     return NextResponse.json({
       ok: true,
       data: {
         numero: r.numero,
+        pagoUrl: r.estado === 'pendiente_pago' ? r.qboPagoUrl : null,
         estado: r.estado,
         cantidad: r.cantidad,
         montoUsd: r.montoUsd,
