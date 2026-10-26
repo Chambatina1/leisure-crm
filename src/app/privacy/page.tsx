@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/privacy' },
 };
 
-const CONTACTO = 'info@ambitosmax.com · WhatsApp +1 (727) 598-6802';
+const CONTACTO = 'sales@leisureexportingllc.com · WhatsApp +1 (727) 598-6802';
 
 export default function Page() {
   return (
