@@ -53,7 +53,7 @@ export function LegalPage({ titulo, actualizado, en, es }: LegalPageProps) {
       </main>
 
       <footer className="bg-zinc-50 border-t border-zinc-100 py-6 text-center text-xs text-zinc-500">
-        © {new Date().getFullYear()} Ambitosmax · <Link href="/privacy" className="hover:underline">Privacy</Link> · <Link href="/terms" className="hover:underline">Terms</Link> · <Link href="/" className="hover:underline">ambitosmax.com</Link>
+        © {new Date().getFullYear()} Leisure Exporting · Ambitosmax · <Link href="/privacy" className="hover:underline">Privacy</Link> · <Link href="/terms" className="hover:underline">Terms</Link> · <Link href="/" className="hover:underline">ambitosmax.com</Link>
       </footer>
     </div>
   );
