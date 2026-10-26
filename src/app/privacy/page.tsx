@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { LegalPage } from '@/components/ambitosmax/legal-page';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Leisure Exporting (Ambitosmax)',
-  description: 'How Leisure Exporting collects, uses and protects your information, including data accessed through QuickBooks.',
+  title: 'Privacy Policy — Leisure Exporting LLC (Ambitosmax)',
+  description: 'How Leisure Exporting LLC collects, uses and protects your information, including data accessed through QuickBooks.',
   alternates: { canonical: '/privacy' },
 };
 
@@ -15,7 +15,7 @@ export default function Page() {
       titulo="Privacy Policy / Política de privacidad"
       actualizado="October 26, 2026"
       en={[
-        { titulo: 'Who we are', parrafos: ['Leisure Exporting ("we", "us") operates the ambitosmax.com website (Ambitosmax) and the Leisure Exporting API app, which helps our business manage customers, orders, shipments and sales to Cuba. This policy explains what information we collect and how we use it.'] },
+        { titulo: 'Who we are', parrafos: ['Leisure Exporting LLC ("we", "us") operates the ambitosmax.com website (Ambitosmax) and the Leisure Exporting API app, which helps our business manage customers, orders, shipments and sales to Cuba. This policy explains what information we collect and how we use it.'] },
         { titulo: 'Information we collect', parrafos: [
           'Information you give us: name, phone number, email, delivery address and the details of your orders.',
           'Information from QuickBooks Online: when a user connects their QuickBooks company to our app, we access only the accounting data needed to provide the service, such as customers, invoices, products and services, and payments, plus the company ID needed to keep the connection.',
@@ -29,7 +29,7 @@ export default function Page() {
         { titulo: 'Contact', parrafos: [CONTACTO] },
       ]}
       es={[
-        { titulo: 'Quiénes somos', parrafos: ['Leisure Exporting opera el sitio web ambitosmax.com (Ambitosmax) y la aplicación Leisure Exporting API, que nos ayuda a gestionar clientes, pedidos, envíos y ventas a Cuba. Esta política explica qué información recogemos y cómo la usamos.'] },
+        { titulo: 'Quiénes somos', parrafos: ['Leisure Exporting LLC opera el sitio web ambitosmax.com (Ambitosmax) y la aplicación Leisure Exporting API, que nos ayuda a gestionar clientes, pedidos, envíos y ventas a Cuba. Esta política explica qué información recogemos y cómo la usamos.'] },
         { titulo: 'Información que recogemos', parrafos: [
           'La que nos das: nombre, teléfono, correo, dirección de entrega y los datos de tus pedidos.',
           'De QuickBooks Online: cuando un usuario conecta su empresa de QuickBooks, accedemos solo a los datos contables necesarios para el servicio, como clientes, facturas, productos y servicios y pagos, además del identificador de la empresa para mantener la conexión.',
