@@ -114,7 +114,7 @@ export function SeoPage({ titulo, subtitulo, descripcion, beneficios, faqs, ruta
       </section>
 
       <footer className="bg-zinc-50 border-t border-zinc-100 py-6 text-center text-xs text-zinc-500">
-        © {new Date().getFullYear()} Ambitosmax · Gas, combustible y envíos a Cuba · <Link href="/" className="hover:underline">ambitosmax.com</Link>
+        © {new Date().getFullYear()} Ambitosmax · Gas, combustible y envíos a Cuba · <Link href="/privacy" className="hover:underline">Privacidad</Link> · <Link href="/terms" className="hover:underline">Términos</Link> · <Link href="/" className="hover:underline">ambitosmax.com</Link>
       </footer>
     </div>
   );
