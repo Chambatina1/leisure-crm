@@ -26,6 +26,7 @@ import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
 import { UsersPanel } from '@/components/ambitosmax/users-panel';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // Error-safe component wrapper
 function SafeView({ children }: { children: React.ReactNode }) {
@@ -197,6 +198,24 @@ export default function Page() {
       setCurrentView(v as never);
       window.history.replaceState(null, '', '/');
     }
+  }, [setCurrentView]);
+
+  // Vuelta desde Stripe Checkout: /?pago=ok&pedido=123 o /?pago=cancelado
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const pago = q.get('pago');
+    if (!pago) return;
+    const pedido = q.get('pedido');
+    useAppStore.setState({ mode: 'public', selectedProduct: null });
+    if (pago === 'ok') {
+      try { localStorage.removeItem('ambitosmax_cart'); } catch { /* sin almacenamiento */ }
+      toast.success(`¡Pago recibido! Tu pedido${pedido ? ` #${pedido}` : ''} está confirmado. Te contactaremos para la entrega.`, { duration: 8000 });
+      setCurrentView('home');
+    } else {
+      toast.info('Pago cancelado. Tu carrito sigue guardado por si quieres intentarlo de nuevo.');
+      setCurrentView('tienda');
+    }
+    window.history.replaceState(null, '', '/');
   }, [setCurrentView]);
 
   // Sesión de cliente: la decide el servidor (cookie); sincronizar al abrir

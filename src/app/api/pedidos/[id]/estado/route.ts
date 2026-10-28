@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 
-const ESTADOS_VALIDOS = ['pendiente', 'en_proceso', 'en_transito', 'en_aduana', 'entregado', 'cancelado'];
+const ESTADOS_VALIDOS = ['pendiente', 'pendiente_pago', 'pagado', 'en_proceso', 'en_transito', 'en_aduana', 'entregado', 'cancelado'];
 
 // PATCH /api/pedidos/[id]/estado - Update pedido status
 export async function PATCH(
