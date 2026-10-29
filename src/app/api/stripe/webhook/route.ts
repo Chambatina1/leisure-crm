@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type Stripe from 'stripe';
-import { db } from '@/lib/db';
-import { getStripe } from '@/lib/stripe';
+import { aplicarSesion, getStripe } from '@/lib/stripe';
 
 // POST /api/stripe/webhook — Stripe avisa aquí cuando un pago se completa o caduca.
+// Es opcional: el pago también se confirma cuando el cliente vuelve de Stripe
+// (/api/stripe/confirmar), pero el webhook cubre a quien cierra la pestaña antes.
 // Configurar en Stripe → Developers → Webhooks con la URL
 // https://ambitosmax.com/api/stripe/webhook y los eventos
 // checkout.session.completed, checkout.session.async_payment_succeeded,
@@ -26,23 +27,7 @@ export async function POST(request: NextRequest) {
 
   try {
     if (event.type.startsWith('checkout.session.')) {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const pedidoId = Number(session.metadata?.pedidoId);
-      if (pedidoId) {
-        let estado: string | null = null;
-        if (
-          (event.type === 'checkout.session.completed' && session.payment_status === 'paid') ||
-          event.type === 'checkout.session.async_payment_succeeded'
-        ) {
-          estado = 'pagado';
-        } else if (event.type === 'checkout.session.async_payment_failed' || event.type === 'checkout.session.expired') {
-          estado = 'cancelado';
-        }
-        // Solo se mueven pedidos que siguen esperando el pago (los reintentos de Stripe no pisan nada)
-        if (estado) {
-          await db.pedido.updateMany({ where: { id: pedidoId, estado: 'pendiente_pago' }, data: { estado } });
-        }
-      }
+      await aplicarSesion(event.data.object as Stripe.Checkout.Session, event.type);
     }
     return NextResponse.json({ ok: true });
   } catch (error) {

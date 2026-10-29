@@ -209,6 +209,15 @@ export default function Page() {
     useAppStore.setState({ mode: 'public', selectedProduct: null });
     if (pago === 'ok') {
       try { localStorage.removeItem('ambitosmax_cart'); } catch { /* sin almacenamiento */ }
+      // Marcar el pedido como pagado comprobándolo con Stripe (no fiarse de la URL)
+      const sessionId = q.get('session_id');
+      if (sessionId) {
+        fetch('/api/stripe/confirmar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        }).catch(() => {});
+      }
       toast.success(`¡Pago recibido! Tu pedido${pedido ? ` #${pedido}` : ''} está confirmado. Te contactaremos para la entrega.`, { duration: 8000 });
       setCurrentView('home');
     } else {

@@ -85,7 +85,8 @@ export async function POST(request: NextRequest) {
           product_data: { name: l.p.nombre, ...(l.p.descripcion ? { description: l.p.descripcion.slice(0, 500) } : {}) },
         },
       })),
-      success_url: `${base}/?pago=ok&pedido=${pedido.id}`,
+      // Stripe sustituye {CHECKOUT_SESSION_ID}; con él confirmamos el pago al volver
+      success_url: `${base}/?pago=ok&pedido=${pedido.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/?pago=cancelado&pedido=${pedido.id}`,
     });
 
