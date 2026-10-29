@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
     if (productos.length !== cantidades.size) {
       return NextResponse.json({ ok: false, error: 'Algún producto ya no está disponible. Revisa tu carrito.' }, { status: 409 });
     }
-    // El combustible y los cilindros tienen su propio flujo de compra
-    if (productos.some((p) => p.categoria === 'combustible' || p.precio <= 0)) {
+    // El diésel y la gasolina tienen su propio flujo de compra; el cilindro de gas sí se paga aquí
+    if (productos.some((p) => (p.categoria === 'combustible' && !/CILINDRO/i.test(p.nombre)) || p.precio <= 0)) {
       return NextResponse.json({ ok: false, error: 'Hay productos en el carrito que no se pagan por aquí.' }, { status: 400 });
     }
 

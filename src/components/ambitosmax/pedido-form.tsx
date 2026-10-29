@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
+import { useCartStore } from './cart-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,21 +40,14 @@ const defaultData: PedidoData = {
 };
 
 const AMBITOSMAX_ADDRESS = '6800 N Florida Ave, Tampa, FL 33604';
-const CART_KEY = 'ambitosmax_cart';
-
 // Líneas a cobrar con Stripe: todo el carrito si el producto elegido está en él,
 // o solo ese producto si se compró directamente.
 interface LineaCarrito { id: number; nombre: string; precio: number; qty: number }
 function lineasDeCompra(producto: { id?: number; nombre: string; precio: number } | null): LineaCarrito[] {
   if (!producto?.id) return [];
-  try {
-    const cart: { product: { id: number; nombre: string; precio: number }; qty: number }[] =
-      JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-    if (cart.some((i) => i.product.id === producto.id)) {
-      return cart.map((i) => ({ id: i.product.id, nombre: i.product.nombre, precio: i.product.precio, qty: i.qty }));
-    }
-  } catch {
-    /* carrito ilegible: comprar solo este producto */
+  const cart = useCartStore.getState().items;
+  if (cart.some((i) => i.product.id === producto.id)) {
+    return cart.map((i) => ({ id: i.product.id, nombre: i.product.nombre, precio: i.product.precio, qty: i.qty }));
   }
   return [{ id: producto.id, nombre: producto.nombre, precio: producto.precio, qty: 1 }];
 }

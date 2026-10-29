@@ -226,11 +226,6 @@ export const useAppStore = create<AppState>()(
           get().pedirRegistro({ tipo: 'producto', producto: product });
           return;
         }
-        // El cilindro de gas tiene su propio flujo de reserva con PIN y cierre diario
-        if (/CILINDRO/i.test(product.nombre) && get().mode !== 'admin') {
-          set({ selectedProduct: product, currentView: 'reserva-cilindro' });
-          return;
-        }
         // Diésel / gasolina: se venden en el sistema de Combustible (botón "Comprar combustible")
         if (
           get().mode !== 'admin' &&

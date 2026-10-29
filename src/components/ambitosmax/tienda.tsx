@@ -2,6 +2,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
+import { useCartStore, cartCount, cartTotal } from './cart-store';
+import { CartButton } from './cart-sheet';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -56,7 +58,9 @@ export function Tienda() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [province, setProvince] = useState('La Habana');
-  const [cart, setCart] = useState<{product: Product; qty: number}[]>([]);
+  const cart = useCartStore((s) => s.items);
+  const addItem = useCartStore((s) => s.add);
+  const setCartOpen = useCartStore((s) => s.setOpen);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -74,15 +78,8 @@ export function Tienda() {
     load();
   }, []);
 
-  // Carrito persistente
-  useEffect(() => {
-    const c = localStorage.getItem('ambitosmax_cart');
-    if (c) setCart(JSON.parse(c));
-  }, []);
-  useEffect(() => { localStorage.setItem('ambitosmax_cart', JSON.stringify(cart)); }, [cart]);
-
-  const cartCount = cart.reduce((s, i) => s + i.qty, 0);
-  const cartTotal = cart.reduce((s, i) => s + i.product.precio * i.qty, 0);
+  const nCart = cartCount(cart);
+  const totalCart = cartTotal(cart);
 
   // Filtrar por categoría activa y búsqueda
   // Al abrir la tienda se ven TODOS los productos; las categorías filtran
@@ -93,13 +90,15 @@ export function Tienda() {
     return list;
   }, [products, grouped, activeCat, search]);
 
-  function addToCart(p: Product) {
-    setCart(prev => {
-      const found = prev.find(i => i.product.id === p.id);
-      if (found) return prev.map(i => i.product.id === p.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { product: p, qty: 1 }];
+  function addToCart(p: Product, abrir = false) {
+    addItem({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria, imagenUrl: p.imagenUrl });
+    if (abrir) {
+      setCartOpen(true);
+      return;
+    }
+    toast.success(`${p.nombre} añadido al carrito`, {
+      action: { label: 'Ver carrito', onClick: () => setCartOpen(true) },
     });
-    toast.success(`${p.nombre} añadido al carrito`);
   }
 
   function handleComprar(p: Product) {
@@ -142,7 +141,8 @@ export function Tienda() {
             <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900">Tienda</h1>
             <p className="text-zinc-500 mt-1">Balas de gas, combustible, motos, paneles y más</p>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-2 w-full sm:w-auto items-center">
+            <CartButton className="border border-zinc-200 bg-white shrink-0" />
             <div className="relative flex-1 sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
               <Input
@@ -226,17 +226,26 @@ export function Tienda() {
                 {product.descripcion && <CardDescription className="text-xs line-clamp-2">{product.descripcion}</CardDescription>}
               </CardHeader>
               <CardContent className="pt-0 space-y-2">
-                {product.categoria === 'combustible' ? (
+                {/CILINDRO/i.test(product.nombre) ? (
                   <>
-                    <div className="text-xs text-emerald-600 font-medium">
-                      {/CILINDRO/i.test(product.nombre) ? '✓ Recogida en Los Avioncitos, La Lisa' : '✓ Carga en el servicentro'}
-                    </div>
+                    <div className="text-xs text-emerald-600 font-medium">✓ Recogida en Los Avioncitos, La Lisa</div>
+                    <Button
+                      className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
+                      onClick={() => addToCart(product, true)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1.5" />
+                      Comprar
+                    </Button>
+                  </>
+                ) : product.categoria === 'combustible' ? (
+                  <>
+                    <div className="text-xs text-emerald-600 font-medium">✓ Carga en el servicentro</div>
                     <Button
                       className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
                       onClick={() => handleComprar(product)}
                     >
                       <ShoppingCart className="h-4 w-4 mr-1.5" />
-                      {/CILINDRO/i.test(product.nombre) ? 'Reservar cilindro' : 'Comprar combustible'}
+                      Comprar combustible
                     </Button>
                   </>
                 ) : (
@@ -260,22 +269,29 @@ export function Tienda() {
       </div>
 
       {/* Carrito flotante */}
-      {cartCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#071a46] text-white px-6 py-4 flex items-center justify-between shadow-2xl">
-          <div>
-            <strong>{cartCount} producto(s)</strong>
-            <span className="ml-3 text-emerald-300 font-bold">${cartTotal.toFixed(2)}</span>
-          </div>
+      {/* Barra del carrito: encima de la barra de navegación del móvil */}
+      {nCart > 0 && (
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-[#071a46] text-white px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
+          <button onClick={() => setCartOpen(true)} className="flex items-center gap-3 text-left">
+            <span className="relative">
+              <ShoppingCart className="h-6 w-6" />
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-[#55b949] text-[11px] font-bold flex items-center justify-center">{nCart}</span>
+            </span>
+            <span>
+              <strong className="block text-sm">Ver carrito</strong>
+              <span className="text-emerald-300 font-bold">${totalCart.toFixed(2)}</span>
+            </span>
+          </button>
           <Button
-            onClick={() => handleComprar(cart[0].product)}
+            onClick={() => setCartOpen(true)}
             className="bg-[#55b949] hover:bg-[#348f39] text-white font-bold"
           >
-            Checkout →
+            Pagar →
           </Button>
         </div>
       )}
 
-      <div className="md:hidden h-20" />
+      <div className={nCart > 0 ? 'h-36 md:h-20' : 'md:hidden h-20'} />
     </motion.div>
   );
 }
