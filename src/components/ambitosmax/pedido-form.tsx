@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PedidoData {
@@ -39,6 +39,24 @@ const defaultData: PedidoData = {
 };
 
 const AMBITOSMAX_ADDRESS = '6800 N Florida Ave, Tampa, FL 33604';
+const CART_KEY = 'ambitosmax_cart';
+
+// Líneas a cobrar con Stripe: todo el carrito si el producto elegido está en él,
+// o solo ese producto si se compró directamente.
+interface LineaCarrito { id: number; nombre: string; precio: number; qty: number }
+function lineasDeCompra(producto: { id?: number; nombre: string; precio: number } | null): LineaCarrito[] {
+  if (!producto?.id) return [];
+  try {
+    const cart: { product: { id: number; nombre: string; precio: number }; qty: number }[] =
+      JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    if (cart.some((i) => i.product.id === producto.id)) {
+      return cart.map((i) => ({ id: i.product.id, nombre: i.product.nombre, precio: i.product.precio, qty: i.qty }));
+    }
+  } catch {
+    /* carrito ilegible: comprar solo este producto */
+  }
+  return [{ id: producto.id, nombre: producto.nombre, precio: producto.precio, qty: 1 }];
+}
 
 export function PedidoForm() {
   const { selectedPedidoId, selectedProduct, setAdminView, adminView, mode, setCurrentView, setSelectedProduct } = useAppStore();
@@ -48,6 +66,9 @@ export function PedidoForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof PedidoData, string>>>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [lineas, setLineas] = useState<LineaCarrito[]>([]);
+  const pagaConTarjeta = isPublic && !isEdit && lineas.length > 0;
+  const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
 
   useEffect(() => {
     if (isEdit && selectedPedidoId) {
@@ -74,13 +95,17 @@ export function PedidoForm() {
         .finally(() => setLoading(false));
     } else if (selectedProduct) {
       // Pre-fill form with product data from store
+      const ls = isPublic ? lineasDeCompra(selectedProduct) : [];
+      setLineas(ls);
       setData({
         ...defaultData,
-        producto: `${selectedProduct.nombre} - $${selectedProduct.precio.toFixed(2)}`,
+        producto: ls.length > 1
+          ? ls.map((l) => `${l.qty}x ${l.nombre}`).join(', ')
+          : `${selectedProduct.nombre} - $${selectedProduct.precio.toFixed(2)}`,
         notas: `Enviar equipo a: ${AMBITOSMAX_ADDRESS}`,
       });
     }
-  }, [isEdit, selectedPedidoId, selectedProduct]);
+  }, [isEdit, isPublic, selectedPedidoId, selectedProduct]);
 
   const validate = (): boolean => {
     const errs: Partial<Record<keyof PedidoData, string>> = {};
@@ -95,10 +120,34 @@ export function PedidoForm() {
     return Object.keys(errs).length === 0;
   };
 
+  // Pago con tarjeta: el servidor crea el pedido y nos manda a Stripe Checkout
+  const pagarConStripe = async (): Promise<boolean> => {
+    const res = await fetch('/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, items: lineas.map((l) => ({ id: l.id, qty: l.qty })) }),
+    });
+    const json = await res.json();
+    if (json.sinStripe) return false; // Stripe sin configurar: pedido normal
+    if (!json.ok && json.requiereRegistro) {
+      useAppStore.getState().pedirRegistro({ tipo: 'pedido' });
+      return true;
+    }
+    if (json.ok && json.data?.url) {
+      // El carrito se vacía al volver con el pago hecho (si cancela, lo conserva)
+      window.location.href = json.data.url;
+      return true;
+    }
+    if (json.error && typeof json.error === 'object') setErrors(json.error);
+    else toast.error(json.error || 'No se pudo iniciar el pago');
+    return true;
+  };
+
   const handleSubmit = async () => {
     if (!validate()) return;
     setSaving(true);
     try {
+      if (pagaConTarjeta && (await pagarConStripe())) return;
       const url = isEdit ? `/api/pedidos/${selectedPedidoId}` : '/api/pedidos';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -197,8 +246,21 @@ export function PedidoForm() {
                 <ShoppingCart className="h-5 w-5 text-[#123d83]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[#071a46] text-sm">{selectedProduct.nombre}</p>
-                <p className="text-blue-700 text-sm font-bold">${selectedProduct.precio.toFixed(2)}</p>
+                {lineas.length > 1 ? (
+                  <ul className="space-y-0.5">
+                    {lineas.map((l) => (
+                      <li key={l.id} className="text-sm text-[#071a46] flex justify-between gap-3">
+                        <span>{l.qty}x {l.nombre}</span>
+                        <span className="font-semibold">${(l.precio * l.qty).toFixed(2)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="font-semibold text-[#071a46] text-sm">{selectedProduct.nombre}</p>
+                )}
+                <p className="text-blue-700 text-sm font-bold">
+                  {lineas.length > 1 ? 'Total: ' : ''}${(lineas.length ? totalCarrito : selectedProduct.precio).toFixed(2)}
+                </p>
                 <div className="flex items-start gap-1.5 mt-2">
                   <MapPin className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
                   <p className="text-xs text-[#123d83] leading-relaxed">
@@ -364,10 +426,12 @@ export function PedidoForm() {
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : pagaConTarjeta ? (
+                <CreditCard className="h-4 w-4 mr-2" />
               ) : (
                 <Save className="h-4 w-4 mr-2" />
               )}
-              {isEdit ? 'Actualizar Pedido' : 'Crear Pedido'}
+              {isEdit ? 'Actualizar Pedido' : pagaConTarjeta ? `Pagar $${totalCarrito.toFixed(2)} con tarjeta` : 'Crear Pedido'}
             </Button>
             <Button variant="outline" onClick={handleCancel}>
               Cancelar

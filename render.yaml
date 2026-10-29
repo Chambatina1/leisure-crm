@@ -18,3 +18,8 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
+      # Pago con tarjeta en la tienda. Poner los valores en Render → Environment.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

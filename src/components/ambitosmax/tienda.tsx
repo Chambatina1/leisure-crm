@@ -103,7 +103,7 @@ export function Tienda() {
   }
 
   function handleComprar(p: Product) {
-    goToComprar({ nombre: p.nombre, precio: p.precio, categoria: p.categoria });
+    goToComprar({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria });
   }
 
   if (loading) return (

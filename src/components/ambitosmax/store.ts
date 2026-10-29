@@ -14,6 +14,7 @@ interface UserData {
 }
 
 interface ProductPreview {
+  id?: number;
   nombre: string;
   precio: number;
   categoria: string;
