@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from '@/components/ambitosmax/store';
+import { useCartStore } from '@/components/ambitosmax/cart-store';
 import { Navbar } from '@/components/ambitosmax/navbar';
 import { LoginDialog } from '@/components/ambitosmax/login-dialog';
 import { RegisterDialog } from '@/components/ambitosmax/register-dialog';
@@ -208,7 +209,7 @@ export default function Page() {
     const pedido = q.get('pedido');
     useAppStore.setState({ mode: 'public', selectedProduct: null });
     if (pago === 'ok') {
-      try { localStorage.removeItem('ambitosmax_cart'); } catch { /* sin almacenamiento */ }
+      useCartStore.getState().clear();
       // Marcar el pedido como pagado comprobándolo con Stripe (no fiarse de la URL)
       const sessionId = q.get('session_id');
       if (sessionId) {
