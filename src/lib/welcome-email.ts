@@ -1,6 +1,7 @@
 // Correo de bienvenida — lógica compartida (usada por el registro de usuarios
 // y por /api/email/welcome). Se llama directamente, sin pasar por HTTP.
 import { db } from '@/lib/db';
+import { asegurarTelefonoContacto } from '@/lib/telefono-contacto';
 import nodemailer from 'nodemailer';
 
 // ─── Obtener configuración desde la tabla Config ───────────────────────
@@ -22,7 +23,7 @@ async function getPlatformConfig() {
 
   const defaults: Record<string, string> = {
     direccion: '6800 N Florida Ave, Tampa, FL 33604',
-    telefono1: '727-506-1845',
+    telefono1: '656-224-8018',
     nombre_contacto1: 'Geo',
     telefono2: '786-784-6421',
     nombre_contacto2: 'Adriana',
@@ -34,6 +35,7 @@ async function getPlatformConfig() {
   };
 
   try {
+    await asegurarTelefonoContacto();
     const entries = await db.config.findMany({
       where: { clave: { in: keys } },
     });

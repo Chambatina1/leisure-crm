@@ -30,7 +30,7 @@ interface ConfigData {
 const DEFAULT_CONFIG: ConfigData = {
   nombre_negocio: 'Ambitosmax',
   direccion: '6800 N Florida Ave, Tampa, FL 33604',
-  telefono1: '727-506-1845',
+  telefono1: '656-224-8018',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',
   nombre_contacto2: 'Adriana',

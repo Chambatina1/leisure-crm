@@ -89,7 +89,7 @@ export default function Page() {
             h2: 'Por qué es seguro comprar gas para Cuba con Ambitosmax',
             p: [
               'Ambitosmax es una empresa con dirección en 6800 N Florida Ave, Tampa, Florida. El pago se hace por Zelle desde tu banco en Estados Unidos, y la entrega está protegida por dos datos que solo tú y tu familiar conocen: el carnet de identidad registrado y el PIN de 6 dígitos. Además puedes consultar el estado de tu reserva y tu PIN cuando quieras con tu número de reserva y tu teléfono.',
-              'Si tienes dudas antes de pagar, escríbenos por WhatsApp o llama al +1 (727) 506-1845. Te atendemos en español.',
+              'Si tienes dudas antes de pagar, escríbenos por WhatsApp o llama al +1 (656) 224-8018. Te atendemos en español.',
             ],
           },
         ]}

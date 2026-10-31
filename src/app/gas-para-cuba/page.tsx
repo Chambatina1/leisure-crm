@@ -45,7 +45,7 @@ const FAQS = [
   { q: '¿Cómo sé que mi dinero está seguro?', a: 'Somos una empresa en 6800 N Florida Ave, Tampa, FL. La balita solo se entrega a la persona que registraste, con su carnet de identidad y el PIN que te enviamos al confirmar el pago.' },
   { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el número de Zelle y tu número de reserva para usarlo como referencia.' },
   { q: '¿Puedo comprar varias?', a: 'Sí, hasta 4 balitas por reserva ($85 cada una). Para más, haz otra reserva o escríbenos por WhatsApp.' },
-  { q: '¿Y si tengo una duda antes de pagar?', a: 'Escríbenos por WhatsApp o llámanos al +1 (727) 506-1845. Te atendemos en español.' },
+  { q: '¿Y si tengo una duda antes de pagar?', a: 'Escríbenos por WhatsApp o llámanos al +1 (656) 224-8018. Te atendemos en español.' },
 ];
 
 const PRODUCTO_JSONLD = {
@@ -96,8 +96,8 @@ export default function Page() {
       <nav className="border-b border-zinc-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <Link href="/" className="font-black tracking-widest text-[#071a46]">AMBITOSMAX</Link>
-          <a href="tel:+17275061845" className="flex items-center gap-1.5 text-sm font-bold text-[#123d83]">
-            <Phone className="h-4 w-4" /> <span className="hidden sm:inline">+1 (727) 506-1845</span><span className="sm:hidden">Llamar</span>
+          <a href="tel:+16562248018" className="flex items-center gap-1.5 text-sm font-bold text-[#123d83]">
+            <Phone className="h-4 w-4" /> <span className="hidden sm:inline">+1 (656) 224-8018</span><span className="sm:hidden">Llamar</span>
           </a>
         </div>
       </nav>
@@ -145,7 +145,7 @@ export default function Page() {
             [Building2, 'Empresa en Tampa, FL', '6800 N Florida Ave'],
             [ShieldCheck, 'Pago seguro', 'Zelle desde EE.UU.'],
             [KeyRound, 'Entrega protegida', 'Carnet + PIN de 6 dígitos'],
-            [Phone, 'Atención en español', '+1 (727) 506-1845'],
+            [Phone, 'Atención en español', '+1 (656) 224-8018'],
           ].map(([Icono, titulo, sub]) => {
             const I = Icono as typeof Building2;
             return (
@@ -273,7 +273,7 @@ export default function Page() {
       </section>
 
       <footer className="bg-zinc-50 border-t border-zinc-100 py-6 px-4 text-center text-xs text-zinc-500">
-        © {new Date().getFullYear()} Ambitosmax · 6800 N Florida Ave, Tampa, FL 33604 · <a href="tel:+17275061845" className="hover:underline">+1 (727) 506-1845</a> · <Link href="/" className="hover:underline">ambitosmax.com</Link>
+        © {new Date().getFullYear()} Ambitosmax · 6800 N Florida Ave, Tampa, FL 33604 · <a href="tel:+16562248018" className="hover:underline">+1 (656) 224-8018</a> · <Link href="/" className="hover:underline">ambitosmax.com</Link>
       </footer>
 
       {/* ═══ BOTÓN FIJO EN MÓVIL ═══ */}
