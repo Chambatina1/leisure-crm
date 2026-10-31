@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
+import { asegurarTelefonoContacto } from '@/lib/telefono-contacto';
 
 const DEFAULTS: Record<string, string> = {
   nombre_negocio: 'Ambitosmax',
   direccion: '6800 N Florida Ave, Tampa, FL 33604',
-  telefono1: '727-506-1845',
+  telefono1: '656-224-8018',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',
   nombre_contacto2: 'Adriana',
@@ -26,6 +27,7 @@ function esClavePublica(clave: string): boolean {
 }
 
 async function getOrCreate(clave: string): Promise<string> {
+  await asegurarTelefonoContacto();
   const existing = await db.config.findUnique({ where: { clave } });
   if (existing) return existing.valor;
   const val = DEFAULTS[clave] || '';

@@ -30,7 +30,7 @@ export const ORGANIZACION_JSONLD = {
   logo: `${SITIO}/icon-512.png`,
   description:
     'Balitas de gas, diésel y gasolina en Cuba, tienda online y envíos a Cuba desde Estados Unidos. Recogida en La Habana y entrega en toda la isla.',
-  telephone: '+1-727-506-1845',
+  telephone: '+1-656-224-8018',
   sameAs: ['https://www.tiktok.com/@ambitosmax'],
   areaServed: [{ '@type': 'Country', name: 'Cuba' }, { '@type': 'Country', name: 'United States' }],
   address: {
@@ -42,6 +42,6 @@ export const ORGANIZACION_JSONLD = {
     addressCountry: 'US',
   },
   contactPoint: [
-    { '@type': 'ContactPoint', telephone: '+1-727-506-1845', contactType: 'customer service', availableLanguage: ['Spanish', 'English'] },
+    { '@type': 'ContactPoint', telephone: '+1-656-224-8018', contactType: 'customer service', availableLanguage: ['Spanish', 'English'] },
   ],
 };

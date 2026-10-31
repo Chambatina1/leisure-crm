@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { asegurarTelefonoContacto } from '@/lib/telefono-contacto';
 import { detectarIntencion, BUSINESS_CONTEXT, calcularEnvio, BICICLETAS, CAJAS } from '@/lib/ambitosmax';
 import ZAI from 'z-ai-web-dev-sdk';
 
 // Config keys and their defaults
 const CONFIG_DEFAULTS: Record<string, string> = {
   direccion: '6800 N Florida Ave, Tampa, FL 33604',
-  telefono1: '727-506-1845',
+  telefono1: '656-224-8018',
   nombre_contacto1: 'Geo',
   telefono2: '786-784-6421',
   nombre_contacto2: 'Adriana',
@@ -21,6 +22,7 @@ const CONFIG_DEFAULTS: Record<string, string> = {
 
 async function getConfig(keys: string[]): Promise<Record<string, string>> {
   try {
+    await asegurarTelefonoContacto();
     const entries = await db.config.findMany({
       where: { clave: { in: keys } },
     });

@@ -180,7 +180,7 @@ export function Home() {
           </div>
           <div>
             <h2 className="text-lg font-black text-[#071a46] mb-2">Compra desde Estados Unidos</h2>
-            <p>Ambitosmax tiene su dirección en 6800 N Florida Ave, Tampa, Florida. Pagas desde tu banco en EE.UU. y te atendemos en español por WhatsApp o al +1 (727) 506-1845.</p>
+            <p>Ambitosmax tiene su dirección en 6800 N Florida Ave, Tampa, Florida. Pagas desde tu banco en EE.UU. y te atendemos en español por WhatsApp o al +1 (656) 224-8018.</p>
           </div>
         </div>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
@@ -212,7 +212,7 @@ export function Home() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900">Llámanos</h4>
-              <p className="text-sm text-gray-500">+1 (727) 506-1845</p>
+              <p className="text-sm text-gray-500">+1 (656) 224-8018</p>
               <p className="text-sm text-gray-500">Lun-Vie 8AM-5PM</p>
             </div>
           </div>
