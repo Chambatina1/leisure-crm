@@ -8,7 +8,6 @@ import {
   MAX_POR_RESERVA,
   ZELLE_CILINDROS,
   PUNTOS_RECOGIDA,
-  PUNTO_POR_DEFECTO,
   puntoDe,
   type PuntoRecogida,
   ahoraEnCuba,
@@ -49,8 +48,7 @@ const schema = z.object({
   telefonoRecoge: z.string().trim().max(20).optional().or(z.literal('')),
   cantidad: z.coerce.number().int().min(1).max(MAX_POR_RESERVA),
   punto: z
-    .enum(Object.keys(PUNTOS_RECOGIDA) as [PuntoRecogida, ...PuntoRecogida[]], { message: 'Elige el punto de recogida' })
-    .default(PUNTO_POR_DEFECTO),
+    .enum(Object.keys(PUNTOS_RECOGIDA) as [PuntoRecogida, ...PuntoRecogida[]], { message: 'Elige dónde va a recoger: Punto de Gas de Madera o Punto de venta Barbosa' }),
   website: z.string().optional(), // trampa anti-bots
 });
 

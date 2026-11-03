@@ -5,7 +5,7 @@ import { SITIO } from '@/lib/seo-paginas';
 
 const T = 'Balitas de gas en Cuba — Cilindro lleno en La Habana por $85';
 const D =
-  'Compra balitas de gas en Cuba desde EE.UU.: cilindro de gas lleno por $85 sin entregar la balita vacía. Recogida en La Habana (Bar Madera, Arroyo Arenas) con PIN de seguridad.';
+  'Compra balitas de gas en Cuba desde EE.UU.: cilindro de gas lleno por $85 sin entregar la balita vacía. Recogida en La Habana (Bar Madera en La Lisa o Barbosa en Playa) con PIN de seguridad.';
 
 export const metadata: Metadata = {
   title: T,
@@ -42,7 +42,7 @@ export default function Page() {
       beneficios={[
         'Precio fijo: $85 USD por cilindro lleno',
         'Sin entrega de balita vacía',
-        'Recogida en Bar Madera, Arroyo Arenas, La Lisa',
+        'Recogida en Bar Madera (La Lisa) o Barbosa (Playa)',
         'PIN de seguridad para recoger',
         'Pago por Zelle desde EE.UU.',
         'Reservas diarias hasta las 8:00 PM',
@@ -50,7 +50,7 @@ export default function Page() {
       faqs={[
         { q: '¿Cuánto cuesta una balita de gas en Cuba?', a: '$85 USD por balita (cilindro) de gas llena. No hace falta entregar la balita vacía.' },
         { q: '¿Puedo comprar la balita de gas desde Estados Unidos?', a: 'Sí. Pagas desde EE.UU. por Zelle y tu familiar en Cuba la recoge con su carnet y el PIN.' },
-        { q: '¿Dónde se recoge?', a: 'En el punto de gas "BAR MADERA", en Arroyo Arenas, municipio La Lisa, La Habana.' },
+        { q: '¿Dónde se recoge?', a: 'En uno de nuestros dos puntos de La Habana, el que elijas al pagar: el Punto de Gas de Madera (Bar Madera), en Arroyo Arenas, municipio La Lisa, o el Punto de venta Barbosa, en el municipio Playa.' },
         { q: '¿Cómo se recoge?', a: 'Al confirmar tu pago recibes un PIN de 6 dígitos. La persona que recoge presenta su carnet de identidad y dice el PIN.' },
         { q: '¿Hasta qué hora puedo comprar?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Las reservas posteriores pasan al listado del día siguiente.' },
         { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos, usando tu número de reserva como referencia.' },
@@ -73,9 +73,9 @@ export default function Page() {
             ],
           },
           {
-            h2: 'Dónde se recogen las balitas de gas en La Habana: Bar Madera, Arroyo Arenas',
+            h2: 'Dónde se recogen las balitas de gas en La Habana: Bar Madera (La Lisa) y Barbosa (Playa)',
             p: [
-              'Las balitas se recogen en el punto de gas "Bar Madera", en Arroyo Arenas, municipio La Lisa, La Habana.',
+              'Las balitas se recogen en uno de nuestros dos puntos, el que elijas al pagar: el Punto de Gas de Madera ("Bar Madera"), en Arroyo Arenas, municipio La Lisa, o el Punto de venta Barbosa, en el municipio Playa.',
               'Cada día, al cierre de ventas, el punto recibe el listado de las personas que van a recoger, con su nombre, su carnet y la cantidad de balitas. Por eso solo la persona registrada en la reserva puede llevarse el gas.',
             ],
           },

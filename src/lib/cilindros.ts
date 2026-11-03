@@ -22,8 +22,12 @@ export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || '727-598-6802';
 // Avioncitos) se recoge en el punto por defecto.
 export const PUNTOS_RECOGIDA = {
   'bar-madera': {
-    nombre: 'Bar Madera',
-    direccion: 'Punto de gas "BAR MADERA" — Arroyo Arenas, municipio La Lisa, La Habana',
+    nombre: 'Punto de Gas de Madera',
+    direccion: 'Punto de Gas de Madera (Bar Madera) — Arroyo Arenas, municipio La Lisa, La Habana',
+  },
+  barbosa: {
+    nombre: 'Punto de venta Barbosa',
+    direccion: 'Punto de venta Barbosa — municipio Playa, La Habana',
   },
 } as const;
 export type PuntoRecogida = keyof typeof PUNTOS_RECOGIDA;
