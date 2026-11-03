@@ -228,7 +228,7 @@ export function Tienda() {
               <CardContent className="pt-0 space-y-2">
                 {/CILINDRO/i.test(product.nombre) ? (
                   <>
-                    <div className="text-xs text-emerald-600 font-medium">✓ Recogida en Los Avioncitos, La Lisa</div>
+                    <div className="text-xs text-emerald-600 font-medium">✓ Recogida en Arroyo Arena (La Lisa) o Barbosa (Playa)</div>
                     <Button
                       className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
                       onClick={() => addToCart(product, true)}
