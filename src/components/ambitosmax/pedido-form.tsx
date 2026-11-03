@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
 import { useCartStore } from './cart-store';
+import { PUNTOS_GAS, CLAVES_PUNTOS_GAS, esBalitaGas, type PuntoGas } from '@/lib/puntos-gas';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +64,10 @@ export function PedidoForm() {
   const [lineas, setLineas] = useState<LineaCarrito[]>([]);
   const pagaConTarjeta = isPublic && !isEdit && lineas.length > 0;
   const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
+  // Las balitas de gas se recogen en uno de los dos puntos: hay que elegirlo
+  const llevaGas = pagaConTarjeta && lineas.some((l) => esBalitaGas(l.nombre));
+  const [punto, setPunto] = useState<PuntoGas | null>(null);
+  const [errorPunto, setErrorPunto] = useState(false);
 
   useEffect(() => {
     if (isEdit && selectedPedidoId) {
@@ -111,7 +116,10 @@ export function PedidoForm() {
     if (!data.direccionDestinatario.trim()) errs.direccionDestinatario = 'Requerido';
     if (!data.producto.trim()) errs.producto = 'Requerido';
     setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const faltaPunto = llevaGas && !punto;
+    setErrorPunto(faltaPunto);
+    if (faltaPunto) toast.error('Elige dónde vas a recoger la balita de gas');
+    return Object.keys(errs).length === 0 && !faltaPunto;
   };
 
   // Pago con tarjeta: el servidor crea el pedido y nos manda a Stripe Checkout
@@ -119,7 +127,11 @@ export function PedidoForm() {
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, items: lineas.map((l) => ({ id: l.id, qty: l.qty })) }),
+      body: JSON.stringify({
+        ...data,
+        items: lineas.map((l) => ({ id: l.id, qty: l.qty })),
+        ...(llevaGas && punto ? { puntoRecogida: punto } : {}),
+      }),
     });
     const json = await res.json();
     if (json.sinStripe) return false; // Stripe sin configurar: pedido normal
@@ -132,6 +144,7 @@ export function PedidoForm() {
       window.location.href = json.data.url;
       return true;
     }
+    if (json.faltaPunto) setErrorPunto(true);
     if (json.error && typeof json.error === 'object') setErrors(json.error);
     else toast.error(json.error || 'No se pudo iniciar el pago');
     return true;
@@ -411,6 +424,47 @@ export function PedidoForm() {
               </div>
             </div>
           </div>
+
+          {llevaGas && (
+            <>
+              <Separator className="my-6" />
+              <div className="mb-6">
+                <h2 className="text-lg font-semibold text-zinc-900 mb-1 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                    <MapPin className="h-4 w-4 text-emerald-700" />
+                  </div>
+                  ¿Dónde recoges la balita de gas? *
+                </h2>
+                <p className="text-sm text-zinc-500 mb-3">Las balitas solo están en estos dos puntos. Marca uno.</p>
+                <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {CLAVES_PUNTOS_GAS.map((k) => {
+                    const sel = punto === k;
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        role="radio"
+                        aria-checked={sel}
+                        onClick={() => { setPunto(k); setErrorPunto(false); }}
+                        className={`text-left rounded-xl border-2 p-4 flex items-start gap-3 transition-colors ${
+                          sel ? 'border-[#55b949] bg-emerald-50' : errorPunto ? 'border-red-400 bg-red-50/40' : 'border-zinc-200 hover:border-emerald-300'
+                        }`}
+                      >
+                        <span className={`mt-0.5 h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center ${sel ? 'border-[#55b949]' : 'border-zinc-300'}`}>
+                          {sel && <span className="h-2.5 w-2.5 rounded-full bg-[#55b949]" />}
+                        </span>
+                        <span>
+                          <span className="block font-semibold text-zinc-900">{PUNTOS_GAS[k].nombre}</span>
+                          <span className="block text-sm text-zinc-600">{PUNTOS_GAS[k].lugar}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {errorPunto && <p className="text-xs text-red-500 mt-2">Elige uno de los dos puntos de recogida</p>}
+              </div>
+            </>
+          )}
 
           <div className="flex gap-3 pt-4">
             <Button

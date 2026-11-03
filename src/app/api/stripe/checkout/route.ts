@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { getStripe, urlBase } from '@/lib/stripe';
+import { CLAVES_PUNTOS_GAS, esBalitaGas, textoPuntoGas } from '@/lib/puntos-gas';
 
 const checkoutSchema = z.object({
   nombreComprador: z.string().min(2, 'El nombre del comprador es requerido'),
@@ -17,6 +18,7 @@ const checkoutSchema = z.object({
     .array(z.object({ id: z.number().int().positive(), qty: z.number().int().min(1).max(50) }))
     .min(1, 'El carrito está vacío')
     .max(30),
+  puntoRecogida: z.enum(CLAVES_PUNTOS_GAS).optional(),
 });
 
 // POST /api/stripe/checkout — crea el pedido (pendiente de pago) y la sesión de
@@ -51,6 +53,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Hay productos en el carrito que no se pagan por aquí.' }, { status: 400 });
     }
 
+    // Las balitas de gas se recogen en uno de los dos puntos; es obligatorio elegirlo
+    const llevaGas = productos.some((p) => esBalitaGas(p.nombre));
+    if (llevaGas && !data.puntoRecogida) {
+      return NextResponse.json(
+        { ok: false, faltaPunto: true, error: 'Elige dónde vas a recoger la balita de gas' },
+        { status: 400 }
+      );
+    }
+    const recogida = llevaGas && data.puntoRecogida ? textoPuntoGas(data.puntoRecogida) : null;
+
     const lineas = productos.map((p) => ({ p, qty: cantidades.get(p.id)! }));
     const total = lineas.reduce((s, l) => s + Math.round(l.p.precio * 100) * l.qty, 0) / 100;
     const resumen = lineas.map((l) => `${l.qty}x ${l.p.nombre} ($${l.p.precio.toFixed(2)})`).join(', ');
@@ -64,8 +76,8 @@ export async function POST(request: NextRequest) {
         telefonoDestinatario: data.telefonoDestinatario,
         carnetDestinatario: data.carnetDestinatario || null,
         direccionDestinatario: data.direccionDestinatario,
-        producto: `${resumen} — Total $${total.toFixed(2)}`,
-        notas: data.notas || null,
+        producto: `${resumen} — Total $${total.toFixed(2)}${recogida ? ` — Recogida: ${recogida}` : ''}`,
+        notas: [recogida && `Recoge en: ${recogida}`, data.notas].filter(Boolean).join('\n') || null,
         estado: 'pendiente_pago',
       },
     });
@@ -75,8 +87,12 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       customer_email: data.emailComprador || cliente.email,
       client_reference_id: String(pedido.id),
-      metadata: { pedidoId: String(pedido.id), userId: String(cliente.id) },
-      payment_intent_data: { metadata: { pedidoId: String(pedido.id) }, description: `Pedido #${pedido.id} Ambitosmax` },
+      metadata: { pedidoId: String(pedido.id), userId: String(cliente.id), ...(recogida ? { recogida } : {}) },
+      payment_intent_data: {
+        metadata: { pedidoId: String(pedido.id), ...(recogida ? { recogida } : {}) },
+        description: `Pedido #${pedido.id} Ambitosmax${recogida ? ` — Recogida: ${recogida}` : ''}`,
+      },
+      ...(recogida ? { custom_text: { submit: { message: `Recogida de la balita de gas: ${recogida}` } } } : {}),
       line_items: lineas.map((l) => ({
         quantity: l.qty,
         price_data: {
@@ -92,7 +108,7 @@ export async function POST(request: NextRequest) {
 
     await db.pedido.update({
       where: { id: pedido.id },
-      data: { notas: [data.notas, `Stripe: ${session.id}`].filter(Boolean).join('\n') },
+      data: { notas: [pedido.notas, `Stripe: ${session.id}`].filter(Boolean).join('\n') },
     });
 
     return NextResponse.json({ ok: true, data: { url: session.url, pedidoId: pedido.id } });
