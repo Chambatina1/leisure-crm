@@ -60,7 +60,7 @@ export default function Page() {
       faqs={[
         { q: '¿Dónde puedo recoger gas en La Lisa?', a: 'En el punto de gas "Bar Madera", en Arroyo Arenas, municipio La Lisa, La Habana.' },
         { q: '¿Cuánto cuesta la balita de gas?', a: '$85 USD por balita llena, sin entregar la vacía.' },
-        { q: '¿Puedo recoger si vivo en otro municipio?', a: 'Sí. Cualquier persona puede recoger en Bar Madera con su carnet y el PIN; solo tiene que llegar hasta allí.' },
+        { q: '¿Puedo recoger si vivo en otro municipio?', a: 'Sí. Cualquier persona puede recoger en Bar Madera con su carnet y el PIN. Si le queda más cerca, también puede elegir el Punto de venta Barbosa, en el municipio Playa.' },
         { q: '¿Cuántas balitas puedo comprar?', a: 'Hasta 4 por reserva. Para más, haz otra reserva.' },
       ]}
     >

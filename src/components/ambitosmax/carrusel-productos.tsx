@@ -130,7 +130,7 @@ export function CarruselProductos() {
                       <p className="text-[13px] font-bold text-zinc-900 leading-snug line-clamp-2 min-h-[2.5em]">{p.nombre}</p>
                       <p className="text-base font-black text-[#123d83] mt-1">${p.precio.toFixed(2)}</p>
                       <button
-                        onClick={() => goToComprar({ nombre: p.nombre, precio: p.precio, categoria: p.categoria })}
+                        onClick={() => goToComprar({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria })}
                         className="mt-auto pt-2"
                       >
                         <span className="w-full inline-flex items-center justify-center gap-1.5 bg-[#55b949] hover:bg-[#3f9a35] text-white text-xs font-bold py-2 rounded-xl transition-colors">

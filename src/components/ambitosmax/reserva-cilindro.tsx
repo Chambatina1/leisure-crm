@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 const PRECIO = 85;
 // Mismos puntos que PUNTOS_RECOGIDA en src/lib/cilindros.ts
 const PUNTOS = [
-  { id: 'bar-madera', nombre: 'Bar Madera', direccion: 'Arroyo Arenas, La Lisa' },
+  { id: 'bar-madera', nombre: 'Punto de Gas de Madera', direccion: 'Arroyo Arenas, La Lisa' },
+  { id: 'barbosa', nombre: 'Punto de venta Barbosa', direccion: 'Municipio Playa' },
 ] as const;
 type Punto = (typeof PUNTOS)[number]['id'];
 
@@ -55,7 +56,8 @@ export function ReservaCilindro() {
   const [form, setForm] = useState({
     nombreComprador: '', telefonoComprador: '', emailComprador: '',
     nombreRecoge: '', carnetRecoge: '', telefonoRecoge: '', cantidad: 1,
-    punto: PUNTOS[0].id as Punto,
+    // Sin punto marcado: el cliente tiene que elegir uno antes de pagar
+    punto: '' as Punto | '',
   });
   const [mismoQueRecoge, setMismoQueRecoge] = useState(false);
   const [honeypot, setHoneypot] = useState('');
@@ -80,6 +82,10 @@ export function ReservaCilindro() {
     const datos = mismoQueRecoge
       ? { ...form, nombreRecoge: form.nombreComprador, telefonoRecoge: form.telefonoComprador }
       : form;
+    if (!datos.punto) {
+      toast.error('Elige dónde va a recoger: Punto de Gas de Madera o Punto de venta Barbosa');
+      return;
+    }
     if (!/^\d{11}$/.test(datos.carnetRecoge)) {
       toast.error('El carnet de quien recoge debe tener 11 dígitos');
       return;
@@ -241,7 +247,7 @@ export function ReservaCilindro() {
           </div>
 
           {PUNTOS.length > 1 && (<>
-          <p className="text-xs font-black text-[#b45309] uppercase tracking-wide pt-2">3. Dónde recoge</p>
+          <p className="text-xs font-black text-[#b45309] uppercase tracking-wide pt-2">3. Dónde recoge (elige uno)</p>
           <div className="grid sm:grid-cols-2 gap-2" role="radiogroup" aria-label="Punto de recogida">
             {PUNTOS.map((p) => (
               <label
@@ -255,6 +261,7 @@ export function ReservaCilindro() {
                   checked={form.punto === p.id}
                   onChange={() => setForm((f) => ({ ...f, punto: p.id }))}
                   className="mt-1"
+                  required
                 />
                 <span><b>{p.nombre}</b><br /><span className="text-xs text-zinc-500">{p.direccion}</span></span>
               </label>

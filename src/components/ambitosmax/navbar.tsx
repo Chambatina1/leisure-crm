@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useAppStore, type PublicView, type AdminView } from './store';
+import { CartButton, CartSheet } from './cart-sheet';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -85,6 +86,7 @@ function PublicNavbar() {
                   </button>
                 );
               })}
+              <CartButton className="ml-1" />
               {!currentUser ? (
                 <Button
                   variant="ghost"
@@ -112,7 +114,9 @@ function PublicNavbar() {
               </Button>
             </nav>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile: carrito + menú */}
+            <div className="md:hidden flex items-center gap-1">
+            <CartButton />
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden text-zinc-500 hover:text-zinc-900">
@@ -173,9 +177,12 @@ function PublicNavbar() {
                 </div>
               </SheetContent>
             </Sheet>
+            </div>
           </div>
         </div>
       </header>
+
+      <CartSheet />
 
       {/* Mobile Bottom Tab Bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-100 safe-area-bottom">

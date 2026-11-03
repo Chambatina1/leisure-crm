@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from '@/components/ambitosmax/store';
+import { useCartStore } from '@/components/ambitosmax/cart-store';
 import { Navbar } from '@/components/ambitosmax/navbar';
 import { LoginDialog } from '@/components/ambitosmax/login-dialog';
 import { RegisterDialog } from '@/components/ambitosmax/register-dialog';
@@ -26,6 +27,7 @@ import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
 import { UsersPanel } from '@/components/ambitosmax/users-panel';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // Error-safe component wrapper
 function SafeView({ children }: { children: React.ReactNode }) {
@@ -197,6 +199,33 @@ export default function Page() {
       setCurrentView(v as never);
       window.history.replaceState(null, '', '/');
     }
+  }, [setCurrentView]);
+
+  // Vuelta desde Stripe Checkout: /?pago=ok&pedido=123 o /?pago=cancelado
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const pago = q.get('pago');
+    if (!pago) return;
+    const pedido = q.get('pedido');
+    useAppStore.setState({ mode: 'public', selectedProduct: null });
+    if (pago === 'ok') {
+      useCartStore.getState().clear();
+      // Marcar el pedido como pagado comprobándolo con Stripe (no fiarse de la URL)
+      const sessionId = q.get('session_id');
+      if (sessionId) {
+        fetch('/api/stripe/confirmar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        }).catch(() => {});
+      }
+      toast.success(`¡Pago recibido! Tu pedido${pedido ? ` #${pedido}` : ''} está confirmado. Te contactaremos para la entrega.`, { duration: 8000 });
+      setCurrentView('home');
+    } else {
+      toast.info('Pago cancelado. Tu carrito sigue guardado por si quieres intentarlo de nuevo.');
+      setCurrentView('tienda');
+    }
+    window.history.replaceState(null, '', '/');
   }, [setCurrentView]);
 
   // Sesión de cliente: la decide el servidor (cookie); sincronizar al abrir

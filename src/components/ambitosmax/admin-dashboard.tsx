@@ -27,6 +27,8 @@ import {
 
 const ESTADOS = [
   { value: 'pendiente', label: 'Pendiente', color: 'bg-blue-100 text-blue-700' },
+  { value: 'pendiente_pago', label: 'Esperando pago', color: 'bg-amber-100 text-amber-700' },
+  { value: 'pagado', label: 'Pagado', color: 'bg-emerald-100 text-emerald-700' },
   { value: 'en_proceso', label: 'En Proceso', color: 'bg-blue-100 text-blue-700' },
   { value: 'en_transito', label: 'En Tránsito', color: 'bg-purple-100 text-purple-700' },
   { value: 'entregado', label: 'Entregado', color: 'bg-emerald-100 text-emerald-700' },

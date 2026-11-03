@@ -63,7 +63,7 @@ const CAMBIOS: CambioProducto[] = [
     datos: {
       nombre: 'CILINDRO LLENO SIN ENTREGA DE VACÍO',
       descripcion:
-        'Precio: 85 USD. Recogida en el punto de gas "BAR MADERA": Arroyo Arenas, municipio La Lisa, La Habana.',
+        'Precio: 85 USD. Recogida, a elegir al pagar, en el Punto de Gas de Madera (Arroyo Arenas, La Lisa) o en el Punto de venta Barbosa (Playa).',
       precio: 85,
     },
   },

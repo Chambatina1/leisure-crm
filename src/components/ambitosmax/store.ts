@@ -14,6 +14,7 @@ interface UserData {
 }
 
 interface ProductPreview {
+  id?: number;
   nombre: string;
   precio: number;
   categoria: string;
@@ -223,11 +224,6 @@ export const useAppStore = create<AppState>()(
         // Nadie compra sin estar registrado (el servidor también lo exige)
         if (get().mode !== 'admin' && !get().currentUser) {
           get().pedirRegistro({ tipo: 'producto', producto: product });
-          return;
-        }
-        // El cilindro de gas tiene su propio flujo de reserva con PIN y cierre diario
-        if (/CILINDRO/i.test(product.nombre) && get().mode !== 'admin') {
-          set({ selectedProduct: product, currentView: 'reserva-cilindro' });
           return;
         }
         // Diésel / gasolina: se venden en el sistema de Combustible (botón "Comprar combustible")
