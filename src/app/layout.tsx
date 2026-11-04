@@ -54,7 +54,7 @@ export const metadata: Metadata = {
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
     apple: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
   manifest: "/manifest.json",
@@ -86,7 +86,6 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="Ambitosmax" />
-        <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify([ORGANIZACION_JSONLD, { "@context": "https://schema.org", "@type": "WebSite", "@id": "https://ambitosmax.com/#sitio", name: "Ambitosmax", alternateName: ["Ambitos", "ambitosmax.com"], url: "https://ambitosmax.com/", inLanguage: "es", publisher: { "@id": "https://ambitosmax.com/#organizacion" } }]) }}
