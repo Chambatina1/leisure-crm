@@ -38,14 +38,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Contraseña incorrecta' }, { status: 401 });
   }
 
-  // El botón Admin es solo para el acceso completo; la contraseña de tienda
-  // se usa en "Administrar tienda" (dentro de la Tienda)
-  if (rol === 'tienda' && acceso !== 'tienda') {
-    return NextResponse.json(
-      { ok: false, error: 'Esa contraseña es solo para "Administrar tienda", dentro de la Tienda.' },
-      { status: 401 }
-    );
-  }
+  // La contraseña de tienda entra por cualquier botón, pero solo abre
+  // "Administrar tienda" (el rol se aplica en el servidor con requireAdmin)
+  void acceso;
 
   const token = createSessionToken(rol);
   if (!token) {
