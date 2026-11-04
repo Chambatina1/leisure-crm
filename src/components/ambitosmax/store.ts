@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { esBalitaGas } from '@/lib/puntos-gas';
 
 export type PublicView = 'home' | 'tienda' | 'combustible' | 'rastreador' | 'chat' | 'registro' | 'pedido-public' | 'reserva-cilindro';
 export type AdminView = 'dashboard' | 'pedidos' | 'tracking' | 'config' | 'pedido-detail' | 'pedido-form' | 'pedido-edit' | 'tienda-admin' | 'combustible-admin' | 'ai-training' | 'apariencia' | 'users' | 'emails' | 'cilindros';
@@ -245,9 +246,11 @@ export const useAppStore = create<AppState>()(
           get().pedirRegistro({ tipo: 'producto', producto: product });
           return;
         }
-        // Diésel / gasolina: se venden en el sistema de Combustible (botón "Comprar combustible")
+        // Diésel / gasolina: se venden en el sistema de Combustible (botón "Comprar combustible").
+        // Las balitas de gas NO: se pagan aquí y se recogen en un punto de gas.
         if (
           get().mode !== 'admin' &&
+          !esBalitaGas(product.nombre) &&
           (/DI[EÉ]SEL|GASOLINA|COMBUSTIBLE/i.test(product.nombre) || product.categoria === 'combustible')
         ) {
           set({ selectedProduct: null, currentView: 'combustible' });

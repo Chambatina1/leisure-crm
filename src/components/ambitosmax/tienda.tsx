@@ -24,6 +24,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { quedanEnPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 
 interface Product { id: number; nombre: string; descripcion: string | null; precio: number; categoria: string; imagenUrl: string | null; tiktokUrl: string | null; existencia?: number | null; }
 interface GroupedProducts { [category: string]: Product[]; }
@@ -63,6 +64,14 @@ export function Tienda() {
   const addItem = useCartStore((s) => s.add);
   const setCartOpen = useCartStore((s) => s.setOpen);
   const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
+  // Balitas disponibles en cada punto de recogida (se muestran en las tarjetas de cilindro)
+  const [puntos, setPuntos] = useState<PuntoRecogida[]>([]);
+  useEffect(() => {
+    fetch('/api/tienda/puntos')
+      .then((r) => r.json())
+      .then((j) => { if (j.ok) setPuntos(j.data); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -236,9 +245,26 @@ export function Tienda() {
               <CardContent className="pt-0 space-y-2">
                 {product.existencia != null && product.existencia <= 0 ? (
                   <Button disabled className="w-full text-sm font-bold">Agotado</Button>
+                ) : /CILINDRO/i.test(product.nombre) && puntos.length > 0 && puntos.every((pt) => quedanEnPunto(pt) === 0) ? (
+                  <Button disabled className="w-full text-sm font-bold">Agotado en todos los puntos</Button>
                 ) : /CILINDRO/i.test(product.nombre) ? (
                   <>
                     <div className="text-xs text-emerald-600 font-medium">✓ Recogida en punto de gas (lo eliges al pagar)</div>
+                    {puntos.some((pt) => quedanEnPunto(pt) !== null) && (
+                      <ul className="text-xs text-zinc-600 space-y-0.5">
+                        {puntos.map((pt) => {
+                          const q = quedanEnPunto(pt);
+                          return (
+                            <li key={pt.id} className="flex justify-between gap-2">
+                              <span className="truncate">{pt.nombre}</span>
+                              <span className={`shrink-0 font-semibold ${q === 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                                {q === null ? 'Disponible' : q === 0 ? 'Agotado' : `${q} disponibles`}
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                     <Button
                       className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
                       onClick={() => addToCart(product, true)}

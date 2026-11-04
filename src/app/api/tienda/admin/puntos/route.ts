@@ -10,6 +10,7 @@ const puntosSchema = z
       nombre: z.string().trim().min(2, 'Cada punto necesita un nombre').max(80),
       lugar: z.string().trim().max(120).optional().default(''),
       activo: z.boolean().optional().default(true),
+      existencia: z.number().int().min(0).max(100000).nullable().optional().default(null),
     })
   )
   .max(30);
@@ -40,7 +41,7 @@ export async function PUT(request: NextRequest) {
       let id = p.id || slug(p.nombre);
       for (let n = 2; usados.has(id); n++) id = `${slug(p.nombre)}-${n}`;
       usados.add(id);
-      return { id, nombre: p.nombre, lugar: p.lugar || '', activo: p.activo };
+      return { id, nombre: p.nombre, lugar: p.lugar || '', activo: p.activo, existencia: p.existencia ?? null };
     });
     await guardarPuntos(puntos);
     return NextResponse.json({ ok: true, data: puntos });

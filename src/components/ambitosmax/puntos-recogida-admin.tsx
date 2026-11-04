@@ -29,7 +29,7 @@ export function PuntosRecogidaAdmin() {
     setCambios(true);
   };
   const agregar = () => {
-    setPuntos((ps) => [...ps, { id: '', nombre: '', lugar: '', activo: true }]);
+    setPuntos((ps) => [...ps, { id: '', nombre: '', lugar: '', activo: true, existencia: null }]);
     setCambios(true);
   };
   const quitar = (i: number) => {
@@ -58,7 +58,7 @@ export function PuntosRecogidaAdmin() {
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2"><MapPin className="h-5 w-5 text-emerald-600" />Puntos de recogida de balitas de gas</CardTitle>
-        <CardDescription>El cliente elige uno de los puntos activos al pagar.</CardDescription>
+        <CardDescription>El cliente elige uno de los puntos activos al pagar y ve cuántas balitas quedan en cada uno. Al cobrarse, se descuentan del punto elegido. Deja &quot;Balitas&quot; vacío para no poner límite.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {loading ? (
@@ -69,6 +69,21 @@ export function PuntosRecogidaAdmin() {
               <div key={p.id || `nuevo-${i}`} className="flex flex-col sm:flex-row sm:items-center gap-2 rounded-lg border border-zinc-100 p-2">
                 <Input value={p.nombre} onChange={(e) => cambiar(i, { nombre: e.target.value })} placeholder="Nombre del punto" className="sm:flex-1" />
                 <Input value={p.lugar} onChange={(e) => cambiar(i, { lugar: e.target.value })} placeholder="Lugar (ej: Arroyo Arena, La Lisa)" className="sm:flex-1" />
+                <label className="flex items-center gap-2 text-sm text-zinc-600 sm:w-44">
+                  <span className="shrink-0">Balitas</span>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    value={p.existencia ?? ''}
+                    onChange={(e) => {
+                      const v = e.target.value.trim();
+                      cambiar(i, { existencia: v === '' ? null : Math.max(0, Math.floor(Number(v)) || 0) });
+                    }}
+                    placeholder="Sin límite"
+                    aria-label={`Balitas disponibles en ${p.nombre || 'este punto'}`}
+                  />
+                </label>
                 <div className="flex items-center justify-between sm:justify-start gap-3">
                   <label className="flex items-center gap-2 text-sm text-zinc-600">
                     <Switch checked={p.activo} onCheckedChange={(v) => cambiar(i, { activo: v })} />Activo
