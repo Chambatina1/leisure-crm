@@ -396,18 +396,18 @@ export function TiendaAdmin() {
                     {filtered.map((product) => (
                       <motion.tr key={product.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="border-b hover:bg-zinc-50 transition-colors">
                         <TableCell className="font-mono text-xs text-zinc-400">{product.orden}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
+                        <TableCell className="whitespace-normal">
+                          <button type="button" onClick={() => openEdit(product)} className="flex items-center gap-2 text-left max-w-[420px]" title="Editar producto">
                             {product.imagenUrl ? (
                               <div className="w-8 h-8 rounded-lg overflow-hidden bg-white shrink-0 flex items-center justify-center border border-zinc-100"><img src={product.imagenUrl} alt={product.nombre} className="w-full h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /></div>
                             ) : (
                               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0"><ImageIcon className="h-4 w-4 text-blue-400" /></div>
                             )}
-                            <div>
-                              <p className="text-sm font-medium">{product.nombre}</p>
-                              {product.descripcion && <p className="text-xs text-zinc-400 max-w-[200px] truncate hidden sm:block">{product.descripcion}</p>}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium line-clamp-2 hover:text-[#123d83]">{product.nombre}</p>
+                              {product.descripcion && <p className="text-xs text-zinc-400 max-w-[260px] truncate hidden sm:block">{product.descripcion}</p>}
                             </div>
-                          </div>
+                          </button>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell"><Badge variant="secondary" className={`text-xs ${CATEGORIA_COLORS[product.categoria] || 'bg-zinc-100 text-zinc-700'}`}>{getCategoriaLabel(product.categoria)}</Badge></TableCell>
                         <TableCell className="hidden md:table-cell text-sm font-medium">${product.precio.toFixed(2)}</TableCell>
