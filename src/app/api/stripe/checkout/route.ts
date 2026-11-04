@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { getStripe, urlBase } from '@/lib/stripe';
-import { CLAVES_PUNTOS_GAS, esBalitaGas, textoPuntoGas } from '@/lib/puntos-gas';
+import { esBalitaGas, textoPunto } from '@/lib/puntos-gas';
+import { leerPuntos } from '@/lib/puntos-recogida';
+import { existencias, itemsAMetadata } from '@/lib/existencia';
 
 const checkoutSchema = z.object({
   nombreComprador: z.string().min(2, 'El nombre del comprador es requerido'),
@@ -18,7 +20,7 @@ const checkoutSchema = z.object({
     .array(z.object({ id: z.number().int().positive(), qty: z.number().int().min(1).max(50) }))
     .min(1, 'El carrito está vacío')
     .max(30),
-  puntoRecogida: z.enum(CLAVES_PUNTOS_GAS).optional(),
+  puntoRecogida: z.string().max(60).optional(),
 });
 
 // POST /api/stripe/checkout — crea el pedido (pendiente de pago) y la sesión de
@@ -53,15 +55,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Hay productos en el carrito que no se pagan por aquí.' }, { status: 400 });
     }
 
-    // Las balitas de gas se recogen en uno de los dos puntos; es obligatorio elegirlo
+    // No vender más de lo que hay (los productos sin existencia definida no tienen límite)
+    const stock = await existencias([...cantidades.keys()]);
+    const sinStock = productos.find((p) => {
+      const hay = stock.get(p.id);
+      return hay !== null && hay !== undefined && cantidades.get(p.id)! > hay;
+    });
+    if (sinStock) {
+      const hay = stock.get(sinStock.id) ?? 0;
+      return NextResponse.json(
+        { ok: false, error: hay > 0 ? `Solo quedan ${hay} de ${sinStock.nombre}. Ajusta tu carrito.` : `${sinStock.nombre} está agotado.` },
+        { status: 409 }
+      );
+    }
+
+    // Las balitas de gas se recogen en uno de los puntos activos; es obligatorio elegirlo
     const llevaGas = productos.some((p) => esBalitaGas(p.nombre));
-    if (llevaGas && !data.puntoRecogida) {
+    const punto = llevaGas ? (await leerPuntos()).find((p) => p.activo && p.id === data.puntoRecogida) : undefined;
+    if (llevaGas && !punto) {
       return NextResponse.json(
         { ok: false, faltaPunto: true, error: 'Elige dónde vas a recoger la balita de gas' },
         { status: 400 }
       );
     }
-    const recogida = llevaGas && data.puntoRecogida ? textoPuntoGas(data.puntoRecogida) : null;
+    const recogida = punto ? textoPunto(punto) : null;
 
     const lineas = productos.map((p) => ({ p, qty: cantidades.get(p.id)! }));
     const total = lineas.reduce((s, l) => s + Math.round(l.p.precio * 100) * l.qty, 0) / 100;
@@ -87,7 +104,12 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       customer_email: data.emailComprador || cliente.email,
       client_reference_id: String(pedido.id),
-      metadata: { pedidoId: String(pedido.id), userId: String(cliente.id), ...(recogida ? { recogida } : {}) },
+      metadata: {
+        pedidoId: String(pedido.id),
+        userId: String(cliente.id),
+        items: itemsAMetadata([...cantidades].map(([id, qty]) => ({ id, qty }))),
+        ...(recogida ? { recogida } : {}),
+      },
       payment_intent_data: {
         metadata: { pedidoId: String(pedido.id), ...(recogida ? { recogida } : {}) },
         description: `Pedido #${pedido.id} Ambitosmax${recogida ? ` — Recogida: ${recogida}` : ''}`,

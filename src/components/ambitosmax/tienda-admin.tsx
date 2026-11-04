@@ -25,11 +25,12 @@ import {
   Plus, Pencil, Trash2, Loader2, Store, ExternalLink, ImageIcon, Save, Check, Upload, X, Camera, Link2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { PuntosRecogidaAdmin } from './puntos-recogida-admin';
 
 interface Product {
   id: number; nombre: string; descripcion: string | null; precio: number;
   categoria: string; tiktokUrl: string | null; imagenUrl: string | null;
-  activo: boolean; orden: number;
+  activo: boolean; orden: number; existencia?: number | null;
 }
 
 const CATEGORIAS = [
@@ -61,12 +62,12 @@ const CATEGORIA_COLORS: Record<string, string> = {
 
 interface ProductForm {
   nombre: string; descripcion: string; precio: string; categoria: string;
-  tiktokUrl: string; imagenUrl: string; activo: boolean; orden: string;
+  tiktokUrl: string; imagenUrl: string; activo: boolean; orden: string; existencia: string;
 }
 
 const EMPTY_FORM: ProductForm = {
   nombre: '', descripcion: '', precio: '', categoria: 'general',
-  tiktokUrl: '', imagenUrl: '', activo: true, orden: '0',
+  tiktokUrl: '', imagenUrl: '', activo: true, orden: '0', existencia: '',
 };
 
 function safeErrorMessage(err: unknown): string {
@@ -159,6 +160,7 @@ export function TiendaAdmin() {
       precio: String(product.precio), categoria: product.categoria,
       tiktokUrl: product.tiktokUrl || '', imagenUrl: product.imagenUrl || '',
       activo: product.activo, orden: String(product.orden),
+      existencia: product.existencia == null ? '' : String(product.existencia),
     });
     setDialogOpen(true);
   };
@@ -220,7 +222,9 @@ export function TiendaAdmin() {
     if (isNaN(precio) || precio < 0) { toast.error('Precio no válido'); return; }
     setSaving(true);
     try {
-      const payload = { ...form, precio, orden: parseInt(form.orden) || 0 };
+      // Existencia vacía = sin límite
+      const existencia = form.existencia.trim() === '' ? null : Math.max(0, parseInt(form.existencia) || 0);
+      const payload = { ...form, precio, orden: parseInt(form.orden) || 0, existencia };
       // Si la imagen no cambió (sigue siendo la URL relativa del servidor),
       // no enviarla: así no se sobreescribe la foto original guardada en la BD.
       if (form.imagenUrl.startsWith('/api/')) {
@@ -297,6 +301,8 @@ export function TiendaAdmin() {
         </CardContent>
       </Card>
 
+      <PuntosRecogidaAdmin />
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total Productos', value: products.length, bg: 'bg-blue-50' },
@@ -336,6 +342,7 @@ export function TiendaAdmin() {
                     <TableHead>Nombre</TableHead>
                     <TableHead className="hidden sm:table-cell">Categoría</TableHead>
                     <TableHead className="hidden md:table-cell">Precio</TableHead>
+                    <TableHead>Existencia</TableHead>
                     <TableHead className="hidden lg:table-cell">Link Compra</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
@@ -361,6 +368,11 @@ export function TiendaAdmin() {
                         </TableCell>
                         <TableCell className="hidden sm:table-cell"><Badge variant="secondary" className={`text-xs ${CATEGORIA_COLORS[product.categoria] || 'bg-zinc-100 text-zinc-700'}`}>{getCategoriaLabel(product.categoria)}</Badge></TableCell>
                         <TableCell className="hidden md:table-cell text-sm font-medium">${product.precio.toFixed(2)}</TableCell>
+                        <TableCell className="text-sm">
+                          {product.existencia == null ? <span className="text-zinc-400">Sin límite</span>
+                            : product.existencia === 0 ? <Badge variant="secondary" className="bg-red-100 text-red-700 text-xs">Agotado</Badge>
+                            : <span className={product.existencia <= 5 ? 'font-semibold text-amber-700' : 'font-medium'}>{product.existencia}</span>}
+                        </TableCell>
                         <TableCell className="hidden lg:table-cell">
                           {product.tiktokUrl ? (
                             <a href={product.tiktokUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-[#123d83] hover:text-blue-700"><ExternalLink className="h-3 w-3" />Ver Link</a>
@@ -394,6 +406,7 @@ export function TiendaAdmin() {
             <div className="space-y-2"><Label className="text-xs font-medium">Descripción</Label><Textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} placeholder="Descripción del producto" rows={3} /></div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2"><Label className="text-xs font-medium">Precio *</Label><Input type="number" step="0.01" min="0" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} placeholder="0.00" />{precioOrigen !== null && <p className="text-[11px] text-amber-700">Precio en la tienda de origen: ${precioOrigen.toFixed(2)}. Pon tu precio de venta.</p>}</div>
+              <div className="space-y-2"><Label className="text-xs font-medium">Existencia</Label><Input type="number" min="0" step="1" value={form.existencia} onChange={(e) => setForm({ ...form, existencia: e.target.value })} placeholder="Sin límite" /><p className="text-[11px] text-zinc-500">Vacío = sin límite. Baja sola con cada venta pagada.</p></div>
               <div className="space-y-2"><Label className="text-xs font-medium">Orden</Label><Input type="number" value={form.orden} onChange={(e) => setForm({ ...form, orden: e.target.value })} placeholder="0" /></div>
             </div>
             <div className="space-y-2">

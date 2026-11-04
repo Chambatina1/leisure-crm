@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import { asegurarProductosNuevos } from '@/lib/productos-nuevos';
+import { existencias, guardarExistencia } from '@/lib/existencia';
 
 // ─── Esquemas de validación ─────────────────────────────────────────────
 const optionalUrl = z.string().optional().or(z.literal(''));
@@ -15,6 +16,7 @@ const createSchema = z.object({
   imagenUrl: optionalUrl,
   activo: z.boolean().optional().default(true),
   orden: z.number().int().optional().default(0),
+  existencia: z.number().int().min(0).nullable().optional(),
 });
 
 const updateSchema = z.object({
@@ -27,6 +29,7 @@ const updateSchema = z.object({
   imagenUrl: optionalUrl,
   activo: z.boolean().optional(),
   orden: z.number().int().optional(),
+  existencia: z.number().int().min(0).nullable().optional(),
 });
 
 // ─── GET /api/tienda/admin ─────────────────────────────────────────────
@@ -59,8 +62,10 @@ export async function GET(request: NextRequest) {
     // Miniaturas por URL ligera en vez de base64 incrustado.
     // La versión (?v=) cambia al actualizar el producto → el navegador
     // descarga la foto nueva en vez de servir la vieja de su caché.
+    const stock = await existencias();
     const light = products.map((p) => ({
       ...p,
+      existencia: stock.get(p.id) ?? null,
       imagenUrl: p.imagenUrl
         ? p.imagenUrl.startsWith('data:')
           ? `/api/tienda/imagen/${p.id}?v=${new Date(p.updatedAt).getTime()}`
@@ -108,6 +113,8 @@ export async function POST(request: NextRequest) {
         orden: data.orden,
       },
     });
+
+    if (data.existencia !== undefined) await guardarExistencia(product.id, data.existencia);
 
     return NextResponse.json({ ok: true, data: product }, { status: 201 });
   } catch (error) {
@@ -164,6 +171,7 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data,
     });
+    if (updateData.existencia !== undefined) await guardarExistencia(id, updateData.existencia);
 
     return NextResponse.json({ ok: true, data: product });
   } catch (error) {

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface Product { id: number; nombre: string; descripcion: string | null; precio: number; categoria: string; imagenUrl: string | null; tiktokUrl: string | null; }
+interface Product { id: number; nombre: string; descripcion: string | null; precio: number; categoria: string; imagenUrl: string | null; tiktokUrl: string | null; existencia?: number | null; }
 interface GroupedProducts { [category: string]: Product[]; }
 
 const CATEGORY_CONFIG: Record<string, { label: string; icon: typeof Truck; color: string; bgColor: string }> = {
@@ -91,6 +91,13 @@ export function Tienda() {
   }, [products, grouped, activeCat, search]);
 
   function addToCart(p: Product, abrir = false) {
+    // No dejar añadir más de lo que queda en existencia
+    const enCarrito = useCartStore.getState().items.find((i) => i.product.id === p.id)?.qty || 0;
+    if (p.existencia != null && enCarrito >= p.existencia) {
+      toast.error(p.existencia > 0 ? `Solo quedan ${p.existencia} de ${p.nombre}` : `${p.nombre} está agotado`);
+      if (abrir && enCarrito > 0) setCartOpen(true);
+      return;
+    }
     addItem({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria, imagenUrl: p.imagenUrl });
     if (abrir) {
       setCartOpen(true);
@@ -226,9 +233,11 @@ export function Tienda() {
                 {product.descripcion && <CardDescription className="text-xs line-clamp-2">{product.descripcion}</CardDescription>}
               </CardHeader>
               <CardContent className="pt-0 space-y-2">
-                {/CILINDRO/i.test(product.nombre) ? (
+                {product.existencia != null && product.existencia <= 0 ? (
+                  <Button disabled className="w-full text-sm font-bold">Agotado</Button>
+                ) : /CILINDRO/i.test(product.nombre) ? (
                   <>
-                    <div className="text-xs text-emerald-600 font-medium">✓ Recogida en Arroyo Arena (La Lisa) o Barbosa (Playa)</div>
+                    <div className="text-xs text-emerald-600 font-medium">✓ Recogida en punto de gas (lo eliges al pagar)</div>
                     <Button
                       className="w-full bg-[#55b949] hover:bg-[#3f9a35] text-white text-sm font-bold"
                       onClick={() => addToCart(product, true)}

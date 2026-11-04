@@ -1,22 +1,15 @@
-// Puntos donde se recogen las balitas (cilindros) de gas compradas en la tienda.
-// Son los dos únicos sitios con balitas; el cliente elige uno al pagar.
+// Tipos y utilidades de los puntos de recogida de las balitas de gas.
+// La lista la edita el administrador (ver src/lib/puntos-recogida.ts).
 // Sin dependencias del servidor: lo usan el formulario y la API de Stripe.
-export const PUNTOS_GAS = {
-  'bar-madera': {
-    nombre: 'Punto de Gas de Madera',
-    lugar: 'Arroyo Arena, La Lisa',
-  },
-  barbosa: {
-    nombre: 'Punto de venta Barbosa',
-    lugar: 'Municipio Playa',
-  },
-} as const;
+export interface PuntoRecogida {
+  id: string;
+  nombre: string;
+  lugar: string;
+  activo: boolean;
+}
 
-export type PuntoGas = keyof typeof PUNTOS_GAS;
-export const CLAVES_PUNTOS_GAS = Object.keys(PUNTOS_GAS) as [PuntoGas, ...PuntoGas[]];
-
-export function textoPuntoGas(p: PuntoGas): string {
-  return `${PUNTOS_GAS[p].nombre} (${PUNTOS_GAS[p].lugar})`;
+export function textoPunto(p: Pick<PuntoRecogida, 'nombre' | 'lugar'>): string {
+  return p.lugar ? `${p.nombre} (${p.lugar})` : p.nombre;
 }
 
 // Las balitas de gas se llaman "CILINDRO ..." en la tienda
