@@ -18,6 +18,7 @@ export function LoginDialog() {
   const showLoginDialog = useAppStore((s) => s.showLoginDialog);
   const setShowLoginDialog = useAppStore((s) => s.setShowLoginDialog);
   const login = useAppStore((s) => s.login);
+  const soloTienda = useAppStore((s) => s.loginAcceso === 'tienda');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -54,9 +55,11 @@ export function LoginDialog() {
           <div className="mx-auto mb-3 flex flex-col items-center gap-2">
             <Image src="/logo-ambitos.png" alt="Ambitos" width={112} height={112} className="h-28 w-28 object-contain" priority />
           </div>
-          <DialogTitle className="text-xl">Acceso Administrativo</DialogTitle>
+          <DialogTitle className="text-xl">{soloTienda ? 'Administrar tienda' : 'Acceso Administrativo'}</DialogTitle>
           <DialogDescription>
-            Ingresa la contraseña para acceder al panel de administración
+            {soloTienda
+              ? 'Ingresa la contraseña de la tienda para añadir y modificar productos'
+              : 'Ingresa la contraseña para acceder al panel de administración'}
           </DialogDescription>
         </DialogHeader>
 
