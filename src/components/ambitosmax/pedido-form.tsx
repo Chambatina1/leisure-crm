@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
 import { useCartStore } from './cart-store';
-import { PUNTOS_GAS, CLAVES_PUNTOS_GAS, esBalitaGas, type PuntoGas } from '@/lib/puntos-gas';
+import { esBalitaGas, type PuntoRecogida } from '@/lib/puntos-gas';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,8 +66,21 @@ export function PedidoForm() {
   const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
   // Las balitas de gas se recogen en uno de los dos puntos: hay que elegirlo
   const llevaGas = pagaConTarjeta && lineas.some((l) => esBalitaGas(l.nombre));
-  const [punto, setPunto] = useState<PuntoGas | null>(null);
+  const [punto, setPunto] = useState<string | null>(null);
   const [errorPunto, setErrorPunto] = useState(false);
+  const [puntos, setPuntos] = useState<PuntoRecogida[]>([]);
+  // Los puntos los define el administrador en Tienda → Puntos de recogida
+  useEffect(() => {
+    if (!llevaGas) return;
+    fetch('/api/tienda/puntos')
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.ok) return;
+        setPuntos(j.data);
+        if (j.data.length === 1) setPunto(j.data[0].id);
+      })
+      .catch(() => toast.error('No se pudieron cargar los puntos de recogida'));
+  }, [llevaGas]);
 
   useEffect(() => {
     if (isEdit && selectedPedidoId) {
@@ -435,9 +448,9 @@ export function PedidoForm() {
                   </div>
                   ¿Dónde recoges la balita de gas? *
                 </h2>
-                <p className="text-sm text-zinc-500 mb-3">Las balitas solo están en estos dos puntos. Marca uno.</p>
+                <p className="text-sm text-zinc-500 mb-3">Las balitas solo están en estos puntos. Marca uno.</p>
                 <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {CLAVES_PUNTOS_GAS.map((k) => {
+                  {puntos.map(({ id: k, nombre, lugar }) => {
                     const sel = punto === k;
                     return (
                       <button
@@ -454,14 +467,14 @@ export function PedidoForm() {
                           {sel && <span className="h-2.5 w-2.5 rounded-full bg-[#55b949]" />}
                         </span>
                         <span>
-                          <span className="block font-semibold text-zinc-900">{PUNTOS_GAS[k].nombre}</span>
-                          <span className="block text-sm text-zinc-600">{PUNTOS_GAS[k].lugar}</span>
+                          <span className="block font-semibold text-zinc-900">{nombre}</span>
+                          {lugar && <span className="block text-sm text-zinc-600">{lugar}</span>}
                         </span>
                       </button>
                     );
                   })}
                 </div>
-                {errorPunto && <p className="text-xs text-red-500 mt-2">Elige uno de los dos puntos de recogida</p>}
+                {errorPunto && <p className="text-xs text-red-500 mt-2">Elige uno de los puntos de recogida</p>}
               </div>
             </>
           )}

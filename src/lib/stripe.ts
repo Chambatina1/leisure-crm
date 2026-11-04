@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
+import { descontarExistencia, itemsDeMetadata } from '@/lib/existencia';
 
 // Cliente de Stripe. Sin STRIPE_SECRET_KEY la tienda sigue funcionando como
 // antes (pedido sin pago en línea), así que esto devuelve null.
@@ -27,6 +28,8 @@ export async function aplicarSesion(session: Stripe.Checkout.Session, tipo?: str
   if (session.payment_status === 'paid' || tipo === 'checkout.session.async_payment_succeeded') estado = 'pagado';
   else if (tipo === 'checkout.session.async_payment_failed' || tipo === 'checkout.session.expired') estado = 'cancelado';
   if (!estado) return null;
-  await db.pedido.updateMany({ where: { id: pedidoId, estado: 'pendiente_pago' }, data: { estado } });
+  const r = await db.pedido.updateMany({ where: { id: pedidoId, estado: 'pendiente_pago' }, data: { estado } });
+  // Al cobrarse (solo la primera vez) se descuenta lo vendido de la existencia
+  if (r.count > 0 && estado === 'pagado') await descontarExistencia(itemsDeMetadata(session.metadata?.items));
   return estado;
 }
