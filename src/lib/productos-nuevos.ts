@@ -37,6 +37,16 @@ const ALTAS: AltaProducto[] = [
     orden: 0,
     imagenUrl: '/carrusel/surtidor.png',
   },
+  {
+    id: 'cilindro_gas_6825_con_vacio',
+    nombre: 'CILINDRO LLENO CON ENTREGA DE VACÍO',
+    descripcion:
+      'Precio: 68.25 USD. Al recoger se entrega un cilindro vacío a cambio. Recogida en el punto de gas que elijas al pagar.',
+    precio: 68.25,
+    categoria: 'combustible',
+    orden: 0,
+    copiarImagenDe: 'CILINDRO LLENO SIN ENTREGA DE VACÍO',
+  },
 ];
 
 // Cambios puntuales a productos ya creados (también de una sola vez).
@@ -65,6 +75,15 @@ const CAMBIOS: CambioProducto[] = [
       descripcion:
         'Precio: 85 USD. Recogida en "LOS AVIONCITOS": Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana.',
       precio: 85,
+    },
+  },
+  {
+    // Ya no es solo Los Avioncitos: el cliente elige el punto al pagar
+    id: 'cilindro_gas_85_puntos_recogida',
+    buscarNombre: 'CILINDRO LLENO SIN ENTREGA DE VACÍO',
+    datos: {
+      descripcion:
+        'Precio: 85 USD. No hace falta entregar cilindro vacío. Recogida en el punto de gas que elijas al pagar.',
     },
   },
 ];
