@@ -318,8 +318,6 @@ export function TiendaAdmin() {
         </CardContent>
       </Card>
 
-      <PuntosRecogidaAdmin />
-
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total Productos', value: products.length, bg: 'bg-blue-50' },
@@ -351,7 +349,35 @@ export function TiendaAdmin() {
           ) : filtered.length === 0 ? (
             <div className="p-12 text-center text-zinc-400"><Store className="h-10 h-10 mx-auto mb-3 text-zinc-300" /><p className="text-sm">No hay productos {filterCat !== 'all' ? 'en esta categoría' : ''}</p></div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            {/* Teléfono: una tarjeta por producto con los botones a la vista */}
+            <div className="md:hidden divide-y divide-zinc-100">
+              {filtered.map((product) => (
+                <div key={product.id} className="p-3 flex gap-3">
+                  <button type="button" onClick={() => openEdit(product)} className="w-16 h-16 rounded-lg overflow-hidden bg-zinc-50 border border-zinc-100 shrink-0 flex items-center justify-center">
+                    {product.imagenUrl ? <img src={product.imagenUrl} alt={product.nombre} className="w-full h-full object-contain" /> : <ImageIcon className="h-6 w-6 text-blue-300" />}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <button type="button" onClick={() => openEdit(product)} className="text-left w-full">
+                      <p className="text-sm font-semibold leading-tight line-clamp-2">{product.nombre}</p>
+                      <p className="text-sm text-zinc-600 mt-0.5">
+                        ${product.precio.toFixed(2)} · {product.existencia == null ? 'Sin límite' : product.existencia === 0 ? <span className="text-red-600 font-semibold">Agotado</span> : `Quedan ${product.existencia}`}
+                      </p>
+                    </button>
+                    <div className="flex items-center justify-between mt-2">
+                      <label className="flex items-center gap-2 text-xs text-zinc-500">
+                        <Switch checked={product.activo} onCheckedChange={() => toggleActive(product)} />{product.activo ? 'Visible' : 'Oculto'}
+                      </label>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" className="h-8 px-3" onClick={() => openEdit(product)}><Pencil className="h-4 w-4 mr-1" />Editar</Button>
+                        <Button size="sm" variant="outline" className="h-8 w-8 p-0 text-red-600 border-red-200" onClick={() => setDeleteId(product.id)} aria-label="Eliminar"><Trash2 className="h-4 w-4" /></Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-zinc-50">
@@ -408,9 +434,12 @@ export function TiendaAdmin() {
                 </TableBody>
               </Table>
             </div>
+            </>
           )}
         </CardContent>
       </Card>
+
+      <PuntosRecogidaAdmin />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
