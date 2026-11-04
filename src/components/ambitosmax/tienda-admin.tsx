@@ -165,54 +165,71 @@ export function TiendaAdmin() {
     setDialogOpen(true);
   };
 
+  // Acepta cualquier foto del celular (cámara o galería, también HEIC del iPhone
+  // y fotos de muchos megas): se decodifica en el navegador, se reduce y se
+  // guarda como JPEG ligero dentro del producto (sobrevive a los deploys de Render).
   const handleImageUpload = async (file: File) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) { toast.error(`Tipo no permitido (${file.type}). Usa JPG, PNG, GIF o WebP.`); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error(`Imagen muy grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo 8MB.`); return; }
+    const esImagen = file.type.startsWith('image/') || /\.(jpe?g|png|gif|webp|heic|heif|avif|bmp)$/i.test(file.name);
+    if (!esImagen) { toast.error('Ese archivo no es una foto.'); return; }
+    if (file.size > 60 * 1024 * 1024) { toast.error('La foto pesa más de 60MB.'); return; }
     setUploadingImage(true);
     try {
-      // La imagen se guarda como data URL dentro del producto (en la BD),
-      // así sobrevive a los deploys de Render sin depender de almacenamiento externo.
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
-        reader.readAsDataURL(file);
-      });
-
-      // Redimensionar y comprimir (los GIF animados no pueden pasar por canvas)
-      let finalUrl = dataUrl;
-      if (file.type !== 'image/gif') {
-        finalUrl = await new Promise<string>((resolve) => {
-          const img = new Image();
-          img.onload = () => {
-            const MAX = 900;
-            const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-            if (scale === 1 && dataUrl.length < 300 * 1024) { resolve(dataUrl); return; }
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            const ctx = canvas.getContext('2d');
-            if (!ctx) { resolve(dataUrl); return; }
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', 0.85));
-          };
-          img.onerror = () => resolve(dataUrl);
-          img.src = dataUrl;
+      // Los GIF se guardan tal cual (si son ligeros) para no perder la animación
+      if (file.type === 'image/gif' && file.size < 1.2 * 1024 * 1024) {
+        const gif = await new Promise<string>((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result as string);
+          r.onerror = () => reject(new Error('No se pudo leer el archivo'));
+          r.readAsDataURL(file);
         });
-      }
-
-      if (finalUrl.length > 1.5 * 1024 * 1024) {
-        toast.error('La imagen sigue siendo muy grande después de comprimir. Prueba con una más pequeña.');
+        setForm((prev) => ({ ...prev, imagenUrl: gif }));
+        toast.success('Imagen lista — se guardará junto con el producto');
         return;
       }
 
+      // Decodificar respetando la orientación de la cámara
+      let fuente: ImageBitmap | HTMLImageElement;
+      try {
+        fuente = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      } catch {
+        const url = URL.createObjectURL(file);
+        try {
+          fuente = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error('formato'));
+            img.src = url;
+          });
+        } finally {
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+      }
+
+      const w = fuente.width, h = fuente.height;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx || !w || !h) throw new Error('formato');
+      // Reducir hasta que pese poco (máx. ~1.2MB en la BD)
+      let max = 1200, calidad = 0.85, finalUrl = '';
+      for (let intento = 0; intento < 5; intento++) {
+        const scale = Math.min(1, max / Math.max(w, h));
+        canvas.width = Math.round(w * scale);
+        canvas.height = Math.round(h * scale);
+        ctx.fillStyle = '#ffffff'; // fondo blanco para PNG con transparencia
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(fuente, 0, 0, canvas.width, canvas.height);
+        finalUrl = canvas.toDataURL('image/jpeg', calidad);
+        if (finalUrl.length < 1.2 * 1024 * 1024) break;
+        max = Math.round(max * 0.75);
+        calidad = Math.max(0.6, calidad - 0.08);
+      }
+      if ('close' in fuente) fuente.close();
+
       setForm((prev) => ({ ...prev, imagenUrl: finalUrl }));
-      toast.success('Imagen lista — se guardará junto con el producto');
+      toast.success('Foto lista — se guardará junto con el producto');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Error desconocido';
-      console.error('[Upload] Error:', errorMsg);
-      toast.error(`Error al procesar imagen: ${errorMsg}`);
+      console.error('[Upload] Error:', err);
+      toast.error('Este navegador no pudo abrir esa foto. Prueba con otra, o hazle una captura de pantalla y sube la captura.');
     } finally { setUploadingImage(false); }
   };
 
