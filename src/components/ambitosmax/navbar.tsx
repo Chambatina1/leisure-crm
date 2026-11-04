@@ -234,8 +234,10 @@ const adminNavItems: { view: AdminView; label: string; icon: typeof BarChart3 }[
 ];
 
 function AdminNavbar() {
-  const { adminView, setAdminView, logout, goBackToPublic } = useAppStore();
+  const { adminView, setAdminView, logout, goBackToPublic, rolAdmin } = useAppStore();
   const [sheetOpen, setSheetOpen] = useState(false);
+  // El acceso de solo tienda ve únicamente la sección Tienda
+  const navItems = rolAdmin === 'tienda' ? adminNavItems.filter((i) => i.view === 'tienda-admin') : adminNavItems;
 
   const handleNav = (view: AdminView) => {
     setAdminView(view);
@@ -273,7 +275,7 @@ function AdminNavbar() {
 
             {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-1">
-              {adminNavItems.map((item) => {
+              {navItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.view);
                 return (
@@ -334,7 +336,7 @@ function AdminNavbar() {
                     </div>
                   </div>
                   <nav className="flex-1 p-2 overflow-y-auto">
-                    {adminNavItems.map((item) => {
+                    {navItems.map((item) => {
                       const Icon = item.icon;
                       const active = isActive(item.view);
                       return (
@@ -379,7 +381,7 @@ function AdminNavbar() {
       {/* Mobile Admin Bottom Tab Bar - Show first 5 nav items */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-[#071a46] to-[#123d83] border-t border-[#123d83]/30 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-1 overflow-x-auto">
-          {adminNavItems.slice(0, 5).map((item) => {
+          {navItems.slice(0, 5).map((item) => {
             const Icon = item.icon;
             const active = isActive(item.view);
             return (

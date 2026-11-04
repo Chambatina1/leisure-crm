@@ -24,6 +24,8 @@ interface AppState {
   // Auth - Admin
   isAdmin: boolean;
   isLoggedIn: boolean;
+  // 'admin' = todo el panel; 'tienda' = solo administrar la tienda
+  rolAdmin: 'admin' | 'tienda' | null;
   login: (password: string) => Promise<{ ok: boolean; error?: string }>;
   verifySession: () => Promise<void>;
   logout: () => void;
@@ -98,6 +100,7 @@ export const useAppStore = create<AppState>()(
       // Auth - Admin
       isAdmin: false,
       isLoggedIn: false,
+      rolAdmin: null,
       login: async (password: string) => {
         try {
           const res = await fetch('/api/auth/login', {
@@ -110,11 +113,13 @@ export const useAppStore = create<AppState>()(
             return { ok: false, error: json.error || 'Contraseña incorrecta' };
           }
           const pending = get().pendingAdminView;
+          const rol = json.rol === 'tienda' ? 'tienda' : 'admin';
           set({
             isLoggedIn: true,
             isAdmin: true,
+            rolAdmin: rol,
             mode: 'admin',
-            adminView: pending || 'dashboard',
+            adminView: rol === 'tienda' ? 'tienda-admin' : pending || 'dashboard',
             showLoginDialog: false,
             pendingAdminView: null,
           });
@@ -128,8 +133,10 @@ export const useAppStore = create<AppState>()(
         try {
           const res = await fetch('/api/auth/me');
           const json = await res.json();
-          if (!json.isAdmin) {
-            set({ isLoggedIn: false, isAdmin: false, mode: 'public', adminView: 'dashboard' });
+          if (!json.rol) {
+            set({ isLoggedIn: false, isAdmin: false, rolAdmin: null, mode: 'public', adminView: 'dashboard' });
+          } else {
+            set({ rolAdmin: json.rol });
           }
         } catch {
           /* sin conexión: no cambiar estado */
@@ -140,6 +147,7 @@ export const useAppStore = create<AppState>()(
         set({
           isLoggedIn: false,
           isAdmin: false,
+          rolAdmin: null,
           mode: 'public',
           adminView: 'dashboard',
           pendingAdminView: null,
@@ -247,7 +255,7 @@ export const useAppStore = create<AppState>()(
       goToAdmin: () => {
         const { isLoggedIn } = get();
         if (isLoggedIn) {
-          set({ mode: 'admin', adminView: 'dashboard' });
+          set({ mode: 'admin', adminView: get().rolAdmin === 'tienda' ? 'tienda-admin' : 'dashboard' });
         } else {
           set({ showLoginDialog: true, pendingAdminView: 'dashboard' });
         }
@@ -259,6 +267,7 @@ export const useAppStore = create<AppState>()(
         currentUser: state.currentUser,
         isAdmin: state.isAdmin,
         isLoggedIn: state.isLoggedIn,
+        rolAdmin: state.rolAdmin,
       }),
       storage: {
         getItem: (name) => {
