@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  checkAdminPassword,
+  rolPorPassword,
   createSessionToken,
   setSessionCookie,
   clientIp,
@@ -31,19 +31,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Acceso no configurado' }, { status: 503 });
   }
 
-  if (!checkAdminPassword(password)) {
+  const rol = rolPorPassword(password);
+  if (!rol) {
     registrarFallo(ip);
     return NextResponse.json({ ok: false, error: 'Contraseña incorrecta' }, { status: 401 });
   }
 
-  const token = createSessionToken();
+  const token = createSessionToken(rol);
   if (!token) {
     console.error('[auth] SESSION_SECRET/JWT_SECRET falta o es demasiado corto');
     return NextResponse.json({ ok: false, error: 'Acceso no configurado' }, { status: 503 });
   }
 
   limpiarFallos(ip);
-  const res = NextResponse.json({ ok: true });
+  const res = NextResponse.json({ ok: true, rol });
   setSessionCookie(res, token);
   return res;
 }

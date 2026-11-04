@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { requireAdmin } from '@/lib/admin-auth';
+import { requireTienda } from '@/lib/admin-auth';
 import { guardarPuntos, leerPuntos } from '@/lib/puntos-recogida';
 
 const puntosSchema = z
@@ -19,14 +19,14 @@ const slug = (s: string) =>
 
 // GET /api/tienda/admin/puntos — todos los puntos de recogida
 export async function GET(request: NextRequest) {
-  const denied = requireAdmin(request);
+  const denied = requireTienda(request);
   if (denied) return denied;
   return NextResponse.json({ ok: true, data: await leerPuntos() });
 }
 
 // PUT /api/tienda/admin/puntos — guarda la lista completa
 export async function PUT(request: NextRequest) {
-  const denied = requireAdmin(request);
+  const denied = requireTienda(request);
   if (denied) return denied;
   try {
     const validated = puntosSchema.safeParse(await request.json());

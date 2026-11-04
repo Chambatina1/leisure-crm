@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/admin-auth';
+import { requireTienda } from '@/lib/admin-auth';
 
 // ═══════════════════════════════════════════════════════════════
 // POST /api/tienda/importar  (admin)  { url }
@@ -137,7 +137,7 @@ async function imagenComoDataUrl(url: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
-  const denied = requireAdmin(request);
+  const denied = requireTienda(request);
   if (denied) return denied;
 
   let url: URL;

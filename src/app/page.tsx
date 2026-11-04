@@ -186,6 +186,7 @@ export default function Page() {
   const mode = useAppStore((s) => s.mode);
   const currentView = useAppStore((s) => s.currentView);
   const adminView = useAppStore((s) => s.adminView);
+  const rolAdmin = useAppStore((s) => s.rolAdmin);
   const verifySession = useAppStore((s) => s.verifySession);
   const [hasError, setHasError] = useState(false);
 
@@ -254,6 +255,8 @@ export default function Page() {
         default: return <Home />;
       }
     } else {
+      // El acceso de solo tienda únicamente ve la administración de la tienda
+      if (rolAdmin === 'tienda') return <TiendaAdmin />;
       switch (adminView) {
         case 'dashboard': return <AdminDashboard />;
         case 'pedidos': return <PedidosList />;
@@ -272,7 +275,7 @@ export default function Page() {
         default: return <AdminDashboard />;
       }
     }
-  }, [mode, currentView, adminView]);
+  }, [mode, currentView, adminView, rolAdmin]);
 
   if (hasError) {
     return (

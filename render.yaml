@@ -23,3 +23,6 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      # Contraseña del acceso de solo tienda (panel → Tienda). Opcional.
+      - key: TIENDA_PASSWORD
+        sync: false
