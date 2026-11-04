@@ -26,6 +26,9 @@ interface AppState {
   isLoggedIn: boolean;
   // 'admin' = todo el panel; 'tienda' = solo administrar la tienda
   rolAdmin: 'admin' | 'tienda' | null;
+  // Por qué puerta se entra: botón Admin (todo) o "Administrar tienda" (solo tienda)
+  loginAcceso: 'admin' | 'tienda';
+  goToAdminTienda: () => void;
   login: (password: string) => Promise<{ ok: boolean; error?: string }>;
   verifySession: () => Promise<void>;
   logout: () => void;
@@ -101,12 +104,20 @@ export const useAppStore = create<AppState>()(
       isAdmin: false,
       isLoggedIn: false,
       rolAdmin: null,
+      loginAcceso: 'admin',
+      goToAdminTienda: () => {
+        if (get().isLoggedIn) {
+          set({ mode: 'admin', adminView: 'tienda-admin' });
+        } else {
+          set({ showLoginDialog: true, pendingAdminView: 'tienda-admin', loginAcceso: 'tienda' });
+        }
+      },
       login: async (password: string) => {
         try {
           const res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({ password, acceso: get().loginAcceso }),
           });
           const json = await res.json().catch(() => ({}));
           if (!res.ok || !json.ok) {
@@ -253,11 +264,12 @@ export const useAppStore = create<AppState>()(
       goBackToPublic: () =>
         set({ mode: 'public', adminView: 'dashboard' }),
       goToAdmin: () => {
-        const { isLoggedIn } = get();
-        if (isLoggedIn) {
-          set({ mode: 'admin', adminView: get().rolAdmin === 'tienda' ? 'tienda-admin' : 'dashboard' });
+        // El botón Admin es el acceso completo: con sesión de solo tienda, pide la contraseña general
+        const { isLoggedIn, rolAdmin } = get();
+        if (isLoggedIn && rolAdmin !== 'tienda') {
+          set({ mode: 'admin', adminView: 'dashboard' });
         } else {
-          set({ showLoginDialog: true, pendingAdminView: 'dashboard' });
+          set({ showLoginDialog: true, pendingAdminView: 'dashboard', loginAcceso: 'admin' });
         }
       },
     }),
