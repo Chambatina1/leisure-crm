@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
 import { descontarExistencia, itemsDeMetadata } from '@/lib/existencia';
+import { descontarBalitasPunto } from '@/lib/puntos-recogida';
 
 // Cliente de Stripe. Sin STRIPE_SECRET_KEY la tienda sigue funcionando como
 // antes (pedido sin pago en línea), así que esto devuelve null.
@@ -30,6 +31,9 @@ export async function aplicarSesion(session: Stripe.Checkout.Session, tipo?: str
   if (!estado) return null;
   const r = await db.pedido.updateMany({ where: { id: pedidoId, estado: 'pendiente_pago' }, data: { estado } });
   // Al cobrarse (solo la primera vez) se descuenta lo vendido de la existencia
-  if (r.count > 0 && estado === 'pagado') await descontarExistencia(itemsDeMetadata(session.metadata?.items));
+  if (r.count > 0 && estado === 'pagado') {
+    await descontarExistencia(itemsDeMetadata(session.metadata?.items));
+    await descontarBalitasPunto(session.metadata?.puntoId ?? '', Number(session.metadata?.balitas) || 0);
+  }
   return estado;
 }

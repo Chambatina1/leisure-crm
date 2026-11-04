@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
 import { useCartStore } from './cart-store';
-import { esBalitaGas, type PuntoRecogida } from '@/lib/puntos-gas';
+import { esBalitaGas, quedanEnPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +66,7 @@ export function PedidoForm() {
   const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
   // Las balitas de gas se recogen en uno de los dos puntos: hay que elegirlo
   const llevaGas = pagaConTarjeta && lineas.some((l) => esBalitaGas(l.nombre));
+  const nBalitas = lineas.filter((l) => esBalitaGas(l.nombre)).reduce((s, l) => s + l.qty, 0);
   const [punto, setPunto] = useState<string | null>(null);
   const [errorPunto, setErrorPunto] = useState(false);
   const [puntos, setPuntos] = useState<PuntoRecogida[]>([]);
@@ -77,7 +78,8 @@ export function PedidoForm() {
       .then((j) => {
         if (!j.ok) return;
         setPuntos(j.data);
-        if (j.data.length === 1) setPunto(j.data[0].id);
+        const conBalitas = (j.data as PuntoRecogida[]).filter((p) => (quedanEnPunto(p) ?? Infinity) > 0);
+        if (conBalitas.length === 1) setPunto(conBalitas[0].id);
       })
       .catch(() => toast.error('No se pudieron cargar los puntos de recogida'));
   }, [llevaGas]);
@@ -448,19 +450,25 @@ export function PedidoForm() {
                   </div>
                   ¿Dónde recoges la balita de gas? *
                 </h2>
-                <p className="text-sm text-zinc-500 mb-3">Las balitas solo están en estos puntos. Marca uno.</p>
+                <p className="text-sm text-zinc-500 mb-3">Las balitas solo están en estos puntos. Marca el punto donde quieres comprarla.</p>
                 <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {puntos.map(({ id: k, nombre, lugar }) => {
+                  {puntos.map((pt) => {
+                    const { id: k, nombre, lugar } = pt;
                     const sel = punto === k;
+                    const quedan = quedanEnPunto(pt);
+                    const agotado = quedan !== null && quedan <= 0;
+                    const pocas = quedan !== null && quedan > 0 && quedan < nBalitas;
                     return (
                       <button
                         key={k}
                         type="button"
                         role="radio"
                         aria-checked={sel}
+                        disabled={agotado}
                         onClick={() => { setPunto(k); setErrorPunto(false); }}
                         className={`text-left rounded-xl border-2 p-4 flex items-start gap-3 transition-colors ${
-                          sel ? 'border-[#55b949] bg-emerald-50' : errorPunto ? 'border-red-400 bg-red-50/40' : 'border-zinc-200 hover:border-emerald-300'
+                          agotado ? 'border-zinc-200 bg-zinc-50 opacity-60 cursor-not-allowed'
+                          : sel ? 'border-[#55b949] bg-emerald-50' : errorPunto ? 'border-red-400 bg-red-50/40' : 'border-zinc-200 hover:border-emerald-300'
                         }`}
                       >
                         <span className={`mt-0.5 h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center ${sel ? 'border-[#55b949]' : 'border-zinc-300'}`}>
@@ -469,6 +477,11 @@ export function PedidoForm() {
                         <span>
                           <span className="block font-semibold text-zinc-900">{nombre}</span>
                           {lugar && <span className="block text-sm text-zinc-600">{lugar}</span>}
+                          {quedan !== null && (
+                            <span className={`block text-sm font-semibold mt-1 ${agotado ? 'text-red-600' : pocas ? 'text-amber-600' : 'text-emerald-700'}`}>
+                              {agotado ? 'Agotado en este punto' : `${quedan} ${quedan === 1 ? 'disponible' : 'disponibles'}${pocas ? ` (pides ${nBalitas})` : ''}`}
+                            </span>
+                          )}
                         </span>
                       </button>
                     );

@@ -25,3 +25,13 @@ export async function guardarPuntos(puntos: PuntoRecogida[]) {
   const valor = JSON.stringify(puntos);
   await db.config.upsert({ where: { clave: CLAVE }, update: { valor }, create: { clave: CLAVE, valor } });
 }
+
+/** Descuenta balitas vendidas del punto donde se recogen (si el punto lleva control). */
+export async function descontarBalitasPunto(puntoId: string, cantidad: number) {
+  if (!puntoId || !(cantidad > 0)) return;
+  const puntos = await leerPuntos();
+  const p = puntos.find((x) => x.id === puntoId);
+  if (!p || typeof p.existencia !== 'number') return;
+  p.existencia = Math.max(0, p.existencia - cantidad);
+  await guardarPuntos(puntos);
+}

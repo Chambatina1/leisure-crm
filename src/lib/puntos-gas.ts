@@ -6,7 +6,13 @@ export interface PuntoRecogida {
   nombre: string;
   lugar: string;
   activo: boolean;
+  // Balitas disponibles en este punto; null o ausente = sin control (no se limita)
+  existencia?: number | null;
 }
+
+/** Balitas que quedan en el punto, o null si no se controla. */
+export const quedanEnPunto = (p: Pick<PuntoRecogida, 'existencia'>): number | null =>
+  typeof p.existencia === 'number' ? Math.max(0, p.existencia) : null;
 
 export function textoPunto(p: Pick<PuntoRecogida, 'nombre' | 'lugar'>): string {
   return p.lugar ? `${p.nombre} (${p.lugar})` : p.nombre;

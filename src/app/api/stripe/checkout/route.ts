@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { getStripe, urlBase } from '@/lib/stripe';
-import { esBalitaGas, textoPunto } from '@/lib/puntos-gas';
+import { esBalitaGas, quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
 import { leerPuntos } from '@/lib/puntos-recogida';
 import { existencias, itemsAMetadata } from '@/lib/existencia';
 
@@ -78,6 +78,21 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    // Cada punto tiene sus propias balitas: no vender más de las que hay allí
+    const balitas = productos.filter((p) => esBalitaGas(p.nombre)).reduce((s, p) => s + cantidades.get(p.id)!, 0);
+    const enPunto = punto ? quedanEnPunto(punto) : null;
+    if (punto && enPunto !== null && balitas > enPunto) {
+      return NextResponse.json(
+        {
+          ok: false,
+          faltaPunto: true,
+          error: enPunto > 0
+            ? `En ${punto.nombre} solo quedan ${enPunto} balitas. Elige otro punto o ajusta tu carrito.`
+            : `En ${punto.nombre} no quedan balitas. Elige otro punto.`,
+        },
+        { status: 409 }
+      );
+    }
     const recogida = punto ? textoPunto(punto) : null;
 
     const lineas = productos.map((p) => ({ p, qty: cantidades.get(p.id)! }));
@@ -109,6 +124,7 @@ export async function POST(request: NextRequest) {
         userId: String(cliente.id),
         items: itemsAMetadata([...cantidades].map(([id, qty]) => ({ id, qty }))),
         ...(recogida ? { recogida } : {}),
+        ...(punto ? { puntoId: punto.id, balitas: String(balitas) } : {}),
       },
       payment_intent_data: {
         metadata: { pedidoId: String(pedido.id), ...(recogida ? { recogida } : {}) },
