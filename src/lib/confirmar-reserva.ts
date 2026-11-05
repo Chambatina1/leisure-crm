@@ -1,12 +1,13 @@
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
+import { descontarBalitasPunto } from '@/lib/puntos-recogida';
 import {
   asegurarTablaReservas,
   loteActual,
   nuevoPin,
   ahoraEnCuba,
   HORA_CIERRE,
-  PUNTO_RECOGIDA,
+  lugarDe,
   esc,
   fechaLarga,
   type Reserva,
@@ -49,13 +50,20 @@ export async function confirmarReservaCilindro(id: number, referencia: string): 
   const reserva = act[0];
   if (!reserva) return { ok: false, status: 409, error: 'La reserva cambió; recarga' };
 
+  // Los cilindros pagados salen de la existencia del punto elegido
+  if (reserva.puntoId) {
+    await descontarBalitasPunto(reserva.puntoId, reserva.cantidad).catch((e) =>
+      console.error('[cilindros] No se pudo descontar del punto:', e instanceof Error ? e.message : e)
+    );
+  }
+
   let correo: 'enviado' | 'sin_email' | 'fallo' = 'sin_email';
   if (reserva.emailComprador) {
     try {
       await enviarCorreo({
         to: reserva.emailComprador,
         subject: `Tu PIN de recogida: ${pin} — Reserva ${reserva.numero}`,
-        text: `Pago confirmado. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${PUNTO_RECOGIDA}. Debe presentar el carnet y decir el PIN.`,
+        text: `Pago confirmado. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${lugarDe(reserva)}. Debe presentar el carnet y decir el PIN.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
           <h2 style="color:#071a46">Pago confirmado</h2>
           <p>Hola ${esc(reserva.nombreComprador)}, tu reserva <b>${esc(reserva.numero)}</b> está pagada.</p>
@@ -63,7 +71,7 @@ export async function confirmarReservaCilindro(id: number, referencia: string): 
           <p><b>${reserva.cantidad}</b> cilindro(s) lleno(s), sin entrega de vacío.<br>
           Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)}<br>
           Listado del ${esc(fechaLarga(reserva.lote))}<br>
-          Lugar: ${esc(PUNTO_RECOGIDA)}</p>
+          Lugar: <b>${esc(lugarDe(reserva))}</b></p>
           <p style="color:#6b7280;font-size:13px">Al llegar, presenta el carnet de identidad y di este PIN.</p>
         </div>`,
       });

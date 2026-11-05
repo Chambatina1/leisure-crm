@@ -22,6 +22,7 @@ interface Reserva {
   pin: string | null;
   lote: string;
   notas: string | null;
+  puntoRecogida: string | null;
   createdAt: string;
 }
 
@@ -231,7 +232,7 @@ export function CilindrosAdmin() {
                 <div key={x.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-amber-50 rounded-lg p-3 text-sm">
                   <div>
                     <span className="font-mono font-bold">{x.numero}</span> · <b>${x.montoUsd.toFixed(2)}</b> · {x.cantidad} cil.
-                    <span className="text-zinc-500"> · paga {x.nombreComprador} ({x.telefonoComprador}) · recoge {x.nombreRecoge}</span>
+                    <span className="text-zinc-500"> · paga {x.nombreComprador} ({x.telefonoComprador}) · recoge {x.nombreRecoge}{x.puntoRecogida ? ` en ${x.puntoRecogida}` : ''}</span>
                     <span className="text-zinc-400"> · reservó {new Date(x.createdAt).toLocaleString('es-ES', { timeZone: 'America/Havana', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <div className="flex gap-1 shrink-0">
@@ -280,7 +281,7 @@ export function CilindrosAdmin() {
                   {datos.reservas.map((x) => (
                     <tr key={x.id} className="border-t border-zinc-100 align-top">
                       <td className="p-3 font-mono text-xs">{x.numero}<br /><span className="text-zinc-400">${x.montoUsd.toFixed(2)}</span></td>
-                      <td className="p-3 font-semibold">{x.nombreRecoge}<br /><span className="text-xs text-zinc-400 font-normal">{x.telefonoRecoge}</span></td>
+                      <td className="p-3 font-semibold">{x.nombreRecoge}<br /><span className="text-xs text-zinc-400 font-normal">{x.telefonoRecoge}</span>{x.puntoRecogida && <div className="text-xs text-[#123d83] font-normal">📍 {x.puntoRecogida}</div>}</td>
                       <td className="p-3 font-mono text-xs">{x.carnetRecoge}</td>
                       <td className="p-3 text-center">{x.cantidad}</td>
                       <td className="p-3 text-xs">{x.nombreComprador}<br /><span className="text-zinc-400">{x.telefonoComprador}</span></td>

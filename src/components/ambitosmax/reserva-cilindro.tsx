@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from './store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Flame, Loader2, MapPin, Clock, CheckCircle2, Search, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { quedanEnPunto, textoPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 
 const PRECIO = 85;
-const PUNTO = '"LOS AVIONCITOS" — Calle 210 / calle 31 y 33, Alturas de la Coronela, La Lisa, La Habana';
 
 interface Resultado {
   numero: string;
@@ -18,6 +18,7 @@ interface Resultado {
   zelle: string;
   lote: string;
   despuesDelCierre: boolean;
+  puntoRecogida: string;
   instrucciones: string;
 }
 
@@ -29,6 +30,7 @@ interface Consulta {
   lote: string;
   nombreRecoge: string;
   pin: string | null;
+  puntoRecogida: string;
 }
 
 const ESTADO_TXT: Record<Consulta['estado'], string> = {
@@ -52,6 +54,20 @@ export function ReservaCilindro() {
   });
   const [mismoQueRecoge, setMismoQueRecoge] = useState(false);
   const [honeypot, setHoneypot] = useState('');
+  // Puntos de gas donde se recoge (los mismos que en la tienda)
+  const [puntos, setPuntos] = useState<PuntoRecogida[]>([]);
+  const [punto, setPunto] = useState('');
+  useEffect(() => {
+    fetch('/api/tienda/puntos')
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.ok) return;
+        setPuntos(j.data);
+        const conCilindros = (j.data as PuntoRecogida[]).filter((p) => (quedanEnPunto(p) ?? Infinity) > 0);
+        if (conCilindros.length === 1) setPunto(conCilindros[0].id);
+      })
+      .catch(() => toast.error('No se pudieron cargar los puntos de recogida'));
+  }, []);
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<Resultado | null>(null);
 
@@ -73,6 +89,10 @@ export function ReservaCilindro() {
     const datos = mismoQueRecoge
       ? { ...form, nombreRecoge: form.nombreComprador, telefonoRecoge: form.telefonoComprador }
       : form;
+    if (!punto) {
+      toast.error('Elige el punto donde vas a recoger');
+      return;
+    }
     if (!/^\d{11}$/.test(datos.carnetRecoge)) {
       toast.error('El carnet de quien recoge debe tener 11 dígitos');
       return;
@@ -82,7 +102,7 @@ export function ReservaCilindro() {
       const res = await fetch('/api/cilindros/reserva', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...datos, website: honeypot }),
+        body: JSON.stringify({ ...datos, puntoRecogida: punto, website: honeypot }),
       });
       const json = await res.json();
       if (json.ok) setResultado(json.data);
@@ -129,7 +149,7 @@ export function ReservaCilindro() {
         <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
         <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
         <div className="mt-3 space-y-1.5 text-sm text-white/80">
-          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />{PUNTO}</p>
+          <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en {puntos.length ? puntos.map((p) => textoPunto(p)).join(' o ') : 'nuestros puntos de gas'}. Eliges el punto al reservar.</p>
           <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Las reservas pagadas antes del cierre entran en el listado de recogida de ese día.</p>
         </div>
       </div>
@@ -165,6 +185,7 @@ export function ReservaCilindro() {
               <p><b>{consulta.numero}</b> · {consulta.cantidad} cilindro(s) · ${consulta.montoUsd.toFixed(2)}</p>
               <p>Estado: <b>{ESTADO_TXT[consulta.estado]}</b></p>
               <p>Recoge: {consulta.nombreRecoge} · Listado del {fechaBonita(consulta.lote)}</p>
+              <p className="flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-[#123d83]" />{consulta.puntoRecogida}</p>
               {consulta.pin && (
                 <div className="bg-[#071a46] rounded-xl p-4 text-center mt-2">
                   <p className="text-[11px] text-white/60 uppercase tracking-widest">PIN de recogida</p>
@@ -187,6 +208,7 @@ export function ReservaCilindro() {
             <p className="flex items-center gap-2">Referencia: <b className="font-mono">{resultado.numero}</b>
               <button onClick={() => copiar(resultado.numero)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
           </div>
+          <p className="text-sm flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-[#123d83]" /><span>Recoges en <b>{resultado.puntoRecogida}</b></span></p>
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
             {resultado.despuesDelCierre
@@ -229,6 +251,41 @@ export function ReservaCilindro() {
               className="font-mono"
               required
             />
+          </div>
+
+          <p className="text-xs font-black text-[#b45309] uppercase tracking-wide pt-2">3. Dónde recoge *</p>
+          <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 gap-2">
+            {puntos.map((p) => {
+              const quedan = quedanEnPunto(p);
+              const agotado = quedan !== null && quedan <= 0;
+              const sel = punto === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={sel}
+                  disabled={agotado}
+                  onClick={() => setPunto(p.id)}
+                  className={`text-left rounded-xl border-2 p-3 flex items-start gap-3 ${
+                    agotado ? 'border-zinc-200 bg-zinc-50 opacity-60 cursor-not-allowed' : sel ? 'border-[#55b949] bg-emerald-50' : 'border-zinc-200 hover:border-emerald-300'
+                  }`}
+                >
+                  <span className={`mt-0.5 h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center ${sel ? 'border-[#55b949]' : 'border-zinc-300'}`}>
+                    {sel && <span className="h-2.5 w-2.5 rounded-full bg-[#55b949]" />}
+                  </span>
+                  <span className="text-sm">
+                    <span className="block font-semibold text-zinc-900">{p.nombre}</span>
+                    {p.lugar && <span className="block text-zinc-600">{p.lugar}</span>}
+                    {quedan !== null && (
+                      <span className={`block font-semibold ${agotado ? 'text-red-600' : 'text-emerald-700'}`}>
+                        {agotado ? 'Agotado en este punto' : `${quedan} disponibles`}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex items-center justify-between pt-2">
