@@ -5,7 +5,7 @@ import { useAppStore } from './store';
 import { useCartStore, cartCount, cartTotal } from './cart-store';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Minus, Plus, Trash2, CreditCard, ImageIcon, Lock } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Trash2, Banknote, ImageIcon, Lock } from 'lucide-react';
 
 // Botón del carrito con el número de productos (para el menú y la tienda)
 export function CartButton({ className = '' }: { className?: string }) {
@@ -42,7 +42,7 @@ export function CartSheet() {
   const pagar = () => {
     if (!items.length) return;
     setOpen(false);
-    // El formulario de compra toma todo el carrito y lleva a Stripe
+    // El formulario de compra toma todo el carrito y da los datos para pagar por Zelle
     const p = items[0].product;
     goToComprar({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria });
   };
@@ -109,10 +109,10 @@ export function CartSheet() {
               <span className="text-2xl font-black text-[#071a46]">${total.toFixed(2)}</span>
             </div>
             <Button onClick={pagar} className="w-full h-12 bg-[#55b949] hover:bg-[#348f39] text-white text-base font-bold">
-              <CreditCard className="h-5 w-5 mr-2" /> Pagar con tarjeta
+              <Banknote className="h-5 w-5 mr-2" /> Pagar por Zelle
             </Button>
             <p className="text-xs text-zinc-500 text-center flex items-center justify-center gap-1">
-              <Lock className="h-3 w-3" /> Pago seguro con Stripe. Primero pedimos los datos de entrega.
+              <Lock className="h-3 w-3" /> Primero pedimos los datos; luego te damos el correo de Zelle y la referencia.
             </p>
             <Button variant="ghost" onClick={() => setOpen(false)} className="w-full text-zinc-600">Seguir comprando</Button>
           </div>
