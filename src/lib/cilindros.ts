@@ -144,53 +144,89 @@ export function fechaLarga(dia: string): string {
   });
 }
 
-// Cuántos cilindros hay que entregar en cada punto
-function porPunto(confirmadas: Reserva[]): string {
-  const m = new Map<string, number>();
-  for (const r of confirmadas) m.set(lugarDe(r), (m.get(lugarDe(r)) || 0) + r.cantidad);
-  if (!m.size) return '';
-  return `<ul style="margin:0 0 12px;padding-left:18px">${[...m]
-    .map(([p, n]) => `<li><b>${esc(p)}</b>: ${n} cilindro(s)</li>`)
-    .join('')}</ul>`;
+/** Día desde el que se recoge lo pagado en ese lote: siempre el día siguiente. */
+export function diaRecogida(lote: string): string {
+  const d = new Date(`${lote}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
 }
 
-/** HTML del informe diario de recogida (para correo e impresión). */
-export function informeHtml(lote: string, reservas: Reserva[]): string {
+/** Pedidos de la tienda hechos ese día (hora de Cuba), sin los cancelados. */
+export async function pedidosDelDia(dia: string): Promise<PedidoDia[]> {
+  return db.$queryRawUnsafe<PedidoDia[]>(
+    `SELECT "id","nombreComprador","telefonoComprador","producto","estado" FROM "Pedido"
+     WHERE ("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE '${ZONA_CUBA}')::date = $1::date AND "estado" <> 'cancelado'
+     ORDER BY "id"`,
+    dia
+  );
+}
+
+/** Venta de la tienda (pedido) del día, para el resumen de las 8 PM. */
+export interface PedidoDia {
+  id: number;
+  nombreComprador: string;
+  telefonoComprador: string;
+  producto: string;
+  estado: string;
+}
+
+const td = 'padding:8px;border-bottom:1px solid #e5e7eb';
+const th = 'padding:8px';
+
+/** HTML del informe diario (correo de las 8 PM e impresión): una lista por punto de recogida. */
+export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDia[] = []): string {
   const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
   const totalCil = confirmadas.reduce((s, r) => s + r.cantidad, 0);
   const totalUsd = confirmadas.reduce((s, r) => s + r.montoUsd, 0);
-  const filas = confirmadas
-    .map(
-      (r, i) => `<tr>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${i + 1}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(lugarDe(r))}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb"><b>${esc(r.nombreRecoge)}</b></td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace">${esc(r.carnetRecoge)}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center">${r.cantidad}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace">${esc(r.numero)}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(r.telefonoRecoge || '')}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${esc(r.nombreComprador)}<br><span style="color:#6b7280">${esc(r.telefonoComprador)}</span></td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:right">$${r.montoUsd.toFixed(2)}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb">${r.estado === 'entregada' ? 'Entregado' : ''}</td>
+
+  const grupos = new Map<string, Reserva[]>();
+  for (const r of confirmadas) grupos.set(lugarDe(r), [...(grupos.get(lugarDe(r)) || []), r]);
+
+  const tablaPunto = ([punto, lista]: [string, Reserva[]]) => {
+    const n = lista.reduce((s, r) => s + r.cantidad, 0);
+    const filas = lista
+      .map(
+        (r, i) => `<tr>
+        <td style="${td}">${i + 1}</td>
+        <td style="${td}"><b>${esc(r.nombreRecoge)}</b></td>
+        <td style="${td};font-family:monospace">${esc(r.carnetRecoge)}</td>
+        <td style="${td};font-family:monospace;font-size:16px"><b>${esc(r.pin || '')}</b></td>
+        <td style="${td};text-align:center">${r.cantidad}</td>
+        <td style="${td};font-family:monospace">${esc(r.numero)}</td>
+        <td style="${td}">${esc(r.telefonoRecoge || r.telefonoComprador)}</td>
+        <td style="${td}">${r.estado === 'entregada' ? 'Entregado' : ''}</td>
       </tr>`
-    )
-    .join('');
+      )
+      .join('');
+    return `
+    <h3 style="color:#071a46;margin:24px 0 6px">${esc(punto)} · ${n} balita(s)</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr style="background:#071a46;color:#fff;text-align:left">
+        <th style="${th}">#</th><th style="${th}">Nombre y apellidos</th><th style="${th}">Carnet</th><th style="${th}">PIN</th>
+        <th style="${th}">Cant.</th><th style="${th}">Compra</th><th style="${th}">Teléfono</th><th style="${th}">Firma / entregado</th>
+      </tr></thead><tbody>${filas}</tbody></table>`;
+  };
+
+  const ventasTienda = pedidos.length
+    ? `<h3 style="color:#071a46;margin:28px 0 6px">Otras ventas de la tienda del día</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr style="background:#374151;color:#fff;text-align:left">
+        <th style="${th}">Pedido</th><th style="${th}">Cliente</th><th style="${th}">Productos</th><th style="${th}">Estado</th>
+      </tr></thead><tbody>${pedidos
+        .map(
+          (p) => `<tr><td style="${td}">${p.id}</td><td style="${td}">${esc(p.nombreComprador)}<br><span style="color:#6b7280">${esc(p.telefonoComprador)}</span></td>
+          <td style="${td}">${esc(p.producto)}</td><td style="${td}">${p.estado === 'pagado' ? 'Pagado' : p.estado === 'pendiente_pago' ? 'Esperando pago' : esc(p.estado)}</td></tr>`
+        )
+        .join('')}</tbody></table>`
+    : '';
 
   return `
   <div style="font-family:Arial,sans-serif;max-width:980px;margin:0 auto;color:#111827">
-    <h2 style="color:#071a46;margin:0">Listado de recogida de cilindros</h2>
-    <p style="margin:4px 0 16px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}.</p>
-    ${porPunto(confirmadas)}
-    <p style="margin:0 0 12px"><b>${confirmadas.length}</b> reservas confirmadas · <b>${totalCil}</b> cilindros · <b>$${totalUsd.toFixed(2)}</b> USD</p>
-    ${
-      confirmadas.length
-        ? `<table style="width:100%;border-collapse:collapse;font-size:14px">
-        <thead><tr style="background:#071a46;color:#fff;text-align:left">
-          <th style="padding:8px">#</th><th style="padding:8px">Punto</th><th style="padding:8px">Recoge</th><th style="padding:8px">Carnet</th>
-          <th style="padding:8px">Cant.</th><th style="padding:8px">Reserva</th><th style="padding:8px">Tel. recoge</th><th style="padding:8px">Comprador</th><th style="padding:8px">Pagó</th><th style="padding:8px">Firma / entregado</th>
-        </tr></thead><tbody>${filas}</tbody></table>`
-        : '<p>No hubo reservas confirmadas en este cierre.</p>'
-    }
-    <p style="margin-top:16px;color:#6b7280;font-size:12px">El cliente debe presentar su carnet de identidad y decir su PIN de recogida. El PIN se comprueba en el panel (Cilindros → Entregar).</p>
+    <h2 style="color:#071a46;margin:0">Resumen de ventas y listado de recogida</h2>
+    <p style="margin:4px 0 12px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}. Se entregan a partir de mañana.</p>
+    <p style="margin:0 0 12px"><b>${confirmadas.length}</b> compras de balitas pagadas · <b>${totalCil}</b> balitas · <b>$${totalUsd.toFixed(2)}</b> USD</p>
+    ${confirmadas.length ? [...grupos].map(tablaPunto).join('') : '<p>No hubo compras de balitas pagadas en este cierre.</p>'}
+    ${ventasTienda}
+    <p style="margin-top:16px;color:#6b7280;font-size:12px">Para entregar: el cliente presenta el carnet de identidad y dice su PIN. Se marca en el panel (Cilindros → Entregar).</p>
   </div>`;
 }

@@ -12,7 +12,6 @@ import {
   Search,
   MessageCircle,
   Menu,
-  Lock,
   LogOut,
   Globe,
   BarChart3,
@@ -38,7 +37,7 @@ const publicNavItems: { view: PublicView; label: string; icon: typeof Home }[] =
 ];
 
 function PublicNavbar() {
-  const { currentView, setCurrentView, goToAdmin, currentUser, setShowRegisterDialog, logoutCliente } = useAppStore();
+  const { currentView, setCurrentView, currentUser, setShowRegisterDialog, logoutCliente } = useAppStore();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleNav = (view: PublicView) => {
@@ -103,15 +102,6 @@ function PublicNavbar() {
                   <button onClick={logoutCliente} className="text-xs text-zinc-400 hover:text-red-600 underline">Salir</button>
                 </span>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToAdmin}
-                className="ml-2 border-[#123d83] text-[#123d83] hover:bg-[#123d83] hover:text-white font-semibold"
-              >
-                <Lock className="h-4 w-4 mr-1" />
-                Admin
-              </Button>
             </nav>
 
             {/* Mobile: carrito + menú */}
@@ -166,13 +156,6 @@ function PublicNavbar() {
                         Registrarse
                       </button>
                     )}
-                    <button
-                      onClick={() => { goToAdmin(); setSheetOpen(false); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-zinc-300 hover:text-zinc-500 hover:bg-zinc-50 transition-all duration-200"
-                      >
-                        <Lock className="h-5 w-5" />
-                        Administración
-                      </button>
                   </div>
                 </div>
               </SheetContent>
@@ -205,13 +188,6 @@ function PublicNavbar() {
               </button>
             );
           })}
-          <button
-            onClick={goToAdmin}
-            className="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 min-w-[64px] text-[#071a46] bg-blue-50"
-          >
-            <Lock className="h-5 w-5" />
-            <span>Admin</span>
-          </button>
         </div>
       </nav>
     </>
