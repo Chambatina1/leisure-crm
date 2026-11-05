@@ -422,7 +422,7 @@ export function CombustibleCupet() {
               </div>
 
               <p className="text-sm text-zinc-600 mb-2">
-                <b>Importante:</b> usa la referencia <b className="font-mono">{solicitud.numero}</b> en tu pago.
+                <b>Importante:</b> escribe <b className="font-mono">{solicitud.numero}</b> en la nota (memo) de Zelle. Así tu pago se confirma solo y el PIN te llega por correo.
               </p>
               <p className="text-sm text-zinc-500 mb-6">
                 Al confirmar tu pago te enviaremos el <b>PIN de carga</b> por WhatsApp.

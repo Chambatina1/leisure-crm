@@ -26,3 +26,6 @@ services:
       # Contraseña del acceso de solo tienda (panel → Tienda). Opcional.
       - key: TIENDA_PASSWORD
         sync: false
+      # Clave compartida con el script de Gmail que confirma los pagos por Zelle (scripts/zelle-gmail.gs)
+      - key: ZELLE_WEBHOOK_SECRET
+        sync: false
