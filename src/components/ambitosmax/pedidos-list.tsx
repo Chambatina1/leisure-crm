@@ -154,6 +154,9 @@ export function PedidosList() {
       const json = await res.json();
       if (json.ok) {
         toast.success(`Estado cambiado a "${ESTADOS.find(e => e.value === newEstado)?.label}"`);
+        if (json.correo === 'enviado') toast.success('Se avisó al cliente por correo que su pago se registró');
+        else if (json.correo === 'sin_email') toast.warning('El cliente no dejó correo: avísale por teléfono');
+        else if (json.correo === 'fallo') toast.error('No se pudo enviar el correo de pago al cliente');
         fetchPedidos();
       }
     } catch {
