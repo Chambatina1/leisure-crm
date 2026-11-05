@@ -7,13 +7,15 @@ import {
   PRECIO_CILINDRO,
   MAX_POR_RESERVA,
   ZELLE_CILINDROS,
-  PUNTO_RECOGIDA,
+  lugarDe,
   ahoraEnCuba,
   HORA_CIERRE,
   type Reserva,
 } from '@/lib/cilindros';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
+import { leerPuntos } from '@/lib/puntos-recogida';
+import { quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cilindros/reserva
@@ -43,6 +45,7 @@ const schema = z.object({
   carnetRecoge: z.string().trim().regex(/^\d{11}$/, 'El carnet debe tener 11 dígitos'),
   telefonoRecoge: z.string().trim().max(20).optional().or(z.literal('')),
   cantidad: z.coerce.number().int().min(1).max(MAX_POR_RESERVA),
+  puntoRecogida: z.string().trim().max(60).optional().default(''),
   website: z.string().optional(), // trampa anti-bots
 });
 
@@ -61,6 +64,18 @@ export async function POST(request: NextRequest) {
     const d = parsed.data;
     if (d.website) return NextResponse.json({ ok: false, error: 'Solicitud inválida' }, { status: 400 });
 
+    // El cliente elige en qué punto de gas recoge (los mismos de la tienda)
+    const punto = (await leerPuntos()).find((p) => p.activo && p.id === d.puntoRecogida);
+    if (!punto) return NextResponse.json({ ok: false, faltaPunto: true, error: 'Elige el punto donde vas a recoger' }, { status: 400 });
+    const quedan = quedanEnPunto(punto);
+    if (quedan !== null && d.cantidad > quedan) {
+      return NextResponse.json(
+        { ok: false, faltaPunto: true, error: quedan > 0 ? `En ${punto.nombre} solo quedan ${quedan}. Elige otro punto o menos cilindros.` : `En ${punto.nombre} no quedan cilindros. Elige otro punto.` },
+        { status: 409 }
+      );
+    }
+    const lugar = textoPunto(punto);
+
     await asegurarTablaReservas();
     const lote = loteActual();
     const monto = PRECIO_CILINDRO * d.cantidad;
@@ -72,8 +87,8 @@ export async function POST(request: NextRequest) {
       try {
         await db.$executeRawUnsafe(
           `INSERT INTO "ReservaCilindro"
-            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote")
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida")
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
           numero,
           d.nombreComprador,
           d.telefonoComprador,
@@ -83,7 +98,9 @@ export async function POST(request: NextRequest) {
           d.telefonoRecoge || null,
           d.cantidad,
           monto,
-          lote
+          lote,
+          punto.id,
+          lugar
         );
         break;
       } catch (e) {
@@ -102,7 +119,7 @@ export async function POST(request: NextRequest) {
           zelle: ZELLE_CILINDROS,
           lote,
           despuesDelCierre: hora >= HORA_CIERRE,
-          puntoRecogida: PUNTO_RECOGIDA,
+          puntoRecogida: lugar,
           instrucciones: `Paga $${monto.toFixed(2)} por Zelle al ${ZELLE_CILINDROS} y escribe ${numero} en la nota (memo) del pago. Al confirmarse el pago recibirás tu PIN de recogida por correo.`,
         },
       },
@@ -144,7 +161,7 @@ export async function GET(request: NextRequest) {
         lote: r.lote,
         nombreRecoge: r.nombreRecoge,
         pin: r.estado === 'pagada' ? r.pin : null,
-        puntoRecogida: PUNTO_RECOGIDA,
+        puntoRecogida: lugarDe(r),
       },
     });
   } catch (e) {

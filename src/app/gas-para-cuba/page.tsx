@@ -40,7 +40,7 @@ const COMPARACION: [string, string][] = [
 
 const FAQS = [
   { q: '¿De verdad no tengo que entregar la balita vacía?', a: 'No. Pagas $85 y tu familiar se lleva un cilindro de gas lleno. No hace falta cambiar un vacío.' },
-  { q: '¿Dónde se recoge?', a: 'En "LOS AVIONCITOS": Calle 210 / calle 31 y 33, Alturas de la Coronela, municipio La Lisa, La Habana.' },
+  { q: '¿Dónde se recoge?', a: 'En uno de nuestros dos puntos de gas, el que elijas al pagar: Punto de Gas de Madera (Arroyo Arena, La Lisa) o Punto de venta Barbosa (Playa), en La Habana.' },
   { q: '¿Cuándo puede recoger mi familia?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Si reservas antes, tu balita entra en el listado de hoy; si reservas después, en el de mañana.' },
   { q: '¿Cómo sé que mi dinero está seguro?', a: 'Somos una empresa en 6800 N Florida Ave, Tampa, FL. La balita solo se entrega a la persona que registraste, con su carnet de identidad y el PIN que te enviamos al confirmar el pago.' },
   { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el número de Zelle y tu número de reserva para usarlo como referencia.' },
@@ -205,7 +205,7 @@ export default function Page() {
             <ul className="space-y-3 mt-6">
               {[
                 'Cilindro lleno, sin entregar el vacío',
-                'Recogida en Los Avioncitos, La Lisa, La Habana',
+                'Recogida en Arroyo Arena (La Lisa) o en Playa, La Habana',
                 'PIN de seguridad a nombre de quien recoge',
                 'Confirmación de tu reserva al momento',
                 'Hasta 4 balitas en la misma reserva',
