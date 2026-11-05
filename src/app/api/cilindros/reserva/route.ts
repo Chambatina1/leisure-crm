@@ -14,7 +14,7 @@ import {
 } from '@/lib/cilindros';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
-import { leerPuntos } from '@/lib/puntos-recogida';
+import { leerPuntosDisponibles } from '@/lib/puntos-recogida';
 import { quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
 
 // ═══════════════════════════════════════════════════════════════
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (d.website) return NextResponse.json({ ok: false, error: 'Solicitud inválida' }, { status: 400 });
 
     // El cliente elige en qué punto de gas recoge (los mismos de la tienda)
-    const punto = (await leerPuntos()).find((p) => p.activo && p.id === d.puntoRecogida);
+    const punto = (await leerPuntosDisponibles()).find((p) => p.activo && p.id === d.puntoRecogida);
     if (!punto) return NextResponse.json({ ok: false, faltaPunto: true, error: 'Elige el punto donde vas a recoger' }, { status: 400 });
     const quedan = quedanEnPunto(punto);
     if (quedan !== null && d.cantidad > quedan) {

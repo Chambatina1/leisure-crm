@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { esBalitaGas, quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
-import { leerPuntos } from '@/lib/puntos-recogida';
+import { leerPuntosDisponibles } from '@/lib/puntos-recogida';
 import { existencias } from '@/lib/existencia';
 import {
   asegurarTablaReservas,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       if (!/^\d{11}$/.test(carnet)) {
         return fallo({ error: { carnetDestinatario: ['El carnet de quien recoge debe tener 11 dígitos'] } }, 400);
       }
-      const punto = (await leerPuntos()).find((p) => p.activo && p.id === data.puntoRecogida);
+      const punto = (await leerPuntosDisponibles()).find((p) => p.activo && p.id === data.puntoRecogida);
       if (!punto) return fallo({ faltaPunto: true, error: 'Elige dónde vas a recoger la balita de gas' }, 400);
       const enPunto = quedanEnPunto(punto);
       if (enPunto !== null && balitas > enPunto) {
