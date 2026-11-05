@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           instrucciones:
             'Paga por Zelle al 727-598-6802 el monto exacto y escribe ' +
             numero +
-            ' en la nota (memo) del pago. Al confirmarse el pago te llega el PIN de carga por correo.',
+            ' en la nota (memo) del pago. Al confirmar tu pago te enviaremos el PIN de carga.',
         },
       },
       { status: 201 }

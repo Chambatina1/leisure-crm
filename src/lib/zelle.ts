@@ -9,8 +9,9 @@ import { confirmarReservaCilindro } from '@/lib/confirmar-reserva';
 // Pagos por Zelle automáticos.
 // Un script de Google (scripts/zelle-gmail.gs) revisa el Gmail donde llegan
 // los avisos del banco y manda cada aviso a /api/zelle/aviso. Aquí se lee el
-// monto y la referencia (SC-000123 combustible, RC-000123 cilindros); si
-// coinciden con una solicitud pendiente se confirma el pago y se envía el PIN.
+// monto y la referencia RC-000123 (reserva de balitas de gas); si coincide con
+// una reserva pendiente se confirma el pago y se envía el PIN. Los pagos de
+// combustible (SC-) quedan para confirmar a mano salvo ZELLE_AUTO_COMBUSTIBLE=1.
 // Lo que no cuadra queda para revisar a mano (el script lo etiqueta en Gmail).
 // ═══════════════════════════════════════════════════════════════
 
@@ -154,6 +155,11 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   if (!monto) return { resultado: 'revisar', detalle: 'No se encontró el monto en el aviso' };
   if (!referencia) return { resultado: 'revisar', detalle: `Pago de $${monto.toFixed(2)} sin referencia SC-/RC- en la nota` };
 
+  // Solo se automatizan las balitas de gas (RC-). El combustible (SC-) se
+  // sigue confirmando a mano en el panel.
+  if (referencia.startsWith('SC-') && process.env.ZELLE_AUTO_COMBUSTIBLE !== '1') {
+    return { resultado: 'revisar', detalle: `${referencia} es de combustible: confirmar a mano en el panel` };
+  }
   if (referencia.startsWith('SC-')) {
     await asegurarTablaSolicitudes();
     const sol = await db.solicitudCombustible.findUnique({ where: { numero: referencia } });
