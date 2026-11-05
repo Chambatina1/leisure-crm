@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { esBalitaGas, quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
 import { leerPuntosDisponibles } from '@/lib/puntos-recogida';
-import { existencias } from '@/lib/existencia';
+import { existenciasDisponibles, itemsAMetadata } from '@/lib/existencia';
 import {
   asegurarTablaReservas,
   loteActual,
@@ -64,6 +64,17 @@ export async function POST(request: NextRequest) {
     const resumen = lineas.map((l) => `${l.qty}x ${l.p.nombre} ($${l.p.precio.toFixed(2)})`).join(', ');
     const gas = lineas.filter((l) => esBalitaGas(l.p.nombre));
 
+    // No vender más de lo que queda (existencia menos lo apartado por compras sin pagar)
+    const stock = await existenciasDisponibles([...cantidades.keys()]);
+    const sinStock = productos.find((p) => {
+      const hay = stock.get(p.id);
+      return hay !== null && hay !== undefined && cantidades.get(p.id)! > hay;
+    });
+    if (sinStock) {
+      const hay = stock.get(sinStock.id) ?? 0;
+      return fallo({ error: hay > 0 ? `Solo quedan ${hay} de ${sinStock.nombre}. Ajusta tu carrito.` : `${sinStock.nombre} está agotado.` }, 409);
+    }
+
     // ── Balitas de gas: reserva RC- que se confirma sola con el aviso de Zelle ──
     if (gas.length) {
       if (gas.length !== lineas.length) {
@@ -99,8 +110,8 @@ export async function POST(request: NextRequest) {
         try {
           await db.$executeRawUnsafe(
             `INSERT INTO "ReservaCilindro"
-              ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida")
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+              ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida","items")
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
             numero,
             data.nombreComprador,
             data.telefonoComprador,
@@ -112,7 +123,8 @@ export async function POST(request: NextRequest) {
             total,
             lote,
             punto.id,
-            lugar
+            lugar,
+            itemsAMetadata(gas.map((l) => ({ id: l.p.id, qty: l.qty })))
           );
           break;
         } catch (e) {
@@ -138,15 +150,6 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Otros productos: pedido pendiente de pago, se confirma a mano ──
-    const stock = await existencias([...cantidades.keys()]);
-    const sinStock = productos.find((p) => {
-      const hay = stock.get(p.id);
-      return hay !== null && hay !== undefined && cantidades.get(p.id)! > hay;
-    });
-    if (sinStock) {
-      const hay = stock.get(sinStock.id) ?? 0;
-      return fallo({ error: hay > 0 ? `Solo quedan ${hay} de ${sinStock.nombre}. Ajusta tu carrito.` : `${sinStock.nombre} está agotado.` }, 409);
-    }
     const pedido = await db.pedido.create({
       data: {
         nombreComprador: data.nombreComprador,

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { ensureCatalogo } from '@/lib/catalogo-seed';
 import { asegurarProductosNuevos } from '@/lib/productos-nuevos';
-import { existencias } from '@/lib/existencia';
+import { existenciasDisponibles } from '@/lib/existencia';
 
 // Convierte la imagen guardada (base64 en BD) en una URL ligera por producto.
 // La versión (?v=) cambia cuando el producto se actualiza: si el dueño cambia
@@ -26,7 +26,7 @@ export async function GET() {
     });
 
     // Servir imágenes por URL (no incrustar base64 de megas en el JSON)
-    const stock = await existencias();
+    const stock = await existenciasDisponibles();
     const light = products.map((p) => ({
       ...p,
       existencia: stock.get(p.id) ?? null,

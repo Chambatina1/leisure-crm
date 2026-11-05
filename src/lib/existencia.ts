@@ -52,3 +52,28 @@ export function itemsDeMetadata(s: string | undefined | null): { id: number; qty
     .filter(([id, qty]) => id > 0 && qty > 0)
     .map(([id, qty]) => ({ id, qty }));
 }
+
+/**
+ * Balitas apartadas por compras pendientes de pago recientes (últimas 24 h), por producto.
+ * Así el siguiente cliente ve enseguida lo que queda; si no se paga, vuelven a estar a la venta.
+ */
+async function apartadosPorProducto(): Promise<Map<number, number>> {
+  const m = new Map<number, number>();
+  try {
+    const filas = await db.$queryRawUnsafe<{ items: string | null }[]>(
+      `SELECT "items" FROM "ReservaCilindro"
+       WHERE "estado" = 'pendiente_pago' AND "items" IS NOT NULL AND "createdAt" > NOW() - INTERVAL '24 hours'`
+    );
+    for (const f of filas) for (const { id, qty } of itemsDeMetadata(f.items)) m.set(id, (m.get(id) || 0) + qty);
+  } catch {
+    // la tabla o la columna aún no existen: nada apartado
+  }
+  return m;
+}
+
+/** Existencia que queda a la venta: la guardada menos lo apartado por compras sin pagar. */
+export async function existenciasDisponibles(ids?: number[]): Promise<Map<number, number | null>> {
+  const [stock, apartados] = await Promise.all([existencias(ids), apartadosPorProducto()]);
+  for (const [id, n] of stock) if (n !== null) stock.set(id, Math.max(0, n - (apartados.get(id) || 0)));
+  return stock;
+}

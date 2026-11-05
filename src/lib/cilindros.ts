@@ -42,6 +42,7 @@ export interface Reserva {
   notas: string | null;
   puntoId: string | null; // id del punto de recogida elegido (ver puntos-recogida.ts)
   puntoRecogida: string | null; // texto del punto, tal como lo vio el cliente
+  items: string | null; // productos de la tienda: "id:cant,id:cant"
   createdAt: Date;
 }
 
@@ -76,6 +77,8 @@ export async function asegurarTablaReservas() {
   await db.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "ReservaCilindro_lote_idx" ON "ReservaCilindro" ("lote")`);
   await db.$executeRawUnsafe(`ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "puntoId" TEXT`);
   await db.$executeRawUnsafe(`ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "puntoRecogida" TEXT`);
+  // Productos comprados ("id:cant,id:cant"): para descontar su existencia al pagar
+  await db.$executeRawUnsafe(`ALTER TABLE "ReservaCilindro" ADD COLUMN IF NOT EXISTS "items" TEXT`);
   tablaLista = true;
 }
 
