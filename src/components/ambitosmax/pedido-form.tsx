@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, CreditCard } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PedidoData {
@@ -41,7 +41,7 @@ const defaultData: PedidoData = {
 };
 
 const AMBITOSMAX_ADDRESS = '6800 N Florida Ave, Tampa, FL 33604';
-// Líneas a cobrar con Stripe: todo el carrito si el producto elegido está en él,
+// Líneas a cobrar por Zelle: todo el carrito si el producto elegido está en él,
 // o solo ese producto si se compró directamente.
 interface LineaCarrito { id: number; nombre: string; precio: number; qty: number }
 function lineasDeCompra(producto: { id?: number; nombre: string; precio: number } | null): LineaCarrito[] {
@@ -62,10 +62,11 @@ export function PedidoForm() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lineas, setLineas] = useState<LineaCarrito[]>([]);
-  const pagaConTarjeta = isPublic && !isEdit && lineas.length > 0;
+  const pagaConZelle = isPublic && !isEdit && lineas.length > 0;
+  const [pagoZelle, setPagoZelle] = useState<PagoZelle | null>(null);
   const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
   // Las balitas de gas se recogen en uno de los dos puntos: hay que elegirlo
-  const llevaGas = pagaConTarjeta && lineas.some((l) => esBalitaGas(l.nombre));
+  const llevaGas = pagaConZelle && lineas.some((l) => esBalitaGas(l.nombre));
   const nBalitas = lineas.filter((l) => esBalitaGas(l.nombre)).reduce((s, l) => s + l.qty, 0);
   const [punto, setPunto] = useState<string | null>(null);
   const [errorPunto, setErrorPunto] = useState(false);
@@ -130,6 +131,9 @@ export function PedidoForm() {
     if (!data.telefonoDestinatario.trim()) errs.telefonoDestinatario = 'Requerido';
     if (!data.direccionDestinatario.trim()) errs.direccionDestinatario = 'Requerido';
     if (!data.producto.trim()) errs.producto = 'Requerido';
+    if (llevaGas && !/^\d{11}$/.test(data.carnetDestinatario.replace(/\s/g, ''))) {
+      errs.carnetDestinatario = 'Carnet de quien recoge: 11 dígitos';
+    }
     setErrors(errs);
     const faltaPunto = llevaGas && !punto;
     setErrorPunto(faltaPunto);
@@ -137,9 +141,10 @@ export function PedidoForm() {
     return Object.keys(errs).length === 0 && !faltaPunto;
   };
 
-  // Pago con tarjeta: el servidor crea el pedido y nos manda a Stripe Checkout
-  const pagarConStripe = async (): Promise<boolean> => {
-    const res = await fetch('/api/stripe/checkout', {
+  // Pago por Zelle: el servidor crea la compra y devuelve la referencia que
+  // el cliente escribe en la nota del Zelle. Las balitas se confirman solas.
+  const pagarConZelle = async () => {
+    const res = await fetch('/api/tienda/zelle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -149,27 +154,28 @@ export function PedidoForm() {
       }),
     });
     const json = await res.json();
-    if (json.sinStripe) return false; // Stripe sin configurar: pedido normal
     if (!json.ok && json.requiereRegistro) {
       useAppStore.getState().pedirRegistro({ tipo: 'pedido' });
-      return true;
+      return;
     }
-    if (json.ok && json.data?.url) {
-      // El carrito se vacía al volver con el pago hecho (si cancela, lo conserva)
-      window.location.href = json.data.url;
-      return true;
+    if (json.ok) {
+      useCartStore.getState().clear();
+      setPagoZelle(json.data);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
     }
     if (json.faltaPunto) setErrorPunto(true);
-    if (json.error && typeof json.error === 'object') setErrors(json.error);
-    else toast.error(json.error || 'No se pudo iniciar el pago');
-    return true;
+    if (json.error && typeof json.error === 'object') {
+      setErrors(Object.fromEntries(Object.entries(json.error).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])));
+      toast.error('Revisa los datos marcados');
+    } else toast.error(json.error || 'No se pudo crear la compra');
   };
 
   const handleSubmit = async () => {
     if (!validate()) return;
     setSaving(true);
     try {
-      if (pagaConTarjeta && (await pagarConStripe())) return;
+      if (pagaConZelle) return await pagarConZelle();
       const url = isEdit ? `/api/pedidos/${selectedPedidoId}` : '/api/pedidos';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -214,6 +220,8 @@ export function PedidoForm() {
     setData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
+
+  if (pagoZelle) return <ResultadoZelle pago={pagoZelle} onVolver={() => { setPagoZelle(null); setSelectedProduct(null); setCurrentView('home'); }} />;
 
   if (loading) {
     return (
@@ -377,13 +385,16 @@ export function PedidoForm() {
                 {errors.telefonoDestinatario && <p className="text-xs text-red-500 mt-1">{errors.telefonoDestinatario}</p>}
               </div>
               <div>
-                <Label htmlFor="carnetDestinatario">Carnet de identidad</Label>
+                <Label htmlFor="carnetDestinatario">{llevaGas ? 'Carnet de quien recoge la balita *' : 'Carnet de identidad'}</Label>
                 <Input
                   id="carnetDestinatario"
                   value={data.carnetDestinatario}
                   onChange={(e) => updateField('carnetDestinatario', e.target.value)}
-                  placeholder="Número de carnet"
+                  placeholder={llevaGas ? '11 dígitos' : 'Número de carnet'}
+                  inputMode={llevaGas ? 'numeric' : undefined}
+                  className={errors.carnetDestinatario ? 'border-red-500' : ''}
                 />
+                {errors.carnetDestinatario && <p className="text-xs text-red-500 mt-1">{errors.carnetDestinatario}</p>}
               </div>
               <div className="sm:col-span-2">
                 <Label htmlFor="direccionDestinatario">Dirección completa *</Label>
@@ -500,12 +511,12 @@ export function PedidoForm() {
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : pagaConTarjeta ? (
-                <CreditCard className="h-4 w-4 mr-2" />
+              ) : pagaConZelle ? (
+                <Banknote className="h-4 w-4 mr-2" />
               ) : (
                 <Save className="h-4 w-4 mr-2" />
               )}
-              {isEdit ? 'Actualizar Pedido' : pagaConTarjeta ? `Pagar $${totalCarrito.toFixed(2)} con tarjeta` : 'Crear Pedido'}
+              {isEdit ? 'Actualizar Pedido' : pagaConZelle ? `Pagar $${totalCarrito.toFixed(2)} por Zelle` : 'Crear Pedido'}
             </Button>
             <Button variant="outline" onClick={handleCancel}>
               Cancelar
@@ -519,3 +530,72 @@ export function PedidoForm() {
   );
 }
 
+
+interface PagoZelle {
+  tipo: 'balitas' | 'pedido';
+  referencia: string;
+  montoUsd: number;
+  zelle: string;
+  puntoRecogida?: string;
+  resumen: string;
+  despuesDelCierre?: boolean;
+}
+
+function Dato({ etiqueta, valor, copiar }: { etiqueta: string; valor: string; copiar?: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-3 rounded-lg bg-white border border-zinc-200 px-4 py-3">
+      <div className="min-w-0">
+        <p className="text-xs text-zinc-500">{etiqueta}</p>
+        <p className="font-semibold text-zinc-900 [overflow-wrap:anywhere]">{valor}</p>
+      </div>
+      {copiar && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label={`Copiar ${etiqueta}`}
+          onClick={() => navigator.clipboard?.writeText(valor).then(() => toast.success('Copiado'), () => {})}
+        >
+          <Copy className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => void }) {
+  const balitas = pago.tipo === 'balitas';
+  return (
+    <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
+      <Card className="border-emerald-200">
+        <CardContent className="p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
+            <div>
+              <h1 className="text-xl font-bold text-zinc-900">Falta el pago por Zelle</h1>
+              <p className="text-sm text-zinc-600">{pago.resumen}</p>
+            </div>
+          </div>
+          <div className="rounded-xl bg-emerald-50 p-4 space-y-2">
+            <Dato etiqueta="Envía por Zelle a" valor={pago.zelle} copiar />
+            <Dato etiqueta="Monto exacto" valor={`$${pago.montoUsd.toFixed(2)}`} />
+            <Dato etiqueta="Escribe en la nota (memo) del Zelle" valor={pago.referencia} copiar />
+            {pago.puntoRecogida && <Dato etiqueta="Recoges en" valor={pago.puntoRecogida} />}
+          </div>
+          {balitas ? (
+            <p className="text-sm text-zinc-700">
+              Cuando llegue tu pago con <strong>{pago.referencia}</strong> en la nota, se confirma solo y te enviamos el
+              <strong> PIN de recogida</strong> por correo. Sin la referencia en la nota el pago no se puede confirmar automáticamente.
+              {pago.despuesDelCierre && ' Los pagos después de las 8:00 PM (hora de Cuba) entran en el lote de mañana.'}
+            </p>
+          ) : (
+            <p className="text-sm text-zinc-700">
+              Cuando recibamos tu pago con <strong>{pago.referencia}</strong> en la nota, confirmamos el pedido y te avisamos.
+            </p>
+          )}
+          <Button onClick={onVolver} className="w-full bg-[#123d83] hover:bg-[#071a46] text-white">Volver a la tienda</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
