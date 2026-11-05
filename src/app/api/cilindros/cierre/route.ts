@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'crypto';
 import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
-import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga } from '@/lib/cilindros';
+import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, pedidosDelDia, ZELLE_DESTINO } from '@/lib/cilindros';
 
 // ═══════════════════════════════════════════════════════════════
 // POST /api/cilindros/cierre — cierre diario de ventas de cilindros
@@ -32,10 +32,11 @@ async function destinatarios(): Promise<string[]> {
       cfg.find((c) => c.clave === 'email')?.valor ||
       '';
   }
-  return lista
+  // El resumen siempre llega también al correo de ventas (el de Zelle)
+  return [...new Set(`${lista},${ZELLE_DESTINO}`.toLowerCase()
     .split(/[,;\s]+/)
     .map((e) => e.trim())
-    .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+    .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)))];
 }
 
 export async function POST(request: NextRequest) {
@@ -60,7 +61,8 @@ export async function POST(request: NextRequest) {
     }
 
     const reservas = await reservasDelLote(lote, true);
-    const html = informeHtml(lote, reservas);
+    const pedidos = await pedidosDelDia(lote);
+    const html = informeHtml(lote, reservas, pedidos);
     const para = await destinatarios();
     if (para.length === 0) {
       console.error('[cierre cilindros] No hay correo de destino (REPORTE_CILINDROS_EMAIL)');
@@ -71,12 +73,12 @@ export async function POST(request: NextRequest) {
     try {
       await enviarCorreo({
         to: para.join(', '),
-        subject: `Cierre 8 PM · ${reservas.length} reservas · ${totalCil} cilindros — ${fechaLarga(lote)}`,
+        subject: `Resumen 8 PM · ${totalCil} balitas${pedidos.length ? ` · ${pedidos.length} pedidos de tienda` : ''} — ${fechaLarga(lote)}`,
         html,
         text: [
-          `Listado de recogida de cilindros — ${lote}`,
+          `Listado de recogida de balitas — ${lote} (se entregan a partir de mañana)`,
           ...reservas.map(
-            (r, i) => `${i + 1}. Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
+            (r, i) => `${i + 1}. ${r.puntoRecogida || ''} · Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · PIN ${r.pin || ''} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
           ),
         ].join('\n'),
       });

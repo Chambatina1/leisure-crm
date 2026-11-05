@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         // Las fotos de productos se sirven desde /api/tienda/imagen: deben poder indexarse
         allow: ['/', '/api/tienda/imagen/'],
-        disallow: ['/api/'],
+        disallow: ['/api/', '/admin'],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

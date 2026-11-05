@@ -21,7 +21,6 @@ import {
   MapPin,
   Refrigerator,
   Wrench,
-  Lock,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { quedanEnPunto, type PuntoRecogida } from '@/lib/puntos-gas';
@@ -304,16 +303,6 @@ export function Tienda() {
         })}
       </div>
 
-      {/* Entrada para quien administra solo la tienda (el botón Admin es el acceso completo) */}
-      <div className="mt-10 text-center">
-        <button
-          type="button"
-          onClick={() => useAppStore.getState().goToAdminTienda()}
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-[#123d83] underline-offset-4 hover:underline"
-        >
-          <Lock className="h-3.5 w-3.5" /> Administrar tienda
-        </button>
-      </div>
 
       {/* Carrito flotante */}
       {/* Barra del carrito: encima de la barra de navegación del móvil */}

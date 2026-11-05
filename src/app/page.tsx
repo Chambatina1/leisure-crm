@@ -194,6 +194,13 @@ export default function Page() {
   const setCurrentView = useAppStore((s) => s.setCurrentView);
   useEffect(() => {
     const v = new URLSearchParams(window.location.search).get('v');
+    // Acceso de administración solo por enlace: /admin y /admin/tienda
+    if (v === 'admin' || v === 'admin-tienda') {
+      window.history.replaceState(null, '', '/');
+      if (v === 'admin') useAppStore.getState().goToAdmin();
+      else useAppStore.getState().goToAdminTienda();
+      return;
+    }
     const permitidas = ['tienda', 'combustible', 'chat', 'reserva-cilindro', 'home'];
     if (v && permitidas.includes(v)) {
       useAppStore.setState({ mode: 'public' });
