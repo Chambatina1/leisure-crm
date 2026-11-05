@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
 import { descontarBalitasPunto } from '@/lib/puntos-recogida';
+import { descontarExistencia, itemsDeMetadata } from '@/lib/existencia';
 import {
   asegurarTablaReservas,
   loteActual,
@@ -53,6 +54,13 @@ export async function confirmarReservaCilindro(id: number, referencia: string): 
   if (reserva.puntoId) {
     await descontarBalitasPunto(reserva.puntoId, reserva.cantidad).catch((e) =>
       console.error('[cilindros] No se pudo descontar del punto:', e instanceof Error ? e.message : e)
+    );
+  }
+
+  // ...y de la existencia de cada producto (la que se ve en la tienda)
+  if (reserva.items) {
+    await descontarExistencia(itemsDeMetadata(reserva.items)).catch((e) =>
+      console.error('[cilindros] No se pudo descontar la existencia:', e instanceof Error ? e.message : e)
     );
   }
 

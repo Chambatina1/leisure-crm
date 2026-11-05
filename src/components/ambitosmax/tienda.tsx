@@ -248,6 +248,9 @@ export function Tienda() {
                   <Button disabled className="w-full text-sm font-bold">Agotado en todos los puntos</Button>
                 ) : /CILINDRO/i.test(product.nombre) ? (
                   <>
+                    {product.existencia != null && (
+                      <div className="text-sm font-bold text-emerald-700">Quedan {product.existencia}</div>
+                    )}
                     <div className="text-xs text-emerald-600 font-medium">✓ Recogida en punto de gas (lo eliges al pagar)</div>
                     {puntos.some((pt) => quedanEnPunto(pt) !== null) && (
                       <ul className="text-xs text-zinc-600 space-y-0.5">

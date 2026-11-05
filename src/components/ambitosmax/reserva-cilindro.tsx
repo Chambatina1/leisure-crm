@@ -68,6 +68,20 @@ export function ReservaCilindro() {
       })
       .catch(() => toast.error('No se pudieron cargar los puntos de recogida'));
   }, []);
+  // Existencia de la balita de $85 en la tienda (null = sin límite)
+  const [quedanProducto, setQuedanProducto] = useState<number | null>(null);
+  useEffect(() => {
+    fetch('/api/tienda')
+      .then((r) => r.json())
+      .then((j) => {
+        const p = (j.data?.products || []).find(
+          (x: { nombre: string; precio: number }) => x.precio === PRECIO && /CILINDRO|BALITA|BALA DE GAS/i.test(x.nombre)
+        );
+        if (p && typeof p.existencia === 'number') setQuedanProducto(p.existencia);
+      })
+      .catch(() => {});
+  }, []);
+  const agotadoProducto = quedanProducto !== null && quedanProducto <= 0;
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<Resultado | null>(null);
 
@@ -302,8 +316,11 @@ export function ReservaCilindro() {
             <span className="text-2xl font-black text-[#123d83]">${(PRECIO * form.cantidad).toFixed(2)}</span>
           </div>
 
-          <Button type="submit" disabled={enviando} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
-            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Reservar y pagar por Zelle'}
+          {agotadoProducto && (
+            <p className="text-sm font-semibold text-red-600 text-center">Agotado por ahora. Vuelve a mirar más tarde.</p>
+          )}
+          <Button type="submit" disabled={enviando || agotadoProducto} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
+            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Reservar y pagar por Zelle'}
           </Button>
         </form>
       )}

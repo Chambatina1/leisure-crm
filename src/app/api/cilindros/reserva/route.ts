@@ -15,7 +15,8 @@ import {
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { leerPuntosDisponibles } from '@/lib/puntos-recogida';
-import { quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
+import { esBalitaGas, quedanEnPunto, textoPunto } from '@/lib/puntos-gas';
+import { existenciasDisponibles, itemsAMetadata } from '@/lib/existencia';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cilindros/reserva
@@ -80,6 +81,20 @@ export async function POST(request: NextRequest) {
     const lote = loteActual();
     const monto = PRECIO_CILINDRO * d.cantidad;
 
+    // Esta página vende la balita de la tienda que vale ${PRECIO_CILINDRO}: respeta su existencia
+    const producto = (await db.tiendaProduct.findMany({ where: { activo: true, precio: PRECIO_CILINDRO } })).find((p) =>
+      esBalitaGas(p.nombre)
+    );
+    if (producto) {
+      const hay = (await existenciasDisponibles([producto.id])).get(producto.id);
+      if (hay !== null && hay !== undefined && d.cantidad > hay) {
+        return NextResponse.json(
+          { ok: false, agotado: hay <= 0, error: hay > 0 ? `Solo quedan ${hay} cilindros.` : 'Los cilindros están agotados por ahora.' },
+          { status: 409 }
+        );
+      }
+    }
+
     // Reintento simple por si dos reservas piden el mismo número a la vez
     let numero = '';
     for (let intento = 0; intento < 3; intento++) {
@@ -87,8 +102,8 @@ export async function POST(request: NextRequest) {
       try {
         await db.$executeRawUnsafe(
           `INSERT INTO "ReservaCilindro"
-            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida")
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+            ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida","items")
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
           numero,
           d.nombreComprador,
           d.telefonoComprador,
@@ -100,7 +115,8 @@ export async function POST(request: NextRequest) {
           monto,
           lote,
           punto.id,
-          lugar
+          lugar,
+          producto ? itemsAMetadata([{ id: producto.id, qty: d.cantidad }]) : null
         );
         break;
       } catch (e) {

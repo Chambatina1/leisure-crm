@@ -36,6 +36,7 @@ export function CarruselProductos() {
       .then((j) => {
         if (j.ok && Array.isArray(j.data?.products)) {
           const lista: Producto[] = [...j.data.products]
+            .filter((p: Producto & { existencia?: number | null }) => !(p.existencia != null && p.existencia <= 0))
             .sort((a: Producto, b: Producto) => prioridad(a) - prioridad(b))
             .slice(0, MAX_PRODUCTOS);
           setProductos(lista);
