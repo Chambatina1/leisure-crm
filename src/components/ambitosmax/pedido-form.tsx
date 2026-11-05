@@ -503,6 +503,11 @@ export function PedidoForm() {
             </>
           )}
 
+          {pagaConZelle && (
+            <p className="text-sm text-zinc-600 rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2 mt-4">
+              Al continuar te damos el correo de Zelle, el monto y una referencia. El pago lo haces desde la app de tu banco.
+            </p>
+          )}
           <div className="flex gap-3 pt-4">
             <Button
               onClick={handleSubmit}
@@ -554,7 +559,7 @@ function Dato({ etiqueta, valor, copiar }: { etiqueta: string; valor: string; co
           variant="ghost"
           size="icon"
           aria-label={`Copiar ${etiqueta}`}
-          onClick={() => navigator.clipboard?.writeText(valor).then(() => toast.success('Copiado'), () => {})}
+          onClick={() => copiarTexto(valor)}
         >
           <Copy className="h-4 w-4" />
         </Button>
@@ -563,37 +568,80 @@ function Dato({ etiqueta, valor, copiar }: { etiqueta: string; valor: string; co
   );
 }
 
+const copiarTexto = (texto: string, aviso = 'Copiado') =>
+  navigator.clipboard?.writeText(texto).then(() => toast.success(aviso), () => toast.error('No se pudo copiar'));
+
+function Paso({ n, titulo, children }: { n: number; titulo: string; children?: React.ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="h-7 w-7 shrink-0 rounded-full bg-[#123d83] text-white text-sm font-bold flex items-center justify-center">{n}</span>
+      <div className="min-w-0 flex-1 space-y-2 pt-0.5">
+        <p className="font-semibold text-zinc-900">{titulo}</p>
+        {children}
+      </div>
+    </li>
+  );
+}
+
 function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => void }) {
   const balitas = pago.tipo === 'balitas';
+  const monto = `$${pago.montoUsd.toFixed(2)}`;
+  const todo = `Zelle a: ${pago.zelle}\nMonto: ${monto}\nNota (memo): ${pago.referencia}`;
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
       <Card className="border-emerald-200">
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="p-6 space-y-5">
           <div className="flex items-center gap-3">
             <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
             <div>
-              <h1 className="text-xl font-bold text-zinc-900">Falta el pago por Zelle</h1>
+              <h1 className="text-xl font-bold text-zinc-900">Tu compra está reservada. Ahora paga por Zelle</h1>
               <p className="text-sm text-zinc-600">{pago.resumen}</p>
             </div>
           </div>
-          <div className="rounded-xl bg-emerald-50 p-4 space-y-2">
-            <Dato etiqueta="Envía por Zelle a" valor={pago.zelle} copiar />
-            <Dato etiqueta="Monto exacto" valor={`$${pago.montoUsd.toFixed(2)}`} />
-            <Dato etiqueta="Escribe en la nota (memo) del Zelle" valor={pago.referencia} copiar />
-            {pago.puntoRecogida && <Dato etiqueta="Recoges en" valor={pago.puntoRecogida} />}
+
+          <p className="text-sm text-zinc-700 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
+            Zelle se paga desde la app de tu banco (o la app Zelle). Deja esta página abierta, sigue estos pasos y vuelve si necesitas copiar algo.
+          </p>
+
+          <ol className="space-y-4">
+            <Paso n={1} titulo="Abre la app de tu banco y entra en Zelle">
+              <p className="text-sm text-zinc-600">Busca &quot;Send money with Zelle&quot; o &quot;Enviar dinero con Zelle&quot;.</p>
+            </Paso>
+            <Paso n={2} titulo="Pega este correo como destinatario">
+              <Dato etiqueta="Enviar a" valor={pago.zelle} copiar />
+            </Paso>
+            <Paso n={3} titulo="Escribe el monto exacto">
+              <Dato etiqueta="Monto" valor={monto} copiar />
+            </Paso>
+            <Paso n={4} titulo="En la nota (memo) pega tu referencia">
+              <Dato etiqueta="Nota / Memo" valor={pago.referencia} copiar />
+              <p className="text-xs text-red-600 font-medium">
+                Importante: sin esta referencia en la nota no sabemos que el pago es tuyo{balitas ? ' y el PIN no sale automático' : ''}.
+              </p>
+            </Paso>
+            <Paso n={5} titulo="Revisa y envía el pago">
+              <p className="text-sm text-zinc-600">
+                {balitas
+                  ? 'Cuando llegue tu pago se confirma solo y te enviamos el PIN de recogida por correo, normalmente en pocos minutos.'
+                  : 'Cuando recibamos tu pago confirmamos el pedido y te avisamos.'}
+                {balitas && pago.despuesDelCierre && ' Los pagos después de las 8:00 PM (hora de Cuba) entran en el lote de mañana.'}
+              </p>
+            </Paso>
+          </ol>
+
+          {pago.puntoRecogida && <Dato etiqueta="Recoges en" valor={pago.puntoRecogida} />}
+
+          <div className="grid gap-2">
+            <Button variant="outline" onClick={() => copiarTexto(todo, 'Datos de pago copiados')}>
+              <Copy className="h-4 w-4 mr-2" /> Copiar todos los datos de pago
+            </Button>
+            {balitas && (
+              <Button variant="outline" onClick={() => useAppStore.getState().setCurrentView('reserva-cilindro')}>
+                Ver el estado y el PIN de mi compra
+              </Button>
+            )}
+            <Button onClick={onVolver} className="bg-[#123d83] hover:bg-[#071a46] text-white">Volver a la tienda</Button>
           </div>
-          {balitas ? (
-            <p className="text-sm text-zinc-700">
-              Cuando llegue tu pago con <strong>{pago.referencia}</strong> en la nota, se confirma solo y te enviamos el
-              <strong> PIN de recogida</strong> por correo. Sin la referencia en la nota el pago no se puede confirmar automáticamente.
-              {pago.despuesDelCierre && ' Los pagos después de las 8:00 PM (hora de Cuba) entran en el lote de mañana.'}
-            </p>
-          ) : (
-            <p className="text-sm text-zinc-700">
-              Cuando recibamos tu pago con <strong>{pago.referencia}</strong> en la nota, confirmamos el pedido y te avisamos.
-            </p>
-          )}
-          <Button onClick={onVolver} className="w-full bg-[#123d83] hover:bg-[#071a46] text-white">Volver a la tienda</Button>
         </CardContent>
       </Card>
     </div>

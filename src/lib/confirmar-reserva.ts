@@ -62,13 +62,13 @@ export async function confirmarReservaCilindro(id: number, referencia: string): 
     try {
       await enviarCorreo({
         to: reserva.emailComprador,
-        subject: `Tu PIN de recogida: ${pin} — Reserva ${reserva.numero}`,
-        text: `Pago confirmado. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${lugarDe(reserva)}. Debe presentar el carnet y decir el PIN.`,
+        subject: `Tu pago se registró con éxito — PIN de recogida ${pin} (${reserva.numero})`,
+        text: `Tu pago se registró con éxito. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir del listado del ${reserva.lote} en ${lugarDe(reserva)}. Debe presentar el carnet y decir el PIN.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
-          <h2 style="color:#071a46">Pago confirmado</h2>
-          <p>Hola ${esc(reserva.nombreComprador)}, tu reserva <b>${esc(reserva.numero)}</b> está pagada.</p>
+          <h2 style="color:#071a46">¡Tu pago se registró con éxito!</h2>
+          <p>Hola ${esc(reserva.nombreComprador)}, recibimos tu pago por Zelle. Tu compra <b>${esc(reserva.numero)}</b> está pagada y este es tu PIN de recogida:</p>
           <p style="font-size:34px;font-weight:800;letter-spacing:8px;background:#071a46;color:#7ed957;text-align:center;padding:18px;border-radius:12px;font-family:monospace">${pin}</p>
-          <p><b>${reserva.cantidad}</b> cilindro(s) lleno(s), sin entrega de vacío.<br>
+          <p><b>${reserva.cantidad}</b> balita(s) de gas.<br>
           Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)}<br>
           Listado del ${esc(fechaLarga(reserva.lote))}<br>
           Lugar: <b>${esc(lugarDe(reserva))}</b></p>
