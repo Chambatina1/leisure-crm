@@ -415,7 +415,7 @@ export function CombustibleCupet() {
 
               <div className="bg-gradient-to-br from-[#071a46] to-[#123d83] rounded-2xl p-6 mb-4">
                 <p className="text-xs text-white/60 uppercase tracking-widest mb-1">Paga por Zelle</p>
-                <p className="text-3xl font-black text-white font-mono">{solicitud.zelle}</p>
+                <p className="text-xl sm:text-2xl font-black text-white font-mono break-all">{solicitud.zelle}</p>
                 <p className="text-2xl font-black text-[#7ed957] mt-2">
                   ${solicitud.montoUsd.toFixed(2)} USD
                 </p>

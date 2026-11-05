@@ -1,7 +1,8 @@
 /**
  * AMBITOSMAX — Pagos por Zelle automáticos (Google Apps Script)
  *
- * Se instala en la cuenta de Gmail donde llegan los avisos de Zelle del banco.
+ * Se instala en la cuenta de Gmail donde llegan los avisos de Zelle del banco
+ * (salesleisureexportingllc@gmail.com).
  * Cada 5 minutos busca avisos nuevos y se los manda a ambitosmax.com, que:
  *   - lee el monto y la referencia de la reserva de balitas de gas (RC-000123),
  *   - si coincide con una reserva pendiente, la marca pagada y envía el PIN al cliente.

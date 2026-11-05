@@ -43,7 +43,7 @@ const FAQS = [
   { q: '¿Dónde se recoge?', a: 'En uno de nuestros dos puntos de gas, el que elijas al pagar: Punto de Gas de Madera (Arroyo Arena, La Lisa) o Punto de venta Barbosa (Playa), en La Habana.' },
   { q: '¿Cuándo puede recoger mi familia?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Si reservas antes, tu balita entra en el listado de hoy; si reservas después, en el de mañana.' },
   { q: '¿Cómo sé que mi dinero está seguro?', a: 'Somos una empresa en 6800 N Florida Ave, Tampa, FL. La balita solo se entrega a la persona que registraste, con su carnet de identidad y el PIN que te enviamos al confirmar el pago.' },
-  { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el número de Zelle y tu número de reserva para usarlo como referencia.' },
+  { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el correo de Zelle (salesleisureexportingllc@gmail.com) y tu número de reserva para usarlo como referencia.' },
   { q: '¿Puedo comprar varias?', a: 'Sí, hasta 4 balitas por reserva ($85 cada una). Para más, haz otra reserva o escríbenos por WhatsApp.' },
   { q: '¿Y si tengo una duda antes de pagar?', a: 'Escríbenos por WhatsApp o llámanos al +1 (727) 506-1845. Te atendemos en español.' },
 ];

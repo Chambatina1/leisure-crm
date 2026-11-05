@@ -4,6 +4,7 @@ import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
 import { z } from 'zod';
+import { ZELLE_DESTINO } from '@/lib/cilindros';
 
 // ═══════════════════════════════════════════════════════════════
 // /api/cupet/solicitud — Solicitudes de combustible (FASE 1)
@@ -56,9 +57,9 @@ export async function POST(request: NextRequest) {
         data: {
           numero: sol.numero,
           montoUsd: sol.montoUsd,
-          zelle: '727-598-6802',
+          zelle: ZELLE_DESTINO,
           instrucciones:
-            'Paga por Zelle al 727-598-6802 el monto exacto y escribe ' +
+            `Paga por Zelle a ${ZELLE_DESTINO} el monto exacto y escribe ` +
             numero +
             ' en la nota (memo) del pago. Al confirmar tu pago te enviaremos el PIN de carga.',
         },
