@@ -3,8 +3,9 @@
  *
  * Se instala en la cuenta de Gmail donde llegan los avisos de Zelle del banco.
  * Cada 5 minutos busca avisos nuevos y se los manda a ambitosmax.com, que:
- *   - lee el monto y la referencia (SC-000123 combustible, RC-000123 cilindros),
- *   - si coinciden con una solicitud pendiente, la marca pagada y envía el PIN al cliente.
+ *   - lee el monto y la referencia de la reserva de balitas de gas (RC-000123),
+ *   - si coincide con una reserva pendiente, la marca pagada y envía el PIN al cliente.
+ *   (Los pagos de combustible SC- quedan en Zelle/Revisar para confirmarlos a mano.)
  * Etiqueta cada aviso en Gmail:
  *   Zelle/Aplicado  → pago confirmado y PIN enviado
  *   Zelle/Revisar   → no cuadró (sin referencia, monto menor, etc.): confirmar a mano en el panel
