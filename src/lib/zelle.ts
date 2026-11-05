@@ -152,7 +152,8 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   if (!remitente.ok) return { resultado: 'ignorado', detalle: remitente.motivo! };
   if (!/zelle/i.test(`${a.asunto}\n${a.cuerpo}`)) return { resultado: 'ignorado', detalle: 'No es un aviso de Zelle' };
   if (esEnvioPropio(a.asunto, a.cuerpo)) return { resultado: 'ignorado', detalle: 'Es un envío o solicitud propia, no un pago recibido' };
-  if (!monto) return { resultado: 'revisar', detalle: 'No se encontró el monto en el aviso' };
+  // Sin importe no es un aviso de pago (alta en Zelle, códigos de verificación...)
+  if (!monto) return { resultado: 'ignorado', detalle: 'Aviso de Zelle sin importe: no es un pago' };
   if (!referencia) return { resultado: 'revisar', detalle: `Pago de $${monto.toFixed(2)} sin referencia SC-/RC- en la nota` };
 
   // Solo se automatizan las balitas de gas (RC-). El combustible (SC-) se
