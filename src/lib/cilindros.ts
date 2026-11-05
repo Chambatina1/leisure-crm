@@ -15,7 +15,9 @@ export const ZONA_CUBA = 'America/Havana';
 export const HORA_CIERRE = 20; // 8:00 PM
 export const PRECIO_CILINDRO = 85;
 export const MAX_POR_RESERVA = 4;
-export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || '727-598-6802';
+// Cuenta de Zelle donde pagan los clientes (combustible y cilindros)
+export const ZELLE_DESTINO = process.env.ZELLE_DESTINO || 'salesleisureexportingllc@gmail.com';
+export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || ZELLE_DESTINO;
 // Reservas antiguas, hechas antes de que el cliente eligiera punto
 export const PUNTO_SIN_ELEGIR = 'Punto de gas por confirmar (Madera, Arroyo Arena, o Barbosa, Playa)';
 

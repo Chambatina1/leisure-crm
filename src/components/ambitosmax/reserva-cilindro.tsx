@@ -203,7 +203,7 @@ export function ReservaCilindro() {
           </div>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm space-y-2">
             <p className="font-bold text-amber-900">Paga ${resultado.montoUsd.toFixed(2)} por Zelle</p>
-            <p className="flex items-center gap-2">Zelle: <b className="font-mono">{resultado.zelle}</b>
+            <p className="flex items-center gap-2">Zelle: <b className="font-mono break-all">{resultado.zelle}</b>
               <button onClick={() => copiar(resultado.zelle)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
             <p className="flex items-center gap-2">Referencia: <b className="font-mono">{resultado.numero}</b>
               <button onClick={() => copiar(resultado.numero)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>

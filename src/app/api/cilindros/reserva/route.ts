@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
           lote,
           despuesDelCierre: hora >= HORA_CIERRE,
           puntoRecogida: lugar,
-          instrucciones: `Paga $${monto.toFixed(2)} por Zelle al ${ZELLE_CILINDROS} y escribe ${numero} en la nota (memo) del pago. Al confirmarse el pago recibirás tu PIN de recogida por correo.`,
+          instrucciones: `Paga $${monto.toFixed(2)} por Zelle a ${ZELLE_CILINDROS} y escribe ${numero} en la nota (memo) del pago. Al confirmarse el pago recibirás tu PIN de recogida por correo.`,
         },
       },
       { status: 201 }
