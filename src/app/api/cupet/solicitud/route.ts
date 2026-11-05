@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
           montoUsd: sol.montoUsd,
           zelle: '727-598-6802',
           instrucciones:
-            'Paga por Zelle al 727-598-6802 el monto exacto y usa la referencia ' +
+            'Paga por Zelle al 727-598-6802 el monto exacto y escribe ' +
             numero +
-            '. Al confirmar tu pago te enviaremos el PIN de carga.',
+            ' en la nota (memo) del pago. Al confirmarse el pago te llega el PIN de carga por correo.',
         },
       },
       { status: 201 }
