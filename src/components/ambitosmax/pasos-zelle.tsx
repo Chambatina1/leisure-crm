@@ -60,7 +60,6 @@ export function PasosZelle({
   despues?: ReactNode;
 }) {
   const montoTxt = `$${monto.toFixed(2)}`;
-  const todo = `Zelle a: ${zelle}\nA nombre de: ${TITULAR_ZELLE}\nMonto: ${montoTxt}\nNota (memo): ${referencia}`;
   return (
     <div className="space-y-4">
       <div className="rounded-xl border-2 border-red-300 bg-red-50 p-3 text-sm text-red-900 space-y-1">
@@ -106,6 +105,9 @@ export function PasosZelle({
 
         <Paso n={5} titulo="En la nota (memo) pega tu referencia">
           <Dato etiqueta="Nota / Memo" valor={referencia} />
+          <p className="text-sm font-semibold text-zinc-800">
+            {referencia}{' '}NO es a quién le pagas. Va solo en la nota (memo, &quot;What&apos;s this for?&quot;). No lo pongas como destinatario ni como nombre del contacto.
+          </p>
           <p className="text-sm text-red-700 font-medium">
             Sin {referencia} en la nota no sabemos que el pago es tuyo{conPin ? ': no se confirma y no recibes el PIN' : ''}.
           </p>
@@ -113,7 +115,7 @@ export function PasosZelle({
 
         <Paso n={6} titulo="Revisa los 3 datos y envía">
           <p className="text-sm text-zinc-600">
-            Destinatario <b>{TITULAR_ZELLE}</b>, monto <b>{montoTxt}</b> y nota <b>{referencia}</b>.{' '}
+            Destinatario: <b>{zelle}</b> (sale como <b>{TITULAR_ZELLE}</b>). Monto: <b>{montoTxt}</b>. Nota: <b>{referencia}</b>.{' '}
             {conPin
               ? 'Cuando nos llega el pago se confirma solo y te mandamos el PIN de recogida por correo, normalmente en pocos minutos.'
               : 'Cuando recibimos el pago confirmamos tu pedido y te avisamos por correo.'}
@@ -121,10 +123,6 @@ export function PasosZelle({
           {despues}
         </Paso>
       </ol>
-
-      <Button type="button" variant="outline" className="w-full" onClick={() => copiar(todo, 'Datos de pago copiados')}>
-        <Copy className="h-4 w-4 mr-2" /> Copiar todos los datos de pago
-      </Button>
     </div>
   );
 }
