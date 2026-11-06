@@ -166,8 +166,7 @@ export function Home() {
         </h1>
         <p className="text-zinc-600 mt-3 leading-relaxed">
           En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: balitas de gas en Cuba (cilindro lleno sin entregar el vacío)
-          con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo), electrodomésticos, motos, plantas eléctricas,
-          alimentos y envíos marítimos y aéreos a toda Cuba.
+          con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo) y triciclos.
         </p>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
           {[

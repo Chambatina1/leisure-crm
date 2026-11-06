@@ -119,6 +119,17 @@ async function aplicarAltas(): Promise<void> {
     await db.config.create({ data: { clave: claveAjuste, valor: new Date().toISOString() } });
   }
 
+  // Tienda reducida (2026-11-06): solo balitas de gas, combustible y triciclos.
+  // Se ocultan (activo=false), no se borran: se pueden reactivar desde /admin/tienda.
+  const claveTienda = 'ocultar_tienda_solo_gas_combustible_triciclos';
+  if (!(await db.config.findUnique({ where: { clave: claveTienda } }))) {
+    const n = await db.$executeRawUnsafe(
+      `UPDATE "TiendaProduct" SET "activo" = false WHERE "activo" = true AND "categoria" NOT IN ('gas','combustible','triciclos')`
+    );
+    console.log(`[Tienda] Productos ocultados: ${n}`);
+    await db.config.create({ data: { clave: claveTienda, valor: new Date().toISOString() } });
+  }
+
   const claveContacto = 'cambio_contacto_whatsapp_16562248018';
   if (!(await db.config.findUnique({ where: { clave: claveContacto } }))) {
     const valores: Record<string, string> = {
