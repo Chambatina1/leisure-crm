@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { requireTienda } from '@/lib/admin-auth';
-import { guardarPuntos, leerPuntos } from '@/lib/puntos-recogida';
+import { db } from '@/lib/db';
+import { ajustarBalitasPunto, guardarPuntos, leerPuntos } from '@/lib/puntos-recogida';
 
 const puntosSchema = z
   .array(
@@ -48,5 +49,26 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Error guardando puntos de recogida:', error);
     return NextResponse.json({ ok: false, error: 'Error al guardar puntos' }, { status: 500 });
+  }
+}
+
+const sumarSchema = z.object({ id: z.string().min(1).max(60), sumar: z.number().int().min(-10000).max(10000) });
+
+// PATCH /api/tienda/admin/puntos — { id, sumar }: añade (o quita) balitas a un punto
+export async function PATCH(request: NextRequest) {
+  const denied = requireTienda(request);
+  if (denied) return denied;
+  try {
+    const v = sumarSchema.safeParse(await request.json());
+    if (!v.success || v.data.sumar === 0) return NextResponse.json({ ok: false, error: 'Cantidad no válida' }, { status: 400 });
+    const puntos = await leerPuntos();
+    if (!puntos.some((p) => p.id === v.data.id)) return NextResponse.json({ ok: false, error: 'Guarda el punto primero' }, { status: 404 });
+    // Si la lista aún no está guardada en la base, se guarda antes de sumar
+    if (!(await db.config.findUnique({ where: { clave: 'puntos_recogida' } }))) await guardarPuntos(puntos);
+    await ajustarBalitasPunto(v.data.id, v.data.sumar, true);
+    return NextResponse.json({ ok: true, data: await leerPuntos() });
+  } catch (error) {
+    console.error('Error sumando balitas al punto:', error);
+    return NextResponse.json({ ok: false, error: 'Error al sumar balitas' }, { status: 500 });
   }
 }

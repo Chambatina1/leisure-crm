@@ -1,3 +1,4 @@
+import { textoPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 // ============================================================
 // Reservas de cilindros de gas (recogida en el punto de gas que elige el cliente)
 // ------------------------------------------------------------
@@ -193,7 +194,20 @@ const td = 'padding:8px;border-bottom:1px solid #e5e7eb';
 const th = 'padding:8px';
 
 /** HTML del informe diario (correo de las 8 PM e impresión): una lista por punto de recogida. */
-export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDia[] = []): string {
+/** Por punto: balitas vendidas en este cierre (a repartir) y las que quedan ahora en el punto. */
+export function resumenPorPunto(reservas: Reserva[], puntos: PuntoRecogida[]) {
+  const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
+  const filas: { punto: string; vendidas: number; quedan: number | null }[] = puntos.map((p) => ({
+    punto: textoPunto(p),
+    vendidas: confirmadas.filter((r) => r.puntoId === p.id).reduce((s, r) => s + r.cantidad, 0),
+    quedan: typeof p.existencia === 'number' ? p.existencia : null,
+  }));
+  const otras = confirmadas.filter((r) => !puntos.some((p) => p.id === r.puntoId)).reduce((s, r) => s + r.cantidad, 0);
+  if (otras) filas.push({ punto: 'Otro / sin punto', vendidas: otras, quedan: null });
+  return filas;
+}
+
+export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDia[] = [], puntos: PuntoRecogida[] = []): string {
   const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
   const totalCil = confirmadas.reduce((s, r) => s + r.cantidad, 0);
   const totalUsd = confirmadas.reduce((s, r) => s + r.montoUsd, 0);
@@ -226,6 +240,20 @@ export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDi
       </tr></thead><tbody>${filas}</tbody></table>`;
   };
 
+  const resumen = puntos.length ? resumenPorPunto(reservas, puntos) : [];
+  const tablaResumen = resumen.length
+    ? `<h3 style="color:#071a46;margin:20px 0 6px">Balitas por punto de venta</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead><tr style="background:#123d83;color:#fff;text-align:left">
+        <th style="${th}">Punto</th><th style="${th}">Vendidas hoy (a repartir)</th><th style="${th}">Quedan en el punto</th>
+      </tr></thead><tbody>${resumen
+        .map(
+          (f) => `<tr><td style="${td}"><b>${esc(f.punto)}</b></td><td style="${td};text-align:center;font-size:16px"><b>${f.vendidas}</b></td>
+          <td style="${td};text-align:center">${f.quedan === null ? 'Sin control' : f.quedan}</td></tr>`
+        )
+        .join('')}</tbody></table>`
+    : '';
+
   const ventasTienda = pedidos.length
     ? `<h3 style="color:#071a46;margin:28px 0 6px">Otras ventas de la tienda del día</h3>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
@@ -244,6 +272,7 @@ export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDi
     <h2 style="color:#071a46;margin:0">Resumen de ventas y listado de recogida</h2>
     <p style="margin:4px 0 12px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}. Se entregan a partir del <b>${esc(fechaLarga(diaRecogida(lote)))}</b>${esFinDeSemana(lote) ? ` (${AVISO_FIN_DE_SEMANA})` : ''}.</p>
     <p style="margin:0 0 12px"><b>${confirmadas.length}</b> compras de balitas pagadas · <b>${totalCil}</b> balitas · <b>$${totalUsd.toFixed(2)}</b> USD</p>
+    ${tablaResumen}
     ${confirmadas.length ? [...grupos].map(tablaPunto).join('') : '<p>No hubo compras de balitas pagadas en este cierre.</p>'}
     ${ventasTienda}
     <p style="margin-top:16px;color:#6b7280;font-size:12px">Para entregar: el cliente presenta el carnet de identidad y dice su PIN. Se marca en el panel (Cilindros → Entregar).</p>
