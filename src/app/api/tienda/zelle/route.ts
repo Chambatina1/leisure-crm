@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     const resumen = lineas.map((l) => `${l.qty}x ${l.p.nombre} ($${l.p.precio.toFixed(2)})`).join(', ');
     const gas = lineas.filter((l) => esBalitaGas(l.p.nombre));
 
-    // No vender más de lo que queda (existencia menos lo apartado por compras sin pagar)
+    // No vender más de lo que queda (la existencia solo baja con pagos confirmados)
     const stock = await existenciasDisponibles([...cantidades.keys()]);
     const sinStock = productos.find((p) => {
       const hay = stock.get(p.id);
