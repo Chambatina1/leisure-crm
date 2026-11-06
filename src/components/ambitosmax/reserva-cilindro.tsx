@@ -124,7 +124,7 @@ export function ReservaCilindro() {
       const json = await res.json();
       if (json.ok) setResultado(json.data);
       else if (json.requiereRegistro) useAppStore.getState().pedirRegistro({ tipo: 'vista', vista: 'reserva-cilindro' });
-      else toast.error(json.error || 'No se pudo reservar');
+      else toast.error(json.error || 'No se pudo crear la compra');
     } catch {
       toast.error('Error de conexión');
     } finally {
@@ -161,7 +161,7 @@ export function ReservaCilindro() {
 
       <div className="bg-[#071a46] text-white rounded-2xl p-5 mb-5">
         <div className="flex items-center gap-2 text-[#7ed957] text-xs font-black uppercase tracking-widest">
-          <Flame className="h-4 w-4" /> Reserva de cilindro
+          <Flame className="h-4 w-4" /> Compra de balita de gas
         </div>
         <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
         <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
@@ -175,22 +175,22 @@ export function ReservaCilindro() {
         <button
           onClick={() => setModoConsulta(false)}
           className={`flex-1 py-2.5 rounded-xl text-sm font-bold ${!modoConsulta ? 'bg-[#123d83] text-white' : 'bg-white border border-zinc-200 text-zinc-600'}`}
-        >Reservar</button>
+        >Comprar</button>
         <button
           onClick={() => setModoConsulta(true)}
           className={`flex-1 py-2.5 rounded-xl text-sm font-bold ${modoConsulta ? 'bg-[#123d83] text-white' : 'bg-white border border-zinc-200 text-zinc-600'}`}
-        >Ya reservé: ver mi PIN</button>
+        >Ya pagué: ver mi PIN</button>
       </div>
 
       {modoConsulta ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-5">
           <form onSubmit={consultar} className="space-y-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Número de reserva</Label>
+              <Label className="text-xs">Número de compra (RC-...)</Label>
               <Input value={cNumero} onChange={(e) => setCNumero(e.target.value)} placeholder="RC-000001" className="uppercase font-mono" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Tu teléfono (el que pusiste al reservar)</Label>
+              <Label className="text-xs">Tu teléfono (el que pusiste al comprar)</Label>
               <Input value={cTelefono} onChange={(e) => setCTelefono(e.target.value)} placeholder="+1 305 000 0000" inputMode="tel" />
             </div>
             <Button type="submit" disabled={consultando} className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-bold">
@@ -216,7 +216,7 @@ export function ReservaCilindro() {
       ) : resultado ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#1f6b3a] font-bold">
-            <CheckCircle2 className="h-5 w-5" /> Reserva creada: {resultado.numero}
+            <CheckCircle2 className="h-5 w-5" /> Compra {resultado.numero} creada: todavía NO está pagada
           </div>
           <AceptarReferencia referencia={resultado.numero}>
           <PasosZelle zelle={resultado.zelle} monto={resultado.montoUsd} referencia={resultado.numero} conPin />
@@ -226,11 +226,11 @@ export function ReservaCilindro() {
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
             {resultado.despuesDelCierre
-              ? ` Como reservaste después de las 8 PM, entras en el listado del ${fechaBonita(resultado.lote)}.`
+              ? ` Si pagas después de las 8 PM, entras en el listado del ${fechaBonita(resultado.lote)}.`
               : ` Si pagas antes de las 8 PM de hoy, entras en el listado de hoy.`}
           </p>
-          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya reservé”.</p>
-          <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra reserva</Button>
+          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya pagué”. Si no pagas, la compra no vale y la balita sigue a la venta.</p>
+          <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra compra</Button>
         </div>
       ) : (
         <form onSubmit={reservar} className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
@@ -320,7 +320,7 @@ export function ReservaCilindro() {
             <p className="text-sm font-semibold text-red-600 text-center">Agotado por ahora. Vuelve a mirar más tarde.</p>
           )}
           <Button type="submit" disabled={enviando || agotadoProducto} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
-            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Reservar y pagar por Zelle'}
+            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Continuar al pago por Zelle'}
           </Button>
         </form>
       )}

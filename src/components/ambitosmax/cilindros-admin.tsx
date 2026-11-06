@@ -251,9 +251,9 @@ export function CilindrosAdmin() {
       {r && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: 'Reservas', v: r.total },
-            { label: 'Pendientes de pago', v: r.pendientes },
-            { label: 'Confirmadas', v: r.confirmadas },
+            { label: 'Compras creadas', v: r.total },
+            { label: 'Sin pagar (no cuentan)', v: r.pendientes },
+            { label: 'Pagadas', v: r.confirmadas },
             { label: 'Cilindros a entregar', v: r.cilindros },
             { label: 'Cobrado (USD)', v: `$${r.usd.toFixed(2)}` },
           ].map((s) => (

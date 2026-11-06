@@ -1,7 +1,8 @@
 import { timingSafeEqual } from 'crypto';
 import { db } from '@/lib/db';
 import { asegurarTablaSolicitudes } from '@/lib/asegurar-tabla-cupet';
-import { asegurarTablaReservas, type Reserva } from '@/lib/cilindros';
+import { asegurarTablaReservas, type Reserva, ZELLE_DESTINO, esc } from '@/lib/cilindros';
+import { enviarCorreo } from '@/lib/mailer';
 import { confirmarSolicitudCombustible, enviarPinCombustible } from '@/lib/pin-combustible';
 import { confirmarReservaCilindro } from '@/lib/confirmar-reserva';
 
@@ -144,6 +145,20 @@ export async function procesarAviso(a: Aviso): Promise<{ resultado: Resultado; d
     salida.detalle.slice(0, 500)
   );
   if (salida.resultado !== 'ignorado') console.log(`[zelle] ${a.mensajeId}: ${salida.resultado} — ${salida.detalle}`);
+  // Un Zelle real que entró pero no se pudo aplicar solo: avisar a ventas para revisarlo
+  if (salida.resultado === 'revisar' && monto) {
+    await enviarCorreo({
+      to: ZELLE_DESTINO,
+      subject: `Zelle recibido SIN aplicar · $${monto.toFixed(2)}${referencia ? ` · ${referencia}` : ''} — revisar`,
+      text: `Llegó un Zelle de $${monto.toFixed(2)} pero no se confirmó solo: ${salida.detalle}. Aviso del banco: ${a.asunto}. No se descontó nada ni se envió PIN.`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
+        <h2 style="color:#b45309">Zelle recibido sin aplicar: $${monto.toFixed(2)}</h2>
+        <p><b>Motivo:</b> ${esc(salida.detalle)}</p>
+        <p><b>Aviso del banco:</b> ${esc(a.asunto)}</p>
+        <p>No se descontó nada del inventario ni se envió PIN. Si es de un cliente, confírmalo a mano en el panel.</p>
+      </div>`,
+    }).catch((e) => console.error('[zelle] No se pudo avisar a ventas:', e instanceof Error ? e.message : e));
+  }
   return { ...salida, referencia, monto };
 }
 
@@ -193,7 +208,7 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   if (monto + 0.009 < Number(res.montoUsd)) {
     return { resultado: 'revisar', detalle: `${referencia}: llegaron $${monto.toFixed(2)} y cuesta $${Number(res.montoUsd).toFixed(2)}` };
   }
-  const r = await confirmarReservaCilindro(res.id, `aviso automático ${referencia}`);
+  const r = await confirmarReservaCilindro(res.id, `aviso automático ${referencia}`, { monto, asunto: a.asunto });
   if (!r.ok) return { resultado: 'revisar', detalle: `${referencia}: ${r.error}` };
   if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${referencia} pagada; PIN enviado por correo` };
   return {

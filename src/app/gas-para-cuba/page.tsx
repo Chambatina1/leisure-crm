@@ -21,18 +21,18 @@ export const metadata: Metadata = {
 };
 
 const RESERVAR = '/?v=reserva-cilindro';
-const WHATSAPP = 'https://wa.me/16562248018?text=' + encodeURIComponent('Hola, quiero reservar una balita de gas para mi familia en La Habana');
+const WHATSAPP = 'https://wa.me/16562248018?text=' + encodeURIComponent('Hola, quiero comprar una balita de gas para mi familia en La Habana');
 const PRECIO = 85;
 
 const PASOS = [
-  { icono: Flame, titulo: 'Reserva en 1 minuto', texto: 'Pon tu nombre, el de quien recoge en Cuba y su carnet. Hasta 4 balitas por reserva.' },
-  { icono: ShieldCheck, titulo: 'Paga por Zelle', texto: 'Desde EE.UU., con tu número de reserva como referencia. Sin tarjetas ni intermediarios.' },
+  { icono: Flame, titulo: 'Compra en 1 minuto', texto: 'Pon tu nombre, el de quien recoge en Cuba y su carnet. Hasta 4 balitas por compra.' },
+  { icono: ShieldCheck, titulo: 'Paga por Zelle', texto: 'Desde EE.UU., con tu número de compra como referencia. Sin pago no hay balita: solo es tuya cuando entra el Zelle.' },
   { icono: KeyRound, titulo: 'Tu familia recoge', texto: 'Al confirmar el pago recibes un PIN de 6 dígitos. Tu familiar presenta carnet + PIN y se lleva la balita llena.' },
 ];
 
 const COMPARACION: [string, string][] = [
   ['Hay que conseguir un cilindro vacío para cambiar', 'No hace falta entregar ninguna balita vacía'],
-  ['Colas largas sin saber si habrá gas', 'Balita reservada a nombre de tu familiar'],
+  ['Colas largas sin saber si habrá gas', 'Balita pagada a nombre de tu familiar'],
   ['Mandar efectivo y rezar para que llegue', 'Pagas tú desde EE.UU. por Zelle'],
   ['Cualquiera puede reclamar la entrega', 'Solo recoge quien tiene el carnet y el PIN'],
   ['Precio que cambia cada semana', 'Precio fijo: $85 por balita llena'],
@@ -41,10 +41,10 @@ const COMPARACION: [string, string][] = [
 const FAQS = [
   { q: '¿De verdad no tengo que entregar la balita vacía?', a: 'No. Pagas $85 y tu familiar se lleva un cilindro de gas lleno. No hace falta cambiar un vacío.' },
   { q: '¿Dónde se recoge?', a: 'En uno de nuestros dos puntos de gas, el que elijas al pagar: Punto de Gas de Madera (Arroyo Arena, La Lisa) o Punto de venta Barbosa (Playa), en La Habana.' },
-  { q: '¿Cuándo puede recoger mi familia?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Si reservas antes, tu balita entra en el listado de hoy; si reservas después, en el de mañana.' },
+  { q: '¿Cuándo puede recoger mi familia?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Si pagas antes, tu balita entra en el listado de hoy; si pagas después, en el de mañana.' },
   { q: '¿Cómo sé que mi dinero está seguro?', a: 'Somos una empresa en 6800 N Florida Ave, Tampa, FL. La balita solo se entrega a la persona que registraste, con su carnet de identidad y el PIN que te enviamos al confirmar el pago.' },
-  { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al reservar te mostramos el correo de Zelle (salesleisureexportingllc@gmail.com) y tu número de reserva para usarlo como referencia.' },
-  { q: '¿Puedo comprar varias?', a: 'Sí, hasta 4 balitas por reserva ($85 cada una). Para más, haz otra reserva o escríbenos por WhatsApp.' },
+  { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos. Al comprar te mostramos el correo de Zelle (salesleisureexportingllc@gmail.com) y tu número de compra para usarlo como referencia. La compra solo vale cuando entra el Zelle.' },
+  { q: '¿Puedo comprar varias?', a: 'Sí, hasta 4 balitas por compra ($85 cada una). Para más, haz otra compra o escríbenos por WhatsApp.' },
   { q: '¿Y si tengo una duda antes de pagar?', a: 'Escríbenos por WhatsApp al +1 (656) 224-8018 o al correo salesleisureexportingllc@gmail.com. Te atendemos en español.' },
 ];
 
@@ -77,7 +77,7 @@ function BotonReservar({ grande = false, className = '' }: { grande?: boolean; c
       href={RESERVAR}
       className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#55b949] hover:bg-[#3f9a35] text-white font-black shadow-[0_10px_30px_rgba(85,185,73,0.45)] transition-transform hover:-translate-y-0.5 ${grande ? 'px-10 py-5 text-xl' : 'px-8 py-4 text-lg'} ${className}`}
     >
-      Reservar mi balita — ${PRECIO} <ArrowRight className="h-5 w-5" />
+      Comprar mi balita — ${PRECIO} <ArrowRight className="h-5 w-5" />
     </Link>
   );
 }
@@ -207,8 +207,8 @@ export default function Page() {
                 'Cilindro lleno, sin entregar el vacío',
                 'Recogida en Arroyo Arena (La Lisa) o en Playa, La Habana',
                 'PIN de seguridad a nombre de quien recoge',
-                'Confirmación de tu reserva al momento',
-                'Hasta 4 balitas en la misma reserva',
+                'PIN por correo en cuanto entra tu Zelle',
+                'Hasta 4 balitas en la misma compra',
               ].map((b) => (
                 <li key={b} className="flex gap-2"><BadgeCheck className="h-5 w-5 text-[#55b949] shrink-0 mt-0.5" /> {b}</li>
               ))}
@@ -220,7 +220,7 @@ export default function Page() {
             <p className="text-zinc-500 mt-1">USD · precio fijo</p>
             <BotonReservar className="w-full mt-6" />
             <p className="text-xs text-zinc-500 mt-4 flex items-center justify-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" /> Reserva antes de las 8:00 PM (Cuba) para recoger hoy
+              <Clock className="h-3.5 w-3.5" /> Paga antes de las 8:00 PM (Cuba) para entrar en el listado de hoy
             </p>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function Page() {
       {/* ═══ BOTÓN FIJO EN MÓVIL ═══ */}
       <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-zinc-200 p-3 flex gap-2">
         <Link href={RESERVAR} className="flex-1 inline-flex items-center justify-center rounded-xl bg-[#55b949] text-white font-black py-3.5">
-          Reservar — ${PRECIO}
+          Comprar — ${PRECIO}
         </Link>
         <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="inline-flex items-center justify-center rounded-xl bg-[#25D366] text-white px-4">
           <MessageCircle className="h-6 w-6" />
