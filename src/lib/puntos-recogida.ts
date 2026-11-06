@@ -1,3 +1,4 @@
+import { HORAS_APARTADO } from '@/lib/existencia';
 import { db } from '@/lib/db';
 import type { PuntoRecogida } from '@/lib/puntos-gas';
 
@@ -36,10 +37,27 @@ export async function descontarBalitasPunto(puntoId: string, cantidad: number) {
   await guardarPuntos(puntos);
 }
 
-/**
- * Puntos con las balitas que quedan para vender. Solo baja cuando un pago se
- * confirma: una compra sin pagar no descuenta nada.
- */
+/** Balitas apartadas por compras sin pagar de la última hora, por punto. */
+async function apartadasPorPunto(): Promise<Map<string, number>> {
+  try {
+    const filas = await db.$queryRawUnsafe<{ puntoId: string; n: number }[]>(
+      `SELECT "puntoId", SUM("cantidad")::int AS n FROM "ReservaCilindro"
+       WHERE "estado" = 'pendiente_pago' AND "puntoId" IS NOT NULL
+         AND "createdAt" > NOW() - INTERVAL '${HORAS_APARTADO} hours'
+       GROUP BY "puntoId"`
+    );
+    return new Map(filas.map((f) => [f.puntoId, Number(f.n) || 0]));
+  } catch {
+    return new Map(); // la tabla aún no existe: nada apartado
+  }
+}
+
+/** Puntos con las balitas a la venta: la existencia menos lo apartado en la última hora. */
 export async function leerPuntosDisponibles(): Promise<PuntoRecogida[]> {
-  return leerPuntos();
+  const [puntos, apartadas] = await Promise.all([leerPuntos(), apartadasPorPunto()]);
+  return puntos.map((p) =>
+    typeof p.existencia === 'number'
+      ? { ...p, existencia: Math.max(0, p.existencia - (apartadas.get(p.id) || 0)) }
+      : p
+  );
 }
