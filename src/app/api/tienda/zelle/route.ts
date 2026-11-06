@@ -14,6 +14,7 @@ import {
   ZELLE_DESTINO,
   ahoraEnCuba,
   HORA_CIERRE,
+  textoRecogida,
 } from '@/lib/cilindros';
 
 // POST /api/tienda/zelle — compra de la tienda pagada por Zelle.
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
             puntoRecogida: lugar,
             resumen,
             despuesDelCierre: hora >= HORA_CIERRE,
+            recogida: textoRecogida(lote),
           },
         },
         { status: 201 }

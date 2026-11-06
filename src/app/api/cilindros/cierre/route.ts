@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'crypto';
 import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
-import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, pedidosDelDia, ZELLE_DESTINO } from '@/lib/cilindros';
+import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, pedidosDelDia, ZELLE_DESTINO, diaRecogida } from '@/lib/cilindros';
 
 // ═══════════════════════════════════════════════════════════════
 // POST /api/cilindros/cierre — cierre diario de ventas de cilindros
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         subject: `Resumen 8 PM · ${totalCil} balitas${pedidos.length ? ` · ${pedidos.length} pedidos de tienda` : ''} — ${fechaLarga(lote)}`,
         html,
         text: [
-          `Listado de recogida de balitas — ${lote} (se entregan a partir de mañana)`,
+          `Listado de recogida de balitas — ${lote} (se entregan a partir del ${diaRecogida(lote)})`,
           ...reservas.map(
             (r, i) => `${i + 1}. ${r.puntoRecogida || ''} · Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · PIN ${r.pin || ''} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
           ),
