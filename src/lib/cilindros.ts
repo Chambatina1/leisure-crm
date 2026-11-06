@@ -16,8 +16,10 @@ export const HORA_CIERRE = 20; // 8:00 PM
 export const PRECIO_CILINDRO = 85;
 export const MAX_POR_RESERVA = 4;
 // Cuenta de Zelle donde pagan los clientes (combustible y cilindros)
-export const ZELLE_DESTINO = process.env.ZELLE_DESTINO || 'salesleisureexportingllc@gmail.com';
-export const ZELLE_CILINDROS = process.env.ZELLE_CILINDROS || ZELLE_DESTINO;
+// Fija en el código a propósito: ninguna variable de entorno vieja puede mostrar
+// a los clientes otro teléfono o correo de Zelle.
+export const ZELLE_DESTINO = 'salesleisureexportingllc@gmail.com';
+export const ZELLE_CILINDROS = ZELLE_DESTINO;
 // Reservas antiguas, hechas antes de que el cliente eligiera punto
 export const PUNTO_SIN_ELEGIR = 'Punto de gas por confirmar (Madera, Arroyo Arena, o Barbosa, Playa)';
 
