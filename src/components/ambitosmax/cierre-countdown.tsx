@@ -30,7 +30,7 @@ export function CierreCountdown({ className = '' }: { className?: string }) {
 
   // Antes de hidratar mostramos el dato fijo, que también es lo que lee Google.
   if (seg === null) return <span className={className}>Las ventas del día cierran a las 8:00 PM (hora de Cuba)</span>;
-  if (seg <= 0) return <span className={className}>Ventas de hoy cerradas · Reserva ahora y tu balita entra en el listado de mañana</span>;
+  if (seg <= 0) return <span className={className}>Ventas de hoy cerradas · Si pagas ahora, tu balita entra en el listado de mañana</span>;
 
   const h = Math.floor(seg / 3600);
   const m = Math.floor((seg % 3600) / 60);

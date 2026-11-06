@@ -596,7 +596,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
           <div className="flex items-center gap-3">
             <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
             <div>
-              <h1 className="text-xl font-bold text-zinc-900">Tu compra está reservada. Ahora paga por Zelle</h1>
+              <h1 className="text-xl font-bold text-zinc-900">Tu compra aún NO está pagada. Paga por Zelle para que sea válida</h1>
               <p className="text-sm text-zinc-600">{pago.resumen}</p>
             </div>
           </div>

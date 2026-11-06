@@ -45,15 +45,15 @@ export default function Page() {
         'Recogida en Arroyo Arena (La Lisa) o en Playa, La Habana',
         'PIN de seguridad para recoger',
         'Pago por Zelle desde EE.UU.',
-        'Reservas diarias hasta las 8:00 PM',
+        'Ventas diarias hasta las 8:00 PM',
       ]}
       faqs={[
         { q: '¿Cuánto cuesta una balita de gas en Cuba?', a: '$85 USD por balita (cilindro) de gas llena. No hace falta entregar la balita vacía.' },
         { q: '¿Puedo comprar la balita de gas desde Estados Unidos?', a: 'Sí. Pagas desde EE.UU. por Zelle y tu familiar en Cuba la recoge con su carnet y el PIN.' },
         { q: '¿Dónde se recoge?', a: 'En uno de nuestros dos puntos de gas, el que elijas al pagar: Punto de Gas de Madera (Arroyo Arena, La Lisa) o Punto de venta Barbosa (Playa), en La Habana.' },
         { q: '¿Cómo se recoge?', a: 'Al confirmar tu pago recibes un PIN de 6 dígitos. La persona que recoge presenta su carnet de identidad y dice el PIN.' },
-        { q: '¿Hasta qué hora puedo comprar?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Las reservas posteriores pasan al listado del día siguiente.' },
-        { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos, usando tu número de reserva como referencia.' },
+        { q: '¿Hasta qué hora puedo comprar?', a: 'Las ventas del día cierran a las 8:00 PM (hora de Cuba). Los pagos posteriores pasan al listado del día siguiente.' },
+        { q: '¿Cómo pago?', a: 'Por Zelle desde Estados Unidos, usando tu número de compra como referencia. Sin pago no hay balita.' },
       ]}
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(producto) }} />
@@ -61,7 +61,7 @@ export default function Page() {
         <p className="text-sm font-bold text-amber-900 uppercase tracking-wide">Cilindro lleno · La Habana</p>
         <p className="text-4xl font-black text-[#071a46] mt-1">$85.00 USD</p>
         <Link href="/?v=reserva-cilindro" className="inline-block mt-4 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold px-8 py-3 rounded-md">
-          Reservar mi cilindro
+          Comprar mi balita
         </Link>
       </div>
     </SeoPage>

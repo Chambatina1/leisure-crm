@@ -31,7 +31,7 @@ const SLIDES = [
     titulo: 'Balas de Gas',
     sub: '',
     precio: 'Desde $15.00',
-    texto: 'Reservá tu balita',
+    texto: 'Compra tu balita',
     color: '#55b949',
     imagen: <img src="/carrusel/bala-gas.png" alt="Balas de gas" className="max-w-full max-h-[220px] md:max-h-[340px] object-contain drop-shadow-xl mx-auto" />,
   },
