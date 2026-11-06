@@ -53,10 +53,30 @@ export function itemsDeMetadata(s: string | undefined | null): { id: number; qty
     .map(([id, qty]) => ({ id, qty }));
 }
 
-/**
- * Existencia que queda a la venta. Solo baja cuando un pago se confirma
- * (descontarExistencia): una compra sin pagar no descuenta nada.
- */
+// Una compra sin pagar aparta sus balitas solo 1 hora. Pasada la hora se
+// cancela y las balitas vuelven a estar a la venta. La existencia guardada
+// solo baja cuando el pago se confirma.
+export const HORAS_APARTADO = 1;
+
+/** Balitas apartadas por compras sin pagar de la última hora, por producto. */
+async function apartadosPorProducto(): Promise<Map<number, number>> {
+  const m = new Map<number, number>();
+  try {
+    const filas = await db.$queryRawUnsafe<{ items: string | null }[]>(
+      `SELECT "items" FROM "ReservaCilindro"
+       WHERE "estado" = 'pendiente_pago' AND "items" IS NOT NULL
+         AND "createdAt" > NOW() - INTERVAL '${HORAS_APARTADO} hours'`
+    );
+    for (const f of filas) for (const { id, qty } of itemsDeMetadata(f.items)) m.set(id, (m.get(id) || 0) + qty);
+  } catch {
+    // la tabla o la columna aún no existen: nada apartado
+  }
+  return m;
+}
+
+/** Existencia a la venta: la guardada (baja al pagarse) menos lo apartado en la última hora. */
 export async function existenciasDisponibles(ids?: number[]): Promise<Map<number, number | null>> {
-  return existencias(ids);
+  const [stock, apartados] = await Promise.all([existencias(ids), apartadosPorProducto()]);
+  for (const [id, n] of stock) if (n !== null) stock.set(id, Math.max(0, n - (apartados.get(id) || 0)));
+  return stock;
 }

@@ -68,6 +68,12 @@ export function PasosZelle({
         <p>Un Zelle enviado a otra persona <b>no se puede devolver</b>. Si te equivocas de destinatario, el dinero no nos llega y no podemos entregarte nada.</p>
       </div>
 
+      {conPin && (
+        <p className="rounded-xl border-2 border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
+          Tienes <b>1 hora</b> para pagar. Te apartamos la balita durante esa hora; si no llega tu Zelle, la compra se cancela y la balita vuelve a la venta.
+        </p>
+      )}
+
       <p className="text-sm text-zinc-700">Zelle se paga desde la app de tu banco. Deja esta página abierta mientras pagas para copiar los datos.</p>
 
       <ol className="space-y-5">

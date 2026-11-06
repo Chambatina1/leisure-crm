@@ -229,7 +229,7 @@ export function ReservaCilindro() {
               ? ` Si pagas después de las 8 PM, entras en el listado del ${fechaBonita(resultado.lote)}.`
               : ` Si pagas antes de las 8 PM de hoy, entras en el listado de hoy.`}
           </p>
-          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya pagué”. Si no pagas, la compra no vale y la balita sigue a la venta.</p>
+          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya pagué”. Tienes 1 hora para pagar: si no, la compra se cancela y la balita vuelve a la venta.</p>
           <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra compra</Button>
         </div>
       ) : (

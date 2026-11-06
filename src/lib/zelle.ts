@@ -5,6 +5,7 @@ import { asegurarTablaReservas, type Reserva, ZELLE_DESTINO, esc } from '@/lib/c
 import { enviarCorreo } from '@/lib/mailer';
 import { confirmarSolicitudCombustible, enviarPinCombustible } from '@/lib/pin-combustible';
 import { confirmarReservaCilindro } from '@/lib/confirmar-reserva';
+import { HORAS_APARTADO } from '@/lib/existencia';
 
 // ═══════════════════════════════════════════════════════════════
 // Pagos por Zelle automáticos.
@@ -207,6 +208,13 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   }
   if (monto + 0.009 < Number(res.montoUsd)) {
     return { resultado: 'revisar', detalle: `${referencia}: llegaron $${monto.toFixed(2)} y cuesta $${Number(res.montoUsd).toFixed(2)}` };
+  }
+  // La compra aparta las balitas 1 hora. Si el Zelle llega pasada la hora (con
+  // 30 min de margen por lo que tarda el aviso del banco), ya no se aplica solo:
+  // ventas lo revisa y decide si quedan balitas.
+  const minutos = (Date.now() - new Date(res.createdAt).getTime()) / 60000;
+  if (minutos > HORAS_APARTADO * 60 + 30) {
+    return { resultado: 'revisar', detalle: `${referencia}: pagó después de la hora de apartado (${Math.round(minutos)} min). Confirmar a mano si quedan balitas` };
   }
   const r = await confirmarReservaCilindro(res.id, `aviso automático ${referencia}`, { monto, asunto: a.asunto });
   if (!r.ok) return { resultado: 'revisar', detalle: `${referencia}: ${r.error}` };
