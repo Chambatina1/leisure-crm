@@ -11,6 +11,7 @@ import {
   ahoraEnCuba,
   HORA_CIERRE,
   type Reserva,
+  textoRecogida,
 } from '@/lib/cilindros';
 import { db } from '@/lib/db';
 import { getCliente, respuestaSinRegistro } from '@/lib/cliente-auth';
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
           zelle: ZELLE_CILINDROS,
           lote,
           despuesDelCierre: hora >= HORA_CIERRE,
+            recogida: textoRecogida(lote),
           puntoRecogida: lugar,
           instrucciones: `Paga $${monto.toFixed(2)} por Zelle a ${ZELLE_CILINDROS} y escribe ${numero} en la nota (memo) del pago. Al confirmarse el pago recibirás tu PIN de recogida por correo.`,
         },

@@ -21,6 +21,7 @@ interface Resultado {
   despuesDelCierre: boolean;
   puntoRecogida: string;
   instrucciones: string;
+  recogida?: string;
 }
 
 interface Consulta {
@@ -165,7 +166,7 @@ export function ReservaCilindro() {
         <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
         <div className="mt-3 space-y-1.5 text-sm text-white/80">
           <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en {puntos.length ? puntos.map((p) => textoPunto(p)).join(' o ') : 'nuestros puntos de gas'}. Eliges el punto al reservar.</p>
-          <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Lo pagado antes del cierre se recoge al día siguiente (a partir de las 24 horas).</p>
+          <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Lo pagado antes del cierre se recoge al día siguiente. Lo que se compra el viernes se entrega el lunes.</p>
         </div>
       </div>
 
@@ -227,6 +228,7 @@ export function ReservaCilindro() {
           </div>
           </AceptarReferencia>
           <p className="text-sm flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-[#123d83]" /><span>Recoges en <b>{resultado.puntoRecogida}</b></span></p>
+          {resultado.recogida && <p className="text-sm font-semibold text-[#071a46]">Si pagas hoy, recoges a partir de {resultado.recogida}.</p>}
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
             {resultado.despuesDelCierre

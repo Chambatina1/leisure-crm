@@ -463,7 +463,7 @@ export function PedidoForm() {
                   ¿Dónde recoges la balita de gas? *
                 </h2>
                 <p className="text-sm text-zinc-500 mb-1">Las balitas solo están en estos puntos. Marca el punto donde quieres comprarla.</p>
-                <p className="text-sm font-semibold text-amber-700 mb-3">Se recoge siempre al día siguiente del pago (a partir de las 24 horas).</p>
+                <p className="text-sm font-semibold text-amber-700 mb-3">Se recoge al día siguiente del pago. Lo que se compra el viernes se entrega el lunes.</p>
                 <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {puntos.map((pt) => {
                     const { id: k, nombre, lugar } = pt;
@@ -546,6 +546,7 @@ interface PagoZelle {
   puntoRecogida?: string;
   resumen: string;
   despuesDelCierre?: boolean;
+  recogida?: string;
 }
 
 function Dato({ etiqueta, valor, copiar }: { etiqueta: string; valor: string; copiar?: boolean }) {
@@ -625,9 +626,9 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
             <Paso n={5} titulo="Revisa y envía el pago">
               <p className="text-sm text-zinc-600">
                 {balitas
-                  ? 'Cuando llegue tu pago se confirma solo y te enviamos el PIN de recogida por correo, normalmente en pocos minutos. La balita se recoge al día siguiente (a partir de las 24 horas).'
+                  ? 'Cuando llegue tu pago se confirma solo y te enviamos el PIN de recogida por correo, normalmente en pocos minutos. '
                   : 'Cuando recibamos tu pago confirmamos el pedido y te avisamos.'}
-                {balitas && pago.despuesDelCierre && ' Los pagos después de las 8:00 PM (hora de Cuba) entran en el lote de mañana.'}
+                {balitas && pago.recogida && <> Si pagas hoy, recoges a partir de <b>{pago.recogida}</b>.</>}
               </p>
             </Paso>
           </ol>

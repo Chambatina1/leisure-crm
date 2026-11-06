@@ -147,11 +147,22 @@ export function fechaLarga(dia: string): string {
   });
 }
 
-/** Día desde el que se recoge lo pagado en ese lote: siempre el día siguiente. */
+/** ¿Ese lote es de un viernes? Lo de los viernes se entrega el lunes. */
+export const esViernes = (lote: string) => new Date(`${lote}T12:00:00Z`).getUTCDay() === 5;
+
+/** Día desde el que se recoge lo pagado en ese lote: el día siguiente; si es viernes, el lunes. */
 export function diaRecogida(lote: string): string {
   const d = new Date(`${lote}T12:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + 1);
+  d.setUTCDate(d.getUTCDate() + (esViernes(lote) ? 3 : 1));
   return d.toISOString().slice(0, 10);
+}
+
+/** Texto para el cliente: desde cuándo recoge, con el aviso del viernes cuando toca. */
+export function textoRecogida(lote: string): string {
+  const desde = fechaLarga(diaRecogida(lote));
+  return esViernes(lote)
+    ? `el lunes ${desde.replace(/^lunes,?\s*/i, '')} (lo que se compra el viernes se entrega el lunes)`
+    : `el ${desde} (día siguiente al pago)`;
 }
 
 /** Pedidos de la tienda hechos ese día (hora de Cuba), sin los cancelados. */
@@ -226,7 +237,7 @@ export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDi
   return `
   <div style="font-family:Arial,sans-serif;max-width:980px;margin:0 auto;color:#111827">
     <h2 style="color:#071a46;margin:0">Resumen de ventas y listado de recogida</h2>
-    <p style="margin:4px 0 12px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}. Se entregan a partir de mañana.</p>
+    <p style="margin:4px 0 12px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}. Se entregan a partir del <b>${esc(fechaLarga(diaRecogida(lote)))}</b>${esViernes(lote) ? ' (lo del viernes se entrega el lunes)' : ''}.</p>
     <p style="margin:0 0 12px"><b>${confirmadas.length}</b> compras de balitas pagadas · <b>${totalCil}</b> balitas · <b>$${totalUsd.toFixed(2)}</b> USD</p>
     ${confirmadas.length ? [...grupos].map(tablaPunto).join('') : '<p>No hubo compras de balitas pagadas en este cierre.</p>'}
     ${ventasTienda}
