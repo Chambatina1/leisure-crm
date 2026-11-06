@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/terms' },
 };
 
-const CONTACTO = 'sales@leisureexportingllc.com · WhatsApp +1 (727) 598-6802';
+const CONTACTO = 'salesleisureexportingllc@gmail.com · Tel. y WhatsApp +1 (656) 224-8018';
 
 export default function Page() {
   return (

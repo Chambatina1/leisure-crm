@@ -102,6 +102,19 @@ async function aplicarAltas(): Promise<void> {
     await db.config.update({ where: { clave: 'direccion' }, data: { valor: '6800 N Florida Ave, Tampa, FL 33604' } });
   }
 
+  // Contacto público: solo el WhatsApp de atención al cliente y el correo de ventas (una sola vez)
+  const claveContacto = 'cambio_contacto_whatsapp_16562248018';
+  if (!(await db.config.findUnique({ where: { clave: claveContacto } }))) {
+    const valores: Record<string, string> = {
+      telefono1: '+1 (656) 224-8018', nombre_contacto1: 'Atención al cliente', telefono2: '', nombre_contacto2: '', telefono3: '', nombre_contacto3: '',
+      whatsapp: '+1 (656) 224-8018', email: 'salesleisureexportingllc@gmail.com',
+    };
+    for (const [clave, valor] of Object.entries(valores)) {
+      await db.config.upsert({ where: { clave }, update: { valor }, create: { clave, valor } });
+    }
+    await db.config.create({ data: { clave: claveContacto, valor: new Date().toISOString() } });
+  }
+
   for (const alta of ALTAS) {
     const clave = `alta_producto_${alta.id}`;
     const hecha = await db.config.findUnique({ where: { clave } });

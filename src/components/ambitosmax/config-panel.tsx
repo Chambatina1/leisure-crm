@@ -30,15 +30,15 @@ interface ConfigData {
 const DEFAULT_CONFIG: ConfigData = {
   nombre_negocio: 'Ambitosmax',
   direccion: '6800 N Florida Ave, Tampa, FL 33604',
-  telefono1: '727-506-1845',
-  nombre_contacto1: 'Geo',
-  telefono2: '786-784-6421',
-  nombre_contacto2: 'Adriana',
+  telefono1: '+1 (656) 224-8018',
+  nombre_contacto1: 'Atención al cliente',
+  telefono2: '',
+  nombre_contacto2: '',
   telefono3: '',
   nombre_contacto3: '',
-  email: '',
+  email: 'salesleisureexportingllc@gmail.com',
   horario: 'Lunes a Viernes 9:00 AM - 6:00 PM',
-  whatsapp: '',
+  whatsapp: '+1 (656) 224-8018',
   instagram: '',
   facebook: '',
 };
@@ -162,7 +162,7 @@ export function ConfigPanel() {
                 type="email"
                 value={config.email}
                 onChange={updateField('email')}
-                placeholder="info@ambitosmax.com"
+                placeholder="salesleisureexportingllc@gmail.com"
               />
             </div>
           </div>
