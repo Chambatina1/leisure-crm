@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ImageIcon, ShoppingCart } from 'lucide-react';
 import { useAppStore } from './store';
+import { useCartStore } from './cart-store';
+import { esBalitaGas } from '@/lib/puntos-gas';
+import { toast } from 'sonner';
 
 interface Producto {
   id: number;
@@ -11,6 +14,7 @@ interface Producto {
   precio: number;
   categoria: string;
   imagenUrl: string | null;
+  existencia?: number | null;
 }
 
 // Productos que van primero en el carrusel (por texto en el nombre)
@@ -24,6 +28,25 @@ function prioridad(p: Producto): number {
 
 export function CarruselProductos() {
   const { goToComprar, setCurrentView } = useAppStore();
+  const addItem = useCartStore((s) => s.add);
+  const setCartOpen = useCartStore((s) => s.setOpen);
+
+  // Igual que en la tienda: va al carrito (ahí se elige la cantidad), sin pasar de lo que queda.
+  // El diésel y la gasolina siguen yendo a su propio flujo de compra.
+  function comprar(p: Producto) {
+    if (p.categoria === 'combustible' && !esBalitaGas(p.nombre)) {
+      goToComprar({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria });
+      return;
+    }
+    const enCarrito = useCartStore.getState().items.find((i) => i.product.id === p.id)?.qty || 0;
+    if (p.existencia != null && enCarrito >= p.existencia) {
+      toast.error(p.existencia > 0 ? `Solo quedan ${p.existencia} de ${p.nombre}` : `${p.nombre} está agotado`);
+      if (enCarrito > 0) setCartOpen(true);
+      return;
+    }
+    addItem({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria, imagenUrl: p.imagenUrl });
+    setCartOpen(true);
+  }
   const [productos, setProductos] = useState<Producto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [pausado, setPausado] = useState(false);
@@ -130,8 +153,11 @@ export function CarruselProductos() {
                     <div className="p-3 flex flex-col flex-1">
                       <p className="text-[13px] font-bold text-zinc-900 leading-snug line-clamp-2 min-h-[2.5em]">{p.nombre}</p>
                       <p className="text-base font-black text-[#123d83] mt-1">${p.precio.toFixed(2)}</p>
+                      {p.existencia != null && (
+                        <p className="text-xs font-bold text-emerald-700">Quedan {p.existencia}</p>
+                      )}
                       <button
-                        onClick={() => goToComprar({ id: p.id, nombre: p.nombre, precio: p.precio, categoria: p.categoria })}
+                        onClick={() => comprar(p)}
                         className="mt-auto pt-2"
                       >
                         <span className="w-full inline-flex items-center justify-center gap-1.5 bg-[#55b949] hover:bg-[#3f9a35] text-white text-xs font-bold py-2 rounded-xl transition-colors">

@@ -103,6 +103,22 @@ async function aplicarAltas(): Promise<void> {
   }
 
   // Contacto público: solo el WhatsApp de atención al cliente y el correo de ventas (una sola vez)
+  // RC-000007 ($68.25) se pagó el 5/11, antes de que la reserva guardara qué
+  // producto llevaba, así que nunca se descontó de la existencia. Se descuenta una vez.
+  const claveAjuste = 'ajuste_existencia_rc000007';
+  if (!(await db.config.findUnique({ where: { clave: claveAjuste } }))) {
+    const pagada = await db.$queryRawUnsafe<{ n: number }[]>(
+      `SELECT COUNT(*)::int AS n FROM "ReservaCilindro" WHERE "numero" = 'RC-000007' AND "estado" IN ('pagada','entregada') AND "items" IS NULL`
+    ).catch(() => [{ n: 0 }]);
+    if (Number(pagada[0]?.n) > 0) {
+      await db.$executeRawUnsafe(
+        `UPDATE "TiendaProduct" SET "existencia" = GREATEST("existencia" - 1, 0) WHERE "existencia" IS NOT NULL AND "nombre" = 'CILINDRO LLENO CON ENTREGA DE VACÍO'`
+      );
+      await db.$executeRawUnsafe(`UPDATE "ReservaCilindro" SET "items" = '117:1' WHERE "numero" = 'RC-000007' AND "items" IS NULL`);
+    }
+    await db.config.create({ data: { clave: claveAjuste, valor: new Date().toISOString() } });
+  }
+
   const claveContacto = 'cambio_contacto_whatsapp_16562248018';
   if (!(await db.config.findUnique({ where: { clave: claveContacto } }))) {
     const valores: Record<string, string> = {
