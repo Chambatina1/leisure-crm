@@ -78,5 +78,21 @@ async function apartadosPorProducto(): Promise<Map<number, number>> {
 export async function existenciasDisponibles(ids?: number[]): Promise<Map<number, number | null>> {
   const [stock, apartados] = await Promise.all([existencias(ids), apartadosPorProducto()]);
   for (const [id, n] of stock) if (n !== null) stock.set(id, Math.max(0, n - (apartados.get(id) || 0)));
+
+  // Balitas de gas: si los puntos de recogida llevan cantidad, la tienda vende la suma de los puntos
+  try {
+    const { totalBalitasEnPuntos } = await import('@/lib/puntos-recogida');
+    const { esBalitaGas } = await import('@/lib/puntos-gas');
+    const total = await totalBalitasEnPuntos();
+    if (total !== null && stock.size) {
+      const filas = await db.$queryRawUnsafe<{ id: number; nombre: string }[]>(
+        `SELECT "id", "nombre" FROM "TiendaProduct" WHERE "id" = ANY($1::int[])`,
+        [...stock.keys()]
+      );
+      for (const f of filas) if (esBalitaGas(f.nombre)) stock.set(Number(f.id), total);
+    }
+  } catch (e) {
+    console.error('[existencia] No se pudo leer la existencia de los puntos:', e instanceof Error ? e.message : e);
+  }
   return stock;
 }

@@ -3,7 +3,8 @@ import { timingSafeEqual } from 'crypto';
 import { isAdminRequest } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { enviarCorreo } from '@/lib/mailer';
-import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, pedidosDelDia, ZELLE_DESTINO, diaRecogida } from '@/lib/cilindros';
+import { leerPuntos } from '@/lib/puntos-recogida';
+import { ahoraEnCuba, HORA_CIERRE, reservasDelLote, informeHtml, fechaLarga, pedidosDelDia, ZELLE_DESTINO, diaRecogida, resumenPorPunto } from '@/lib/cilindros';
 
 // ═══════════════════════════════════════════════════════════════
 // POST /api/cilindros/cierre — cierre diario de ventas de cilindros
@@ -62,7 +63,8 @@ export async function POST(request: NextRequest) {
 
     const reservas = await reservasDelLote(lote, true);
     const pedidos = await pedidosDelDia(lote);
-    const html = informeHtml(lote, reservas, pedidos);
+    const puntos = await leerPuntos();
+    const html = informeHtml(lote, reservas, pedidos, puntos);
     const para = await destinatarios();
     if (para.length === 0) {
       console.error('[cierre cilindros] No hay correo de destino (REPORTE_CILINDROS_EMAIL)');
@@ -77,6 +79,8 @@ export async function POST(request: NextRequest) {
         html,
         text: [
           `Listado de recogida de balitas — ${lote} (se entregan a partir del ${diaRecogida(lote)})`,
+          ...resumenPorPunto(reservas, puntos).map((f) => `${f.punto}: vendidas hoy ${f.vendidas} (a repartir) · quedan ${f.quedan ?? 'sin control'}`),
+          '',
           ...reservas.map(
             (r, i) => `${i + 1}. ${r.puntoRecogida || ''} · Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · PIN ${r.pin || ''} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
           ),
