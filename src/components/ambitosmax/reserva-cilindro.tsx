@@ -9,6 +9,7 @@ import { ArrowLeft, Flame, Loader2, MapPin, Clock, CheckCircle2, Search, Copy } 
 import { toast } from 'sonner';
 import { AceptarReferencia } from './aceptar-referencia';
 import { PasosZelle } from './pasos-zelle';
+import { ComprobanteReserva } from './comprobante-reserva';
 import { quedanEnPunto, textoPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 
 const PRECIO = 85;
@@ -175,7 +176,7 @@ export function ReservaCilindro() {
         <button
           onClick={() => setModoConsulta(false)}
           className={`flex-1 py-2.5 rounded-xl text-sm font-bold ${!modoConsulta ? 'bg-[#123d83] text-white' : 'bg-white border border-zinc-200 text-zinc-600'}`}
-        >Comprar</button>
+        >Reservar</button>
         <button
           onClick={() => setModoConsulta(true)}
           className={`flex-1 py-2.5 rounded-xl text-sm font-bold ${modoConsulta ? 'bg-[#123d83] text-white' : 'bg-white border border-zinc-200 text-zinc-600'}`}
@@ -186,7 +187,7 @@ export function ReservaCilindro() {
         <div className="bg-white rounded-2xl border border-zinc-200 p-5">
           <form onSubmit={consultar} className="space-y-3">
             <div className="space-y-1.5">
-              <Label className="text-xs">Número de compra (RC-...)</Label>
+              <Label className="text-xs">Número de reserva (RC-...)</Label>
               <Input value={cNumero} onChange={(e) => setCNumero(e.target.value)} placeholder="RC-000001" className="uppercase font-mono" />
             </div>
             <div className="space-y-1.5">
@@ -215,9 +216,10 @@ export function ReservaCilindro() {
         </div>
       ) : resultado ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
-          <div className="flex items-center gap-2 text-[#1f6b3a] font-bold">
-            <CheckCircle2 className="h-5 w-5" /> Compra {resultado.numero} creada: todavía NO está pagada
-          </div>
+          <p className="flex items-center gap-2 text-[#1f6b3a] font-bold">
+            <CheckCircle2 className="h-5 w-5" /> Tu balita está reservada por 1 hora. Paga por Zelle para confirmarla
+          </p>
+          <ComprobanteReserva referencia={resultado.numero} resumen={`${resultado.cantidad} balita(s) de gas`} monto={resultado.montoUsd} />
           <AceptarReferencia referencia={resultado.numero}>
           <PasosZelle zelle={resultado.zelle} monto={resultado.montoUsd} referencia={resultado.numero} conPin />
           </AceptarReferencia>
@@ -229,7 +231,7 @@ export function ReservaCilindro() {
               ? ` Si pagas después de las 8 PM, entras en el listado del ${fechaBonita(resultado.lote)}.`
               : ` Si pagas antes de las 8 PM de hoy, entras en el listado de hoy.`}
           </p>
-          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya pagué”. Tienes 1 hora para pagar: si no, la compra se cancela y la balita vuelve a la venta.</p>
+          <p className="text-xs text-zinc-500">Guarda tu número {resultado.numero}: con él y tu teléfono puedes ver tu PIN en “Ya pagué”. Si no pagas en 1 hora, la reserva se cancela y la balita vuelve a la venta.</p>
           <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra compra</Button>
         </div>
       ) : (
@@ -320,7 +322,7 @@ export function ReservaCilindro() {
             <p className="text-sm font-semibold text-red-600 text-center">Agotado por ahora. Vuelve a mirar más tarde.</p>
           )}
           <Button type="submit" disabled={enviando || agotadoProducto} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
-            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Continuar al pago por Zelle'}
+            {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Reservar 1 hora y pagar por Zelle'}
           </Button>
         </form>
       )}

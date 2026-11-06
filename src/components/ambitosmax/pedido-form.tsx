@@ -17,6 +17,7 @@ import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2,
 import { toast } from 'sonner';
 import { AceptarReferencia } from './aceptar-referencia';
 import { PasosZelle } from './pasos-zelle';
+import { ComprobanteReserva } from './comprobante-reserva';
 
 interface PedidoData {
   nombreComprador: string;
@@ -593,13 +594,20 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
       <Card className="border-emerald-200">
         <CardContent className="p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
-            <div>
-              <h1 className="text-xl font-bold text-zinc-900">Tu compra aún NO está pagada. Paga por Zelle para que sea válida</h1>
-              <p className="text-sm text-zinc-600">{pago.resumen}</p>
+          {balitas ? (
+            <>
+              <h1 className="text-xl font-bold text-zinc-900">Tu balita está reservada por 1 hora. Paga por Zelle para confirmarla</h1>
+              <ComprobanteReserva referencia={pago.referencia} resumen={pago.resumen} monto={pago.montoUsd} />
+            </>
+          ) : (
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
+              <div>
+                <h1 className="text-xl font-bold text-zinc-900">Tu pedido {pago.referencia} aún NO está pagado. Paga por Zelle para que sea válido</h1>
+                <p className="text-sm text-zinc-600">{pago.resumen}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           <AceptarReferencia referencia={pago.referencia}>
           <PasosZelle
