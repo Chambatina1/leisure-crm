@@ -463,7 +463,7 @@ export function PedidoForm() {
                   ¿Dónde recoges la balita de gas? *
                 </h2>
                 <p className="text-sm text-zinc-500 mb-1">Las balitas solo están en estos puntos. Marca el punto donde quieres comprarla.</p>
-                <p className="text-sm font-semibold text-amber-700 mb-3">Se recoge al día siguiente del pago. Lo que se compra el viernes se entrega el lunes.</p>
+                <p className="text-sm font-semibold text-amber-700 mb-3">Se recoge al día siguiente del pago. Lo que se compra viernes, sábado o domingo se entrega el lunes.</p>
                 <div role="radiogroup" aria-label="Punto de recogida" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {puntos.map((pt) => {
                     const { id: k, nombre, lugar } = pt;
