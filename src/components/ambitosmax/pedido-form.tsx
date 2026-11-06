@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { AceptarReferencia } from './aceptar-referencia';
+import { PasosZelle } from './pasos-zelle';
 
 interface PedidoData {
   nombreComprador: string;
@@ -588,8 +589,6 @@ function Paso({ n, titulo, children }: { n: number; titulo: string; children?: R
 
 function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => void }) {
   const balitas = pago.tipo === 'balitas';
-  const monto = `$${pago.montoUsd.toFixed(2)}`;
-  const todo = `Zelle a: ${pago.zelle}\nMonto: ${monto}\nNota (memo): ${pago.referencia}`;
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
       <Card className="border-emerald-200">
@@ -603,42 +602,17 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
           </div>
 
           <AceptarReferencia referencia={pago.referencia}>
-          <p className="text-sm text-zinc-700 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
-            Zelle se paga desde la app de tu banco (o la app Zelle). Deja esta página abierta, sigue estos pasos y vuelve si necesitas copiar algo.
-          </p>
-
-          <ol className="space-y-4">
-            <Paso n={1} titulo="Abre la app de tu banco y entra en Zelle">
-              <p className="text-sm text-zinc-600">Busca &quot;Send money with Zelle&quot; o &quot;Enviar dinero con Zelle&quot;.</p>
-            </Paso>
-            <Paso n={2} titulo="Pega este correo como destinatario">
-              <Dato etiqueta="Enviar a" valor={pago.zelle} copiar />
-            </Paso>
-            <Paso n={3} titulo="Escribe el monto exacto">
-              <Dato etiqueta="Monto" valor={monto} copiar />
-            </Paso>
-            <Paso n={4} titulo="En la nota (memo) pega tu referencia">
-              <Dato etiqueta="Nota / Memo" valor={pago.referencia} copiar />
-              <p className="text-xs text-red-600 font-medium">
-                Importante: sin esta referencia en la nota no sabemos que el pago es tuyo{balitas ? ' y no recibes el PIN' : ''}.
-              </p>
-            </Paso>
-            <Paso n={5} titulo="Revisa y envía el pago">
-              <p className="text-sm text-zinc-600">
-                {balitas
-                  ? 'Cuando llegue tu pago se confirma solo y te enviamos el PIN de recogida por correo, normalmente en pocos minutos. '
-                  : 'Cuando recibamos tu pago confirmamos el pedido y te avisamos.'}
-                {balitas && pago.recogida && <> Si pagas hoy, recoges a partir de <b>{pago.recogida}</b>.</>}
-              </p>
-            </Paso>
-          </ol>
+          <PasosZelle
+            zelle={pago.zelle}
+            monto={pago.montoUsd}
+            referencia={pago.referencia}
+            conPin={balitas}
+            despues={balitas && pago.recogida ? <p className="text-sm text-zinc-600">Si pagas hoy, recoges a partir de <b>{pago.recogida}</b>.</p> : null}
+          />
 
           {pago.puntoRecogida && <Dato etiqueta="Recoges en" valor={pago.puntoRecogida} />}
 
           <div className="grid gap-2">
-            <Button variant="outline" onClick={() => copiarTexto(todo, 'Datos de pago copiados')}>
-              <Copy className="h-4 w-4 mr-2" /> Copiar todos los datos de pago
-            </Button>
             {balitas && (
               <Button variant="outline" onClick={() => useAppStore.getState().setCurrentView('reserva-cilindro')}>
                 Ver el estado y el PIN de mi compra
