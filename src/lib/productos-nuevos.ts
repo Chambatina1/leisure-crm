@@ -103,11 +103,11 @@ async function aplicarAltas(): Promise<void> {
   }
 
   // Contacto público: solo el WhatsApp de atención al cliente y el correo de ventas (una sola vez)
-  const claveContacto = 'cambio_contacto_whatsapp_5358592766';
+  const claveContacto = 'cambio_contacto_whatsapp_16562248018';
   if (!(await db.config.findUnique({ where: { clave: claveContacto } }))) {
     const valores: Record<string, string> = {
-      telefono1: '', nombre_contacto1: '', telefono2: '', nombre_contacto2: '', telefono3: '', nombre_contacto3: '',
-      whatsapp: '+53 5859 2766', email: 'salesleisureexportingllc@gmail.com',
+      telefono1: '+1 (656) 224-8018', nombre_contacto1: 'Atención al cliente', telefono2: '', nombre_contacto2: '', telefono3: '', nombre_contacto3: '',
+      whatsapp: '+1 (656) 224-8018', email: 'salesleisureexportingllc@gmail.com',
     };
     for (const [clave, valor] of Object.entries(valores)) {
       await db.config.upsert({ where: { clave }, update: { valor }, create: { clave, valor } });

@@ -6,15 +6,15 @@ import ZAI from 'z-ai-web-dev-sdk';
 // Config keys and their defaults
 const CONFIG_DEFAULTS: Record<string, string> = {
   direccion: '6800 N Florida Ave, Tampa, FL 33604',
-  telefono1: '',
-  nombre_contacto1: '',
+  telefono1: '+1 (656) 224-8018',
+  nombre_contacto1: 'Atención al cliente',
   telefono2: '',
   nombre_contacto2: '',
   telefono3: '',
   nombre_contacto3: '',
   horario: 'Lunes a Viernes 9:00 AM - 6:00 PM',
   email: 'salesleisureexportingllc@gmail.com',
-  whatsapp: '+53 5859 2766',
+  whatsapp: '+1 (656) 224-8018',
   instagram: '',
   facebook: '',
 };

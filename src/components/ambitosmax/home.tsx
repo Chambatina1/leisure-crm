@@ -142,7 +142,7 @@ export function Home() {
               TikTok
             </a>
             <a
-              href="https://wa.me/5358592766"
+              href="https://wa.me/16562248018"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold px-5 py-2.5 rounded-full text-sm transition-colors shadow-md"
@@ -197,7 +197,7 @@ export function Home() {
             </div>
             <div>
               <h4 className="font-bold text-gray-900">Atención al cliente</h4>
-              <a href="https://wa.me/5358592766" target="_blank" rel="noopener noreferrer" className="block text-sm text-gray-500 hover:text-[#123d83]">WhatsApp +53 5859 2766</a>
+              <a href="https://wa.me/16562248018" target="_blank" rel="noopener noreferrer" className="block text-sm text-gray-500 hover:text-[#123d83]">Tel. y WhatsApp +1 (656) 224-8018</a>
               <a href="mailto:salesleisureexportingllc@gmail.com" className="block text-sm text-gray-500 hover:text-[#123d83] break-all">salesleisureexportingllc@gmail.com</a>
             </div>
           </div>
