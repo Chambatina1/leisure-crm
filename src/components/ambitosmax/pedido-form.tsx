@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { AceptarReferencia } from './aceptar-referencia';
 
 interface PedidoData {
   nombreComprador: string;
@@ -600,6 +601,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
             </div>
           </div>
 
+          <AceptarReferencia referencia={pago.referencia}>
           <p className="text-sm text-zinc-700 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
             Zelle se paga desde la app de tu banco (o la app Zelle). Deja esta página abierta, sigue estos pasos y vuelve si necesitas copiar algo.
           </p>
@@ -617,7 +619,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
             <Paso n={4} titulo="En la nota (memo) pega tu referencia">
               <Dato etiqueta="Nota / Memo" valor={pago.referencia} copiar />
               <p className="text-xs text-red-600 font-medium">
-                Importante: sin esta referencia en la nota no sabemos que el pago es tuyo{balitas ? ' y el PIN no sale automático' : ''}.
+                Importante: sin esta referencia en la nota no sabemos que el pago es tuyo{balitas ? ' y no recibes el PIN' : ''}.
               </p>
             </Paso>
             <Paso n={5} titulo="Revisa y envía el pago">
@@ -643,6 +645,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
             )}
             <Button onClick={onVolver} className="bg-[#123d83] hover:bg-[#071a46] text-white">Volver a la tienda</Button>
           </div>
+          </AceptarReferencia>
         </CardContent>
       </Card>
     </div>

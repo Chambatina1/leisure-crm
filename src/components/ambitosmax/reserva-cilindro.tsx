@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, Flame, Loader2, MapPin, Clock, CheckCircle2, Search, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { AceptarReferencia } from './aceptar-referencia';
 import { quedanEnPunto, textoPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 
 const PRECIO = 85;
@@ -215,13 +216,16 @@ export function ReservaCilindro() {
           <div className="flex items-center gap-2 text-[#1f6b3a] font-bold">
             <CheckCircle2 className="h-5 w-5" /> Reserva creada: {resultado.numero}
           </div>
+          <AceptarReferencia referencia={resultado.numero}>
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm space-y-2">
             <p className="font-bold text-amber-900">Paga ${resultado.montoUsd.toFixed(2)} por Zelle</p>
             <p className="flex items-center gap-2">Zelle: <b className="font-mono break-all">{resultado.zelle}</b>
               <button onClick={() => copiar(resultado.zelle)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
             <p className="flex items-center gap-2">Referencia: <b className="font-mono">{resultado.numero}</b>
               <button onClick={() => copiar(resultado.numero)} className="text-[#123d83]"><Copy className="h-3.5 w-3.5" /></button></p>
+            <p className="text-xs font-semibold text-red-700">Sin {resultado.numero} en la nota del Zelle no se confirma el pago ni se envía el PIN.</p>
           </div>
+          </AceptarReferencia>
           <p className="text-sm flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-[#123d83]" /><span>Recoges en <b>{resultado.puntoRecogida}</b></span></p>
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
