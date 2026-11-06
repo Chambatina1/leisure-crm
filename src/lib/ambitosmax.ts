@@ -411,7 +411,7 @@ export const BUSINESS_CONTEXT = `Eres un asistente virtual de Ambitosmax, una em
 INFORMACIÓN DE LA EMPRESA:
 - Nombre: Ambitosmax
 - Oficina: 6800 N Florida Ave, Tampa, FL 33604
-- Teléfonos: 727-506-1845 (Geo), 786-784-6421 (Adriana)
+- Atención al cliente: WhatsApp +53 5859 2766 · correo salesleisureexportingllc@gmail.com
 - Servicios: Gas, Combustible (isotanques y tambores), Tienda, Rastreo de Paquetes (CPK)
 
 PRECIOS DE ENVÍO:
