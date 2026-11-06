@@ -11,7 +11,7 @@ import {
   lugarDe,
   esc,
   fechaLarga,
-  type Reserva, textoRecogida } from '@/lib/cilindros';
+  type Reserva, textoRecogida, ZELLE_DESTINO } from '@/lib/cilindros';
 
 export type ResultadoReserva =
   | {
@@ -87,6 +87,26 @@ export async function confirmarReservaCilindro(id: number, referencia: string): 
       console.error('[cilindros] No se pudo enviar el PIN por correo:', e instanceof Error ? e.message : e);
       correo = 'fallo';
     }
+  }
+
+  // Aviso a ventas: cada pago confirmado (es lo único que descuenta inventario)
+  const monto = `$${Number(reserva.montoUsd).toFixed(2)}`;
+  try {
+    await enviarCorreo({
+      to: ZELLE_DESTINO,
+      subject: `Pago confirmado ${reserva.numero} · ${monto} · ${reserva.cantidad} balita(s)`,
+      text: `Pago confirmado ${reserva.numero} por ${monto}. ${reserva.cantidad} balita(s) descontada(s) del inventario. Comprador: ${reserva.nombreComprador}. Recoge: ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) en ${lugarDe(reserva)} a partir de ${textoRecogida(reserva.lote)}. PIN ${pin}.`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
+        <h2 style="color:#071a46">Pago confirmado ${esc(reserva.numero)}</h2>
+        <p>Entró el Zelle de <b>${monto}</b>. Se descontaron <b>${reserva.cantidad}</b> balita(s) del inventario.</p>
+        <p>Comprador: <b>${esc(reserva.nombreComprador)}</b><br>
+        Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)} · PIN <b>${pin}</b><br>
+        Lugar: ${esc(lugarDe(reserva))}<br>
+        Desde: ${esc(textoRecogida(reserva.lote))}</p>
+      </div>`,
+    });
+  } catch (e) {
+    console.error('[cilindros] No se pudo avisar a ventas del pago:', e instanceof Error ? e.message : e);
   }
 
   return { ok: true, data: reserva, correo, movidaAlLote: loteCerrado ? lote : null };
