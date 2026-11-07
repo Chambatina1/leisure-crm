@@ -603,7 +603,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
           recogida={pago.recogida}
           onVerEstado={() => useAppStore.getState().setCurrentView('reserva-cilindro')}
         />
-        <Button onClick={onVolver} variant="outline" className="w-full">Volver a la tienda</Button>
+        <Button onClick={onVolver} variant="outline" className="w-full h-11 font-bold text-[#123d83]"><ArrowLeft className="h-4 w-4 mr-1.5" />Volver a la tienda</Button>
       </div>
     );
   }
