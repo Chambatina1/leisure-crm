@@ -146,17 +146,30 @@ export async function procesarAviso(a: Aviso): Promise<{ resultado: Resultado; d
     salida.detalle.slice(0, 500)
   );
   if (salida.resultado !== 'ignorado') console.log(`[zelle] ${a.mensajeId}: ${salida.resultado} — ${salida.detalle}`);
+  // Zelle sin referencia: pedir el RC- por correo a quien tiene una compra sin pagar por ese importe
+  let pedidos: { numero: string; nombre: string; email: string }[] = [];
+  if (salida.resultado === 'revisar' && monto && !referencia) {
+    pedidos = await pedirReferencia(monto).catch((e) => {
+      console.error('[zelle] No se pudo pedir la referencia:', e instanceof Error ? e.message : e);
+      return [];
+    });
+  }
+
   // Un Zelle real que entró pero no se pudo aplicar solo: avisar a ventas para revisarlo
   if (salida.resultado === 'revisar' && monto) {
+    const pedidosTxt = pedidos.length
+      ? `Se pidió el número de reserva por correo a: ${pedidos.map((p) => `${p.numero} ${p.nombre} (${p.email})`).join(', ')}.`
+      : referencia ? '' : 'No había compras sin pagar por ese importe con correo: no se pidió la referencia a nadie.';
     await enviarCorreo({
       to: ZELLE_DESTINO,
       subject: `Zelle recibido SIN aplicar · $${monto.toFixed(2)}${referencia ? ` · ${referencia}` : ''} — revisar`,
-      text: `Llegó un Zelle de $${monto.toFixed(2)} pero no se confirmó solo: ${salida.detalle}. Aviso del banco: ${a.asunto}. No se descontó nada ni se envió PIN.`,
+      text: `Llegó un Zelle de $${monto.toFixed(2)} pero no se confirmó solo: ${salida.detalle}. Aviso del banco: ${a.asunto}. No se descontó nada ni se envió PIN. ${pedidosTxt}`,
       html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
         <h2 style="color:#b45309">Zelle recibido sin aplicar: $${monto.toFixed(2)}</h2>
         <p><b>Motivo:</b> ${esc(salida.detalle)}</p>
         <p><b>Aviso del banco:</b> ${esc(a.asunto)}</p>
         <p>No se descontó nada del inventario ni se envió PIN. Si es de un cliente, confírmalo a mano en el panel.</p>
+        ${pedidosTxt ? `<p style="padding:10px;border-radius:8px;background:#eff6ff">${esc(pedidosTxt)} Las respuestas llegan a este correo.</p>` : ''}
       </div>`,
     }).catch((e) => console.error('[zelle] No se pudo avisar a ventas:', e instanceof Error ? e.message : e));
   }
@@ -223,4 +236,55 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
     resultado: 'revisar',
     detalle: `${referencia} pagada (PIN ${r.data.pin}), pero ${r.correo === 'sin_email' ? 'el cliente no dejó email' : 'falló el correo'}: avísale el PIN`,
   };
+}
+
+/**
+ * Llegó un Zelle sin RC- en la nota: se escribe a cada cliente con una compra de
+ * balitas sin pagar de las últimas 3 h por ese mismo importe (un correo por persona), pidiéndole que
+ * responda con su número de reserva. No se confirma nada solo: ventas lo
+ * confirma a mano cuando el cliente responde.
+ */
+async function pedirReferencia(monto: number): Promise<{ numero: string; nombre: string; email: string }[]> {
+  await asegurarTablaReservas();
+  const filas = await db.$queryRawUnsafe<Pick<Reserva, 'numero' | 'nombreComprador' | 'emailComprador' | 'montoUsd'>[]>(
+    `SELECT "numero", "nombreComprador", "emailComprador", "montoUsd" FROM "ReservaCilindro"
+     WHERE "estado" = 'pendiente_pago' AND "emailComprador" IS NOT NULL AND "emailComprador" <> ''
+       AND ABS("montoUsd"::float8 - $1::float8) < 0.01 AND "createdAt" > NOW() - INTERVAL '3 hours'
+     ORDER BY "createdAt" DESC LIMIT 20`,
+    monto
+  );
+  const montoTxt = `$${monto.toFixed(2)}`;
+  const enviados: { numero: string; nombre: string; email: string }[] = [];
+  // Un solo correo por persona aunque haya reservado varias veces
+  const porEmail = new Map<string, { nombre: string; numeros: string[] }>();
+  for (const f of filas) {
+    const k = String(f.emailComprador).trim().toLowerCase();
+    const g = porEmail.get(k) || { nombre: f.nombreComprador, numeros: [] };
+    g.numeros.push(f.numero);
+    porEmail.set(k, g);
+  }
+  for (const [email, g] of porEmail) {
+    const r = { nombreComprador: g.nombre, numero: g.numeros[0] }; // la más reciente
+    const otras = g.numeros.length > 1 ? ` (también tienes sin pagar: ${g.numeros.slice(1).join(', ')})` : '';
+    try {
+      await enviarCorreo({
+        to: email,
+        replyTo: ZELLE_DESTINO,
+        subject: `¿Pagaste ${montoTxt} por Zelle? Falta tu número de reserva ${r.numero}`,
+        text: `Hola ${r.nombreComprador}. Recibimos un pago por Zelle de ${montoTxt} sin número de reserva en la nota. Tu compra ${r.numero} por ese importe aparece sin pagar${otras}. Si ese pago fue tuyo, responde a este correo con tu número ${r.numero} y el nombre de la persona que hizo el Zelle, para registrarlo y enviarte el PIN de recogida. Si todavía no has pagado, ignora este correo y recuerda escribir ${r.numero} en la nota (memo) del Zelle.`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
+          <h2 style="color:#071a46">¿Pagaste ${montoTxt} por Zelle?</h2>
+          <p>Hola ${esc(r.nombreComprador)}, recibimos un pago por Zelle de <b>${montoTxt}</b> <b>sin número de reserva</b> en la nota, así que el sistema no sabe de quién es.</p>
+          <p>Tu compra <b>${esc(r.numero)}</b> por ese importe aparece todavía sin pagar${esc(otras)}.</p>
+          <p style="padding:12px;border-radius:10px;background:#ecfdf5;border:1px solid #a7f3d0"><b>Si ese pago fue tuyo:</b> responde a este correo con tu número
+          <b style="font-family:monospace;font-size:18px">${esc(r.numero)}</b> y el nombre de la persona que hizo el Zelle. Lo registramos y te enviamos el PIN de recogida.</p>
+          <p style="color:#6b7280;font-size:13px">Si todavía no has pagado, ignora este correo y recuerda escribir ${esc(r.numero)} en la nota (memo) del Zelle.</p>
+        </div>`,
+      });
+      enviados.push({ numero: g.numeros.join('/'), nombre: g.nombre, email });
+    } catch (e) {
+      console.error(`[zelle] No se pudo pedir la referencia a ${r.numero}:`, e instanceof Error ? e.message : e);
+    }
+  }
+  return enviados;
 }
