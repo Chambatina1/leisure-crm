@@ -513,11 +513,11 @@ export function PedidoForm() {
               Al continuar te damos el correo de Zelle, el monto y una referencia. El pago lo haces desde la app de tu banco.
             </p>
           )}
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button
               onClick={handleSubmit}
               disabled={saving}
-              className="bg-[#123d83] hover:bg-[#071a46] text-white flex-1 sm:flex-none"
+              className="bg-[#123d83] hover:bg-[#071a46] text-white w-full sm:w-auto h-auto min-h-12 py-3 whitespace-normal text-base font-bold"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -528,7 +528,7 @@ export function PedidoForm() {
               )}
               {isEdit ? 'Actualizar Pedido' : pagaConZelle ? `Pagar $${totalCarrito.toFixed(2)} por Zelle` : 'Crear Pedido'}
             </Button>
-            <Button variant="outline" onClick={handleCancel}>
+            <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
               Cancelar
             </Button>
           </div>
@@ -593,7 +593,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
   const balitas = pago.tipo === 'balitas';
   if (balitas) {
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-3">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 pb-28 md:pb-8 space-y-3">
         <GuiaPagoBalita
           referencia={pago.referencia}
           resumen={pago.resumen}

@@ -153,7 +153,7 @@ export function ReservaCilindro() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-8">
+    <div className="max-w-xl mx-auto px-4 pt-8 pb-28 md:pb-8">
       <button onClick={() => setCurrentView('tienda')} className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800 mb-4">
         <ArrowLeft className="h-4 w-4" /> Volver a la tienda
       </button>
