@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | Ambitosmax",
   },
   description:
-    "Balitas de gas en Cuba con recogida en La Habana, diésel y gasolina en Cuba y triciclos. Compra desde EE.UU. y tu familia recibe en Cuba.",
+    "Compras desde Estados Unidos y se entrega en Cuba: balitas de gas, diésel, gasolina y triciclos.",
   keywords: [
     "balitas de gas en Cuba", "balita de gas Cuba", "diésel y gasolina en Cuba", "gasolina en Cuba", "diésel en Cuba", "cilindro de gas La Habana", "gas licuado Cuba", "comprar gas para Cuba",
     "combustible Cuba", "diésel Cuba", "gasolina Cuba", "envíos a Cuba", "tienda online Cuba",
@@ -36,12 +36,12 @@ export const metadata: Metadata = {
     locale: "es_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Ambitosmax" }],
     title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
-    description: "Balitas de gas en Cuba con recogida en La Habana, diésel y gasolina en Cuba. Compra desde EE.UU.",
+    description: "Compras desde Estados Unidos y se entrega en Cuba: balitas de gas, diésel, gasolina y triciclos.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
-    description: "Balitas de gas en Cuba, diésel y gasolina en Cuba, tienda y envíos.",
+    description: "Compras desde Estados Unidos y se entrega en Cuba: balitas de gas, diésel, gasolina y triciclos.",
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   category: "shopping",

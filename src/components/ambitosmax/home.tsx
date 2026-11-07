@@ -165,18 +165,13 @@ export function Home() {
           Balitas de gas, diésel y gasolina en Cuba
         </h1>
         <p className="text-zinc-600 mt-3 leading-relaxed">
-          En Ambitosmax compras desde Estados Unidos y tu familia recibe en Cuba: balitas de gas en Cuba (cilindro lleno sin entregar el vacío)
-          con recogida en La Habana, diésel y gasolina en Cuba en servicentros como Perla Negra (Bayamo) y triciclos.
+          En Ambitosmax compras desde Estados Unidos y se entrega en Cuba: balitas de gas, diésel, gasolina y triciclos.
         </p>
         <ul className="flex flex-wrap gap-2 mt-4 text-sm">
           {[
             ['/balitas-de-gas-en-cuba', 'Balitas de gas en Cuba'],
             ['/diesel-y-gasolina-en-cuba', 'Diésel y gasolina en Cuba'],
             ['/tienda-cuba', 'Tienda para Cuba'],
-            ['/envios-a-cuba', 'Envíos a Cuba'],
-            ['/electrodomesticos-para-cuba', 'Electrodomésticos'],
-            ['/alimentos-para-cuba', 'Alimentos'],
-            ['/medicamentos-a-cuba', 'Medicamentos'],
           ].map(([href, txt]) => (
             <li key={href}>
               <a href={href} className="inline-block bg-white border border-zinc-200 rounded-full px-3 py-1.5 text-[#123d83] font-semibold hover:bg-blue-50">
