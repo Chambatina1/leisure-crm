@@ -187,18 +187,24 @@ export function GuiaPagoBalita({
 
       {/* 8. Ya pagué */}
       {onVerEstado && (
-        <button
-          type="button"
-          onClick={onVerEstado}
-          className="w-full rounded-2xl bg-[#071a46] p-4 text-left text-white flex items-center gap-3 hover:bg-[#123d83]"
-        >
-          <Search className="h-6 w-6 shrink-0" />
-          <span className="flex-1">
-            <span className="block font-black">¿Ya realizaste el pago?</span>
-            <span className="block text-xs text-white/80">Mira el estado de tu compra y tu PIN de recogida</span>
-          </span>
-          <span className="rounded-lg bg-[#55b949] px-3 py-1.5 text-sm font-bold">Ver estado y PIN</span>
-        </button>
+        <div className="rounded-2xl bg-[#071a46] p-4 text-white space-y-3">
+          <div className="flex items-start gap-3">
+            <Search className="h-6 w-6 shrink-0 mt-0.5 text-[#7ed957]" />
+            <div className="min-w-0">
+              <p className="text-lg font-black leading-tight">¿Ya realizaste el pago?</p>
+              <p className="text-sm text-white/85 mt-1">
+                Aquí ves si tu pago ya llegó y tu PIN de recogida. Ten a mano tu número <b className="font-mono text-white">{referencia}</b>.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onVerEstado}
+            className="w-full min-h-12 rounded-xl bg-[#55b949] px-4 py-3 text-base font-black text-white hover:bg-[#46a03b]"
+          >
+            Ver el estado y mi PIN
+          </button>
+        </div>
       )}
       </div>
       </AceptarReferencia>
