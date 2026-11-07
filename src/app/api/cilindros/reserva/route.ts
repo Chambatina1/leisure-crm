@@ -163,7 +163,7 @@ export async function GET(request: NextRequest) {
     const numero = (request.nextUrl.searchParams.get('numero') || '').trim().toUpperCase();
     const telefono = (request.nextUrl.searchParams.get('telefono') || '').replace(/\D/g, '');
     if (!/^RC-\d{6}$/.test(numero) || telefono.length < 7) {
-      return NextResponse.json({ ok: false, error: 'Escribe el número de reserva (RC-000000) y tu teléfono' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: 'Escribe el número de reserva (RC-000000) y el teléfono de quien pagó o de quien recoge' }, { status: 400 });
     }
     await asegurarTablaReservas();
     const filas = await db.$queryRawUnsafe<Reserva[]>(
@@ -172,8 +172,10 @@ export async function GET(request: NextRequest) {
     );
     const r = filas[0];
     // Mismo mensaje si no existe o si el teléfono no coincide (no revelar reservas ajenas)
-    if (!r || r.telefonoComprador.replace(/\D/g, '').slice(-7) !== telefono.slice(-7)) {
-      return NextResponse.json({ ok: false, error: 'No encontramos esa reserva con ese teléfono' }, { status: 404 });
+    // Vale el teléfono de quien pagó o el de quien recoge en Cuba
+    const coincide = (t: string | null | undefined) => !!t && t.replace(/\D/g, '').slice(-7) === telefono.slice(-7);
+    if (!r || !(coincide(r.telefonoComprador) || coincide(r.telefonoRecoge))) {
+      return NextResponse.json({ ok: false, error: 'No encontramos esa reserva con ese teléfono. Usa el número RC- y el teléfono de quien pagó o de quien recoge' }, { status: 404 });
     }
     return NextResponse.json({
       ok: true,
