@@ -1,5 +1,7 @@
 'use client';
 
+import { PuntosRecogidaAdmin } from './puntos-recogida-admin';
+
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from './store';
@@ -121,6 +123,11 @@ export function AdminDashboard() {
           Dashboard
         </h1>
         <p className="text-zinc-500 mt-1">Resumen general del sistema</p>
+      </div>
+
+      {/* Lo primero al entrar: las balitas de cada punto de gas */}
+      <div className="mb-8">
+        <PuntosRecogidaAdmin />
       </div>
 
       {/* Stat Cards */}
