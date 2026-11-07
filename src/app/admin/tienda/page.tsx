@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-// Enlace del administrador de la tienda: ambitosmax.com/admin/tienda
+// Antiguo enlace de la tienda: ahora todo está en ambitosmax.com/admin (un solo enlace)
 export const metadata = { robots: { index: false, follow: false } };
 
 export default function AdminTienda() {
-  redirect('/?v=admin-tienda');
+  redirect('/?v=admin');
 }

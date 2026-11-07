@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Flame, Loader2, RefreshCw, Printer, Send, CheckCircle2, XCircle, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
+import { PuntosRecogidaAdmin } from './puntos-recogida-admin';
 
 interface Reserva {
   id: number;
@@ -247,6 +248,9 @@ export function CilindrosAdmin() {
           </CardContent>
         </Card>
       )}
+
+      {/* Balitas por punto de venta: también aquí, para tenerlo todo en el mismo panel */}
+      <PuntosRecogidaAdmin />
 
       {r && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
