@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * Antes de mostrar a dónde pagar por Zelle, el cliente tiene que aceptar que
@@ -24,9 +23,22 @@ export function AceptarReferencia({ referencia, children }: { referencia: string
       <p className="text-xs font-semibold text-red-700">
         Si el pago llega sin la referencia, no podemos saber que es tuyo: no se confirma y no recibes el PIN.
       </p>
-      <Button onClick={() => setAceptado(true)} className="w-full h-auto whitespace-normal py-3 bg-[#123d83] hover:bg-[#071a46] text-white font-bold">
-        Entendido, pondré {referencia} en la nota
-      </Button>
+      {/* Botón grande y llamativo: hay que tocarlo para ver a dónde pagar */}
+      <div className="flex items-center gap-1">
+        <ChevronRight className="h-5 w-5 shrink-0 text-[#2563eb] animate-pulse" aria-hidden />
+        <button
+          type="button"
+          onClick={() => setAceptado(true)}
+          className="relative flex-1 rounded-2xl bg-gradient-to-b from-[#1d4fb8] to-[#0b2a6b] px-2 py-3 text-white shadow-[0_0_0_4px_rgba(59,130,246,0.35),0_6px_14px_rgba(7,26,70,0.35)] ring-2 ring-white/70 active:scale-[0.98] transition-transform"
+        >
+          <span className="absolute inset-0 rounded-2xl ring-4 ring-blue-400/70 animate-pulse pointer-events-none" aria-hidden />
+          <span className="flex items-center justify-center gap-1.5 text-base sm:text-lg font-black leading-tight whitespace-nowrap">
+            <CheckCircle2 className="h-5 w-5 shrink-0" /> Entendido, continuar <ArrowRight className="h-5 w-5 shrink-0" />
+          </span>
+          <span className="mt-0.5 block text-xs font-semibold text-white/90">Toca aquí para ver cómo pagar</span>
+        </button>
+        <ChevronLeft className="h-5 w-5 shrink-0 text-[#2563eb] animate-pulse" aria-hidden />
+      </div>
     </div>
   );
 }
