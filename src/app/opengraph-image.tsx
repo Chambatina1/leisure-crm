@@ -17,7 +17,7 @@ export default function Image() {
         <div style={{ fontSize: 36, fontWeight: 800, letterSpacing: 8, color: '#7ed957' }}>AMBITOSMAX</div>
         <div style={{ fontSize: 68, fontWeight: 900, lineHeight: 1.05, marginTop: 24 }}>Balitas de gas, diésel y gasolina en Cuba</div>
         <div style={{ fontSize: 34, marginTop: 32, color: 'rgba(255,255,255,0.8)' }}>
-          Balita de gas llena en La Habana · $85 · sin entregar el vacío
+          Balita de gas llena en La Habana · recogida con PIN
         </div>
         <div style={{ fontSize: 28, marginTop: 40, color: '#7ed957' }}>ambitosmax.com</div>
       </div>
