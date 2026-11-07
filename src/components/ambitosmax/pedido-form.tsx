@@ -593,7 +593,7 @@ function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => v
   const balitas = pago.tipo === 'balitas';
   if (balitas) {
     return (
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 pb-28 md:pb-8 space-y-3">
+      <div className="max-w-3xl mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-28 md:pb-8 space-y-3">
         <GuiaPagoBalita
           referencia={pago.referencia}
           resumen={pago.resumen}

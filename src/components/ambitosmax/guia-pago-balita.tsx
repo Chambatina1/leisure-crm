@@ -26,7 +26,7 @@ function BotonCopiar({ valor, aviso }: { valor: string; aviso: string }) {
 
 function Paso({ n, icono, titulo, children }: { n: number; icono: ReactNode; titulo: string; children: ReactNode }) {
   return (
-    <li className="flex gap-3 rounded-xl border border-blue-100 bg-white p-3 md:flex-col md:items-center md:text-center">
+    <li className="flex gap-3 rounded-xl border border-blue-100 bg-white p-2.5 sm:p-3 md:flex-col md:items-center md:text-center">
       <div className="flex flex-col items-center gap-1 shrink-0">
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#071a46] text-sm font-black text-white">{n}</span>
         <span className="text-[#123d83]">{icono}</span>
@@ -65,41 +65,28 @@ export function GuiaPagoBalita({
   const montoTxt = `$${monto.toFixed(2)}`;
 
   return (
-    <div className="space-y-4">
-      {/* 1. Reservada */}
-      <div className="rounded-2xl bg-[#071a46] p-4 text-white flex items-center gap-3">
-        <CheckCircle2 className="h-10 w-10 shrink-0 text-[#7ed957]" />
-        <div>
-          <p className="text-xl font-black leading-tight">¡Tu balita está reservada!</p>
-          <p className="text-sm text-white/80">Reserva temporal · 1 hora · todavía NO está pagada</p>
-        </div>
-      </div>
-
-      {/* 2. Pedido */}
-      <div className="rounded-2xl border-2 border-blue-100 bg-blue-50/50 p-4 space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Tu pedido</p>
-            <p className="font-semibold text-zinc-900">{resumen}</p>
+    <div className="space-y-3">
+      {/* 1-3. Reservada, pedido y plazo de 1 hora, todo en una tarjeta compacta */}
+      <div className="overflow-hidden rounded-2xl border-2 border-[#071a46]">
+        <div className="bg-[#071a46] px-3 py-2.5 text-white flex items-center gap-2.5">
+          <CheckCircle2 className="h-7 w-7 shrink-0 text-[#7ed957]" />
+          <div className="min-w-0 flex-1">
+            <p className="text-base sm:text-lg font-black leading-tight">¡Tu balita está reservada!</p>
+            <p className="text-xs text-white/80">Todavía NO está pagada</p>
           </div>
-          <p className="text-2xl font-black text-[#071a46] shrink-0">{montoTxt}</p>
+          <span className="shrink-0 rounded-lg bg-white px-2 py-1 font-mono text-sm font-black text-[#071a46]">{referencia}</span>
         </div>
-        <div className="flex items-center justify-between rounded-xl bg-[#123d83] px-4 py-2 text-white">
-          <span className="font-semibold">Total a pagar</span>
-          <span className="text-xl font-black">{montoTxt}</span>
+        <div className="flex items-center justify-between gap-3 bg-blue-50/60 px-3 py-2">
+          <p className="min-w-0 text-xs font-semibold text-zinc-700 leading-snug">{resumen}</p>
+          <div className="shrink-0 text-right">
+            <p className="text-[10px] uppercase tracking-wide text-zinc-500 leading-none">Total a pagar</p>
+            <p className="text-xl font-black text-[#071a46] leading-tight">{montoTxt}</p>
+          </div>
         </div>
-        <p className="text-xs text-zinc-600">
-          Tu número de reserva es <b className="font-mono text-[#071a46]">{referencia}</b>. Guárdalo: lo vas a necesitar para pagar.
-        </p>
-      </div>
-
-      {/* 3. Una hora */}
-      <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-4 flex gap-3">
-        <Clock className="h-8 w-8 shrink-0 text-amber-700" />
-        <div className="text-sm text-amber-900">
-          <p className="font-black text-base">Tienes 1 hora para pagar</p>
-          <p>
-            Tu reserva vence a las <b>{hora.replace(/\.$/, '')}</b>. Si no recibimos el pago, se cancela sola y la balita vuelve a estar a la venta.
+        <div className="flex items-center gap-2 border-t border-amber-200 bg-amber-50 px-3 py-2 text-amber-900">
+          <Clock className="h-5 w-5 shrink-0 text-amber-700" />
+          <p className="text-xs leading-snug">
+            <b className="text-sm">Paga antes de las {hora.replace(/\.$/, '')}</b> (1 hora). Si no, la reserva se cancela sola.
           </p>
         </div>
       </div>
@@ -107,8 +94,8 @@ export function GuiaPagoBalita({
       <AceptarReferencia referencia={referencia}>
       <div className="space-y-4">
       {/* 4. Cómo pagar */}
-      <div className="rounded-2xl border-2 border-[#123d83] p-4 space-y-3">
-        <p className="text-center text-lg font-black text-[#071a46]">Cómo pagar por Zelle, paso a paso</p>
+      <div className="rounded-2xl border-2 border-[#123d83] p-2.5 sm:p-4 space-y-2">
+        <p className="text-center text-base sm:text-lg font-black text-[#071a46]">Cómo pagar por Zelle, paso a paso</p>
         <ol className="grid gap-2 md:grid-cols-5">
           <Paso n={1} icono={<Landmark className="h-5 w-5" />} titulo="Abre la app de tu banco">
             <p className="text-xs text-zinc-600">Entra en Zelle y toca <b>Enviar dinero (Send)</b>.</p>
@@ -139,7 +126,7 @@ export function GuiaPagoBalita({
       </div>
 
       {/* 5. Atención */}
-      <div className="rounded-2xl border-2 border-red-300 bg-red-50 p-4 flex gap-3 text-sm text-red-900">
+      <div className="rounded-2xl border-2 border-red-300 bg-red-50 p-3 sm:p-4 flex gap-3 text-sm text-red-900">
         <AlertTriangle className="h-7 w-7 shrink-0" />
         <div className="space-y-1">
           <p className="font-black">¡Atención antes de enviar!</p>
@@ -151,7 +138,7 @@ export function GuiaPagoBalita({
       </div>
 
       {/* 6. Después */}
-      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-4 space-y-2">
+      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-3 sm:p-4 space-y-2">
         <p className="font-black text-[#1f6b3a] flex items-center gap-2"><CheckCircle2 className="h-5 w-5" /> ¿Qué pasa después del pago?</p>
         <ol className="space-y-1 text-sm text-zinc-800">
           <li><b>1.</b> Recibimos tu Zelle y lo comprobamos con la referencia {referencia}.</li>
