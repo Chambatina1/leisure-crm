@@ -17,7 +17,7 @@ import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2,
 import { toast } from 'sonner';
 import { AceptarReferencia } from './aceptar-referencia';
 import { PasosZelle } from './pasos-zelle';
-import { ComprobanteReserva } from './comprobante-reserva';
+import { GuiaPagoBalita, ComoComprarBalita } from './guia-pago-balita';
 
 interface PedidoData {
   nombreComprador: string;
@@ -457,7 +457,8 @@ export function PedidoForm() {
           {llevaGas && (
             <>
               <Separator className="my-6" />
-              <div className="mb-6">
+              <ComoComprarBalita />
+              <div className="mb-6 mt-6">
                 <h2 className="text-lg font-semibold text-zinc-900 mb-1 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
                     <MapPin className="h-4 w-4 text-emerald-700" />
@@ -590,16 +591,27 @@ function Paso({ n, titulo, children }: { n: number; titulo: string; children?: R
 
 function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => void }) {
   const balitas = pago.tipo === 'balitas';
+  if (balitas) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-3">
+        <GuiaPagoBalita
+          referencia={pago.referencia}
+          resumen={pago.resumen}
+          monto={pago.montoUsd}
+          zelle={pago.zelle}
+          punto={pago.puntoRecogida}
+          recogida={pago.recogida}
+          onVerEstado={() => useAppStore.getState().setCurrentView('reserva-cilindro')}
+        />
+        <Button onClick={onVolver} variant="outline" className="w-full">Volver a la tienda</Button>
+      </div>
+    );
+  }
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 py-8">
       <Card className="border-emerald-200">
         <CardContent className="p-6 space-y-5">
-          {balitas ? (
-            <>
-              <h1 className="text-xl font-bold text-zinc-900">Tu balita está reservada por 1 hora. Paga por Zelle para confirmarla</h1>
-              <ComprobanteReserva referencia={pago.referencia} resumen={pago.resumen} monto={pago.montoUsd} />
-            </>
-          ) : (
+          {(
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-8 w-8 text-[#55b949] shrink-0" />
               <div>
