@@ -206,7 +206,7 @@ export function ReservaCilindro() {
               <Input value={cNumero} onChange={(e) => setCNumero(e.target.value)} placeholder="RC-000001" className="uppercase font-mono" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs">Tu teléfono (el que pusiste al comprar)</Label>
+              <Label className="text-xs">Teléfono de quien pagó o de quien recoge en Cuba</Label>
               <Input value={cTelefono} onChange={(e) => setCTelefono(e.target.value)} placeholder="+1 305 000 0000" inputMode="tel" />
             </div>
             <Button type="submit" disabled={consultando} className="w-full bg-[#123d83] hover:bg-[#071a46] text-white font-bold">
