@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: { url: '/gas-para-cuba', images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Ambitosmax' }], title: T, description: D, type: 'website', siteName: 'Ambitosmax', locale: 'es_US' },
 };
 
-const RESERVAR = '/?v=reserva-cilindro';
+const RESERVAR = '/?v=tienda';
 const WHATSAPP = 'https://wa.me/16562248018?text=' + encodeURIComponent('Hola, quiero comprar una balita de gas para mi familia en La Habana');
 const PRECIO = 85;
 

@@ -86,7 +86,13 @@ export async function POST(request: NextRequest) {
     const producto = (await db.tiendaProduct.findMany({ where: { activo: true, precio: PRECIO_CILINDRO } })).find((p) =>
       esBalitaGas(p.nombre)
     );
-    if (producto) {
+    if (!producto) {
+      return NextResponse.json(
+        { ok: false, agotado: true, error: 'Esta balita ya no está a la venta. Compra tu balita de gas en la tienda.' },
+        { status: 410 }
+      );
+    }
+    {
       const hay = (await existenciasDisponibles([producto.id])).get(producto.id);
       if (hay !== null && hay !== undefined && d.cantidad > hay) {
         return NextResponse.json(

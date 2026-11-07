@@ -60,7 +60,7 @@ export default function Page() {
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-12 text-center">
         <p className="text-sm font-bold text-amber-900 uppercase tracking-wide">Cilindro lleno · La Habana</p>
         <p className="text-4xl font-black text-[#071a46] mt-1">$85.00 USD</p>
-        <Link href="/?v=reserva-cilindro" className="inline-block mt-4 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold px-8 py-3 rounded-md">
+        <Link href="/?v=tienda" className="inline-block mt-4 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold px-8 py-3 rounded-md">
           Comprar mi balita
         </Link>
       </div>
