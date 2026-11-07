@@ -207,7 +207,18 @@ export function resumenPorPunto(reservas: Reserva[], puntos: PuntoRecogida[]) {
   return filas;
 }
 
-export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDia[] = [], puntos: PuntoRecogida[] = []): string {
+export interface OpcionesInforme {
+  titulo?: string; // p. ej. "Resumen actualizado 9:00 AM"
+  disponibles?: { nombre: string; quedan: number | null }[]; // balitas a la venta ahora, por producto
+}
+
+export function informeHtml(
+  lote: string,
+  reservas: Reserva[],
+  pedidos: PedidoDia[] = [],
+  puntos: PuntoRecogida[] = [],
+  opciones: OpcionesInforme = {}
+): string {
   const confirmadas = reservas.filter((r) => r.estado === 'pagada' || r.estado === 'entregada');
   const totalCil = confirmadas.reduce((s, r) => s + r.cantidad, 0);
   const totalUsd = confirmadas.reduce((s, r) => s + r.montoUsd, 0);
@@ -245,13 +256,20 @@ export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDi
     ? `<h3 style="color:#071a46;margin:20px 0 6px">Balitas por punto de venta</h3>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
       <thead><tr style="background:#123d83;color:#fff;text-align:left">
-        <th style="${th}">Punto</th><th style="${th}">Vendidas hoy (a repartir)</th><th style="${th}">Quedan en el punto</th>
+        <th style="${th}">Punto</th><th style="${th}">Vendidas (a repartir)</th><th style="${th}">Disponibles ahora en el punto</th>
       </tr></thead><tbody>${resumen
         .map(
           (f) => `<tr><td style="${td}"><b>${esc(f.punto)}</b></td><td style="${td};text-align:center;font-size:16px"><b>${f.vendidas}</b></td>
-          <td style="${td};text-align:center">${f.quedan === null ? 'Sin control' : f.quedan}</td></tr>`
+          <td style="${td};text-align:center;font-size:16px"><b>${f.quedan === null ? 'Sin cantidad asignada' : f.quedan}</b></td></tr>`
         )
         .join('')}</tbody></table>`
+    : '';
+
+  const disp = opciones.disponibles || [];
+  const tablaDisponibles = disp.length
+    ? `<p style="margin:8px 0 0;font-size:14px"><b>Disponible ahora en la tienda:</b> ${disp
+        .map((d) => `${esc(d.nombre)}: <b>${d.quedan === null ? 'sin límite' : d.quedan}</b>`)
+        .join(' · ')}</p>`
     : '';
 
   const ventasTienda = pedidos.length
@@ -269,10 +287,11 @@ export function informeHtml(lote: string, reservas: Reserva[], pedidos: PedidoDi
 
   return `
   <div style="font-family:Arial,sans-serif;max-width:980px;margin:0 auto;color:#111827">
-    <h2 style="color:#071a46;margin:0">Resumen de ventas y listado de recogida</h2>
+    <h2 style="color:#071a46;margin:0">${esc(opciones.titulo || 'Resumen de ventas y listado de recogida')}</h2>
     <p style="margin:4px 0 12px;color:#4b5563">Ventas cerradas a las 8:00 PM del ${esc(fechaLarga(lote))}. Se entregan a partir del <b>${esc(fechaLarga(diaRecogida(lote)))}</b>${esFinDeSemana(lote) ? ` (${AVISO_FIN_DE_SEMANA})` : ''}.</p>
     <p style="margin:0 0 12px"><b>${confirmadas.length}</b> compras de balitas pagadas · <b>${totalCil}</b> balitas · <b>$${totalUsd.toFixed(2)}</b> USD</p>
     ${tablaResumen}
+    ${tablaDisponibles}
     ${confirmadas.length ? [...grupos].map(tablaPunto).join('') : '<p>No hubo compras de balitas pagadas en este cierre.</p>'}
     ${ventasTienda}
     <p style="margin-top:16px;color:#6b7280;font-size:12px">Para entregar: el cliente presenta el carnet de identidad y dice su PIN. Se marca en el panel (Cilindros → Entregar).</p>

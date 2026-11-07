@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | Ambitosmax",
   },
   description:
-    "Balitas de gas en Cuba por $85 (sin entregar el vacío), diésel y gasolina en Cuba, electrodomésticos, motos y envíos a Cuba. Compra desde EE.UU. y tu familia recibe en Cuba.",
+    "Balitas de gas en Cuba con recogida en La Habana, diésel y gasolina en Cuba y triciclos. Compra desde EE.UU. y tu familia recibe en Cuba.",
   keywords: [
     "balitas de gas en Cuba", "balita de gas Cuba", "diésel y gasolina en Cuba", "gasolina en Cuba", "diésel en Cuba", "cilindro de gas La Habana", "gas licuado Cuba", "comprar gas para Cuba",
     "combustible Cuba", "diésel Cuba", "gasolina Cuba", "envíos a Cuba", "tienda online Cuba",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     locale: "es_US",
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Ambitosmax" }],
     title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
-    description: "Balitas de gas en Cuba por $85, diésel y gasolina en Cuba, tienda online y envíos a Cuba.",
+    description: "Balitas de gas en Cuba con recogida en La Habana, diésel y gasolina en Cuba. Compra desde EE.UU.",
   },
   twitter: {
     card: "summary_large_image",

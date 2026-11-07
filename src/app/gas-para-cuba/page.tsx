@@ -9,9 +9,9 @@ import { SITIO } from '@/lib/seo-paginas';
 
 // Página de ventas (para anuncios, TikTok y WhatsApp): una sola oferta, la balita de $85,
 // con todos los datos reales del servicio y un botón de reserva en cada pantalla.
-const T = 'Balita de gas llena para tu familia en La Habana — $85, sin entregar la vacía';
+const T = 'Balita de gas llena para tu familia en La Habana';
 const D =
-  'Paga desde EE.UU. y tu familia recoge hoy una balita de gas llena en La Habana por $85. Sin entregar el cilindro vacío, con PIN de seguridad. Empresa en Tampa, FL.';
+  'Paga desde EE.UU. y tu familia recoge una balita de gas llena en La Habana, con PIN de seguridad. Empresa en Tampa, FL.';
 
 export const metadata: Metadata = {
   title: T,

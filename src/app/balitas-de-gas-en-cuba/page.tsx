@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { SeoPage } from '@/components/ambitosmax/seo-page';
 import { SITIO } from '@/lib/seo-paginas';
 
-const T = 'Balitas de gas en Cuba — Cilindro lleno en La Habana por $85';
+const T = 'Balitas de gas en Cuba — Cilindro lleno en La Habana';
 const D =
-  'Compra balitas de gas en Cuba desde EE.UU.: cilindro de gas lleno por $85 sin entregar la balita vacía. Recogida en La Habana (Arroyo Arena o Playa) con PIN de seguridad.';
+  'Compra balitas de gas en Cuba desde EE.UU.: cilindro de gas lleno con recogida en La Habana (Arroyo Arena o Playa) y PIN de seguridad.';
 
 export const metadata: Metadata = {
   title: T,
