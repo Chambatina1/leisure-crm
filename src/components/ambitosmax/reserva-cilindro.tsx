@@ -5,11 +5,9 @@ import { useAppStore } from './store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Flame, Loader2, MapPin, Clock, CheckCircle2, Search, Copy } from 'lucide-react';
+import { ArrowLeft, Flame, Loader2, MapPin, Clock, Search, Copy } from 'lucide-react';
 import { toast } from 'sonner';
-import { AceptarReferencia } from './aceptar-referencia';
-import { PasosZelle } from './pasos-zelle';
-import { ComprobanteReserva } from './comprobante-reserva';
+import { GuiaPagoBalita, ComoComprarBalita } from './guia-pago-balita';
 import { quedanEnPunto, textoPunto, type PuntoRecogida } from '@/lib/puntos-gas';
 
 const PRECIO = 85;
@@ -215,16 +213,15 @@ export function ReservaCilindro() {
           )}
         </div>
       ) : resultado ? (
-        <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
-          <p className="flex items-center gap-2 text-[#1f6b3a] font-bold">
-            <CheckCircle2 className="h-5 w-5" /> Tu balita está reservada por 1 hora. Paga por Zelle para confirmarla
-          </p>
-          <ComprobanteReserva referencia={resultado.numero} resumen={`${resultado.cantidad} balita(s) de gas`} monto={resultado.montoUsd} />
-          <AceptarReferencia referencia={resultado.numero}>
-          <PasosZelle zelle={resultado.zelle} monto={resultado.montoUsd} referencia={resultado.numero} conPin />
-          </AceptarReferencia>
-          <p className="text-sm flex gap-1.5"><MapPin className="h-4 w-4 shrink-0 mt-0.5 text-[#123d83]" /><span>Recoges en <b>{resultado.puntoRecogida}</b></span></p>
-          {resultado.recogida && <p className="text-sm font-semibold text-[#071a46]">Si pagas hoy, recoges a partir de {resultado.recogida}.</p>}
+        <div className="space-y-4">
+          <GuiaPagoBalita
+            referencia={resultado.numero}
+            resumen={`${resultado.cantidad} balita(s) de gas`}
+            monto={resultado.montoUsd}
+            zelle={resultado.zelle}
+            punto={resultado.puntoRecogida}
+            recogida={resultado.recogida}
+          />
           <p className="text-sm text-zinc-600">
             Cuando confirmemos tu pago recibirás un <b>PIN de 6 dígitos</b>{form.emailComprador ? ' por correo' : ''}. Quien recoge debe presentar su carnet y decir el PIN.
             {resultado.despuesDelCierre
@@ -235,6 +232,8 @@ export function ReservaCilindro() {
           <Button onClick={() => { setResultado(null); }} variant="outline" className="w-full">Hacer otra compra</Button>
         </div>
       ) : (
+        <>
+        <ComoComprarBalita />
         <form onSubmit={reservar} className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-4">
           <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
             <input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} name="website" />
@@ -325,6 +324,7 @@ export function ReservaCilindro() {
             {enviando ? <Loader2 className="h-5 w-5 animate-spin" /> : agotadoProducto ? 'Agotado' : 'Reservar 1 hora y pagar por Zelle'}
           </Button>
         </form>
+        </>
       )}
     </div>
   );
