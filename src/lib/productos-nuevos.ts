@@ -130,6 +130,15 @@ async function aplicarAltas(): Promise<void> {
     await db.config.create({ data: { clave: claveTienda, valor: new Date().toISOString() } });
   }
 
+  // 2026-11-07: el usuario pidió quitar de la tienda la balita de $85 (sin entrega de vacío)
+  const claveSin85 = 'ocultar_balita_85_sin_vacio';
+  if (!(await db.config.findUnique({ where: { clave: claveSin85 } }))) {
+    await db.$executeRawUnsafe(
+      `UPDATE "TiendaProduct" SET "activo" = false WHERE "precio" = 85 AND "categoria" = 'gas' AND "nombre" ILIKE '%SIN ENTREGA%'`
+    );
+    await db.config.create({ data: { clave: claveSin85, valor: new Date().toISOString() } });
+  }
+
   const claveContacto = 'cambio_contacto_whatsapp_16562248018';
   if (!(await db.config.findUnique({ where: { clave: claveContacto } }))) {
     const valores: Record<string, string> = {

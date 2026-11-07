@@ -70,8 +70,11 @@ export function ReservaCilindro() {
       })
       .catch(() => toast.error('No se pudieron cargar los puntos de recogida'));
   }, []);
+  const [modoConsulta, setModoConsulta] = useState(false);
   // Existencia de la balita de $85 en la tienda (null = sin límite)
   const [quedanProducto, setQuedanProducto] = useState<number | null>(null);
+  // false = la balita de $85 ya no está en la tienda: aquí solo se consulta el PIN
+  const [aLaVenta, setALaVenta] = useState<boolean | null>(null);
   useEffect(() => {
     fetch('/api/tienda')
       .then((r) => r.json())
@@ -79,6 +82,8 @@ export function ReservaCilindro() {
         const p = (j.data?.products || []).find(
           (x: { nombre: string; precio: number }) => x.precio === PRECIO && /CILINDRO|BALITA|BALA DE GAS/i.test(x.nombre)
         );
+        setALaVenta(!!p);
+        if (!p) setModoConsulta(true);
         if (p && typeof p.existencia === 'number') setQuedanProducto(p.existencia);
       })
       .catch(() => {});
@@ -87,7 +92,6 @@ export function ReservaCilindro() {
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<Resultado | null>(null);
 
-  const [modoConsulta, setModoConsulta] = useState(false);
   const [cNumero, setCNumero] = useState('');
   const [cTelefono, setCTelefono] = useState('');
   const [consultando, setConsultando] = useState(false);
@@ -162,8 +166,14 @@ export function ReservaCilindro() {
         <div className="flex items-center gap-2 text-[#7ed957] text-xs font-black uppercase tracking-widest">
           <Flame className="h-4 w-4" /> Compra de balita de gas
         </div>
-        <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
-        <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
+        {aLaVenta === false ? (
+          <h1 className="text-xl font-black mt-1">Consulta tu compra y tu PIN de recogida</h1>
+        ) : (
+          <>
+            <h1 className="text-xl font-black mt-1">Cilindro lleno sin entrega de vacío</h1>
+            <p className="text-2xl font-black text-[#7ed957] mt-1">${PRECIO}.00 <span className="text-sm text-white/60 font-semibold">USD c/u</span></p>
+          </>
+        )}
         <div className="mt-3 space-y-1.5 text-sm text-white/80">
           <p className="flex gap-2"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />Recogida en {puntos.length ? puntos.map((p) => textoPunto(p)).join(' o ') : 'nuestros puntos de gas'}. Eliges el punto al reservar.</p>
           <p className="flex gap-2"><Clock className="h-4 w-4 shrink-0 mt-0.5" />Las ventas cierran todos los días a las 8:00 PM. Lo pagado antes del cierre se recoge al día siguiente. Lo que se compra viernes, sábado o domingo se entrega el lunes.</p>
@@ -181,7 +191,14 @@ export function ReservaCilindro() {
         >Ya pagué: ver mi PIN</button>
       </div>
 
-      {modoConsulta ? (
+      {aLaVenta === false && !modoConsulta ? (
+        <div className="bg-white rounded-2xl border border-zinc-200 p-5 space-y-3 text-center">
+          <p className="font-bold text-[#071a46]">Las balitas de gas se compran ahora en la tienda.</p>
+          <Button onClick={() => setCurrentView('tienda')} className="w-full h-12 bg-[#55b949] hover:bg-[#3f9a35] text-white font-bold text-base">
+            Ir a la tienda
+          </Button>
+        </div>
+      ) : modoConsulta ? (
         <div className="bg-white rounded-2xl border border-zinc-200 p-5">
           <form onSubmit={consultar} className="space-y-3">
             <div className="space-y-1.5">
