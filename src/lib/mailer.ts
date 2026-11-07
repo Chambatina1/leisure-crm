@@ -23,7 +23,7 @@ export async function correoConfigurado(): Promise<boolean> {
   return Boolean(host && user && pass);
 }
 
-export async function enviarCorreo(opts: { to: string; subject: string; html: string; text: string }) {
+export async function enviarCorreo(opts: { to: string; subject: string; html: string; text: string; replyTo?: string }) {
   const c = await smtpDesdeConfig();
   const host = process.env.SMTP_HOST || c.SMTP_HOST || '';
   const port = parseInt(process.env.SMTP_PORT || c.SMTP_PORT || '587', 10);
@@ -48,5 +48,6 @@ export async function enviarCorreo(opts: { to: string; subject: string; html: st
     subject: opts.subject,
     html: opts.html,
     text: opts.text,
+    ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),
   });
 }
