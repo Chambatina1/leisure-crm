@@ -82,44 +82,61 @@ export async function POST(request: NextRequest) {
     const stock = await existenciasDisponibles(cilindros.map((c) => c.id));
     const disponibles = cilindros.map((c) => ({ nombre: c.nombre, quedan: stock.get(c.id) ?? null }));
     const titulo = manana ? `Resumen actualizado 9:00 AM · ${fechaLarga(dia)}` : undefined;
-    const html = informeHtml(lote, reservas, pedidos, puntos, { titulo, disponibles });
     const para = await destinatarios();
     if (para.length === 0) {
       console.error('[cierre cilindros] No hay correo de destino (REPORTE_CILINDROS_EMAIL)');
       return NextResponse.json({ ok: false, error: 'Falta el correo de destino del informe' }, { status: 503 });
     }
 
-    const totalCil = reservas.reduce((s, r) => s + r.cantidad, 0);
+    // Un correo por punto de gas (todos al mismo destinatario), para mandar a cada
+    // punto solo sus ventas. Lo que no tenga punto y los pedidos de tienda van aparte.
+    const conVentas = new Set(reservas.map((r) => r.puntoId));
+    const puntosInforme = puntos.filter((p) => p.activo || conVentas.has(p.id));
+    const sinPunto = reservas.filter((r) => !puntosInforme.some((p) => p.id === r.puntoId));
+    const grupos: { nombre: string; reservas: typeof reservas; puntos: typeof puntos; pedidos: typeof pedidos; disponibles?: typeof disponibles }[] =
+      puntosInforme.map((p) => ({ nombre: p.nombre, reservas: reservas.filter((r) => r.puntoId === p.id), puntos: [p], pedidos: [] as typeof pedidos }));
+    if (sinPunto.length || pedidos.length || grupos.length === 0) {
+      grupos.push({ nombre: 'Otros (sin punto y pedidos de tienda)', reservas: sinPunto, puntos: [], pedidos, disponibles });
+    }
+
+    const tipo = manana ? 'Resumen actualizado 9 AM' : 'Resumen 8 PM';
+    const enviados: string[] = [];
     try {
-      await enviarCorreo({
-        to: para.join(', '),
-        subject: `${manana ? 'Resumen actualizado 9 AM' : 'Resumen 8 PM'} · ${totalCil} balitas${pedidos.length ? ` · ${pedidos.length} pedidos de tienda` : ''} — ${fechaLarga(lote)}`,
-        html,
-        text: [
-          `Listado de recogida de balitas — ${lote} (se entregan a partir del ${diaRecogida(lote)})`,
-          ...resumenPorPunto(reservas, puntos).map((f) => `${f.punto}: vendidas ${f.vendidas} (a repartir) · disponibles ahora ${f.quedan ?? 'sin cantidad asignada'}`),
-          ...disponibles.map((d) => `Disponible en la tienda · ${d.nombre}: ${d.quedan ?? 'sin límite'}`),
-          '',
-          ...reservas.map(
-            (r, i) => `${i + 1}. ${r.puntoRecogida || ''} · Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · PIN ${r.pin || ''} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
-          ),
-        ].join('\n'),
-      });
+      for (const g of grupos) {
+        const cil = g.reservas.reduce((s, r) => s + r.cantidad, 0);
+        const tituloGrupo = `${titulo ?? `Cierre 8:00 PM · ${fechaLarga(lote)}`} · ${g.nombre}`;
+        await enviarCorreo({
+          to: para.join(', '),
+          subject: `${tipo} · ${g.nombre} · ${cil} balitas${g.pedidos.length ? ` · ${g.pedidos.length} pedidos de tienda` : ''} — ${fechaLarga(lote)}`,
+          html: informeHtml(lote, g.reservas, g.pedidos, g.puntos, { titulo: tituloGrupo, disponibles: g.disponibles }),
+          text: [
+            `${g.nombre} — listado de recogida de balitas — ${lote} (se entregan a partir del ${diaRecogida(lote)})`,
+            ...resumenPorPunto(g.reservas, g.puntos).map((f) => `${f.punto}: vendidas ${f.vendidas} (a repartir) · disponibles ahora ${f.quedan ?? 'sin cantidad asignada'}`),
+            ...(g.disponibles ?? []).map((d) => `Disponible en la tienda · ${d.nombre}: ${d.quedan ?? 'sin límite'}`),
+            '',
+            ...g.reservas.map(
+              (r, i) => `${i + 1}. ${r.puntoRecogida || ''} · Recoge: ${r.nombreRecoge} · Carnet ${r.carnetRecoge} · PIN ${r.pin || ''} · ${r.cantidad} cil. · ${r.numero} · Comprador: ${r.nombreComprador} (${r.telefonoComprador}) · $${r.montoUsd.toFixed(2)}`
+            ),
+          ].join('\n'),
+        });
+        enviados.push(g.nombre);
+      }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      console.error('[cierre cilindros] Error enviando el informe:', msg);
+      console.error('[cierre cilindros] Error enviando el informe:', msg, 'enviados:', enviados);
       return NextResponse.json(
-        { ok: false, error: msg === 'SMTP_NO_CONFIGURADO' ? 'El correo de la web (SMTP) no está configurado' : 'No se pudo enviar el correo' },
+        { ok: false, enviados, error: msg === 'SMTP_NO_CONFIGURADO' ? 'El correo de la web (SMTP) no está configurado' : 'No se pudo enviar el correo' },
         { status: 503 }
       );
     }
+    const totalCil = reservas.reduce((s, r) => s + r.cantidad, 0);
 
     const valor = new Date().toISOString();
     if (yaEnviado) await db.config.update({ where: { clave: marca }, data: { valor } });
     else await db.config.create({ data: { clave: marca, valor } });
 
     console.log(`[cierre cilindros] Informe ${lote} enviado a ${para.length} destinatario(s): ${reservas.length} reservas`);
-    return NextResponse.json({ ok: true, lote, reservas: reservas.length, cilindros: totalCil, enviadoA: para });
+    return NextResponse.json({ ok: true, lote, reservas: reservas.length, cilindros: totalCil, enviadoA: para, correos: enviados });
   } catch (e) {
     console.error('[cierre cilindros] Error:', e);
     return NextResponse.json({ ok: false, error: 'Error interno' }, { status: 500 });
