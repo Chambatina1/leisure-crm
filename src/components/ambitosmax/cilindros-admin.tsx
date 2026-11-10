@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Flame, Loader2, RefreshCw, Printer, Send, CheckCircle2, XCircle, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { PuntosRecogidaAdmin } from './puntos-recogida-admin';
+import { RegistroPines } from './registro-pines';
 
 interface Reserva {
   id: number;
@@ -309,6 +310,9 @@ export function CilindrosAdmin() {
           )}
         </CardContent>
       </Card>
+
+      {/* Todas las compras pagadas, de cualquier día, con PIN y cliente */}
+      <RegistroPines />
     </div>
   );
 }
