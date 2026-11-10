@@ -141,7 +141,7 @@ export async function procesarAviso(a: Aviso): Promise<{ resultado: Resultado; d
     a.from.slice(0, 200),
     a.asunto.slice(0, 300),
     monto,
-    referencia,
+    salida.asignada ?? referencia,
     salida.resultado,
     salida.detalle.slice(0, 500)
   );
@@ -173,17 +173,24 @@ export async function procesarAviso(a: Aviso): Promise<{ resultado: Resultado; d
       </div>`,
     }).catch((e) => console.error('[zelle] No se pudo avisar a ventas:', e instanceof Error ? e.message : e));
   }
-  return { ...salida, referencia, monto };
+  return { resultado: salida.resultado, detalle: salida.detalle, referencia: salida.asignada ?? referencia, monto };
 }
 
-async function decidir(a: Aviso, monto: number | null, referencia: string | null): Promise<{ resultado: Resultado; detalle: string }> {
+async function decidir(a: Aviso, monto: number | null, referencia: string | null): Promise<{ resultado: Resultado; detalle: string; asignada?: string }> {
   const remitente = remitenteVerificado(a.from, a.autenticacion);
-  if (!remitente.ok) return { resultado: 'ignorado', detalle: remitente.motivo! };
+  if (!remitente.ok) {
+    // El cliente respondió desde su correo con su RC-: se le asigna el Zelle sin referencia que llegó por ese importe
+    const respuesta = await reclamarPorRespuesta(a, referencia).catch((e) => {
+      console.error('[zelle] Error con la respuesta del cliente:', e instanceof Error ? e.message : e);
+      return null;
+    });
+    return respuesta ?? { resultado: 'ignorado', detalle: remitente.motivo! };
+  }
   if (!/zelle/i.test(`${a.asunto}\n${a.cuerpo}`)) return { resultado: 'ignorado', detalle: 'No es un aviso de Zelle' };
   if (esEnvioPropio(a.asunto, a.cuerpo)) return { resultado: 'ignorado', detalle: 'Es un envío o solicitud propia, no un pago recibido' };
   // Sin importe no es un aviso de pago (alta en Zelle, códigos de verificación...)
   if (!monto) return { resultado: 'ignorado', detalle: 'Aviso de Zelle sin importe: no es un pago' };
-  if (!referencia) return { resultado: 'revisar', detalle: `Pago de $${monto.toFixed(2)} sin referencia SC-/RC- en la nota` };
+  if (!referencia) return asignarSinReferencia(monto, a);
 
   // Solo se automatizan las balitas de gas (RC-). El combustible (SC-) se
   // sigue confirmando a mano en el panel.
@@ -225,13 +232,13 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   // La compra aparta las balitas 1 hora. Si el Zelle llega pasada la hora (con
   // 30 min de margen por lo que tarda el aviso del banco), ya no se aplica solo:
   // ventas lo revisa y decide si quedan balitas.
+  // Decisión del 2026-11-10: si el pago llega, se confirma y se envía el PIN aunque
+  // haya pasado la hora de apartado (queda anotado para ventas).
   const minutos = (Date.now() - new Date(res.createdAt).getTime()) / 60000;
-  if (minutos > HORAS_APARTADO * 60 + 30) {
-    return { resultado: 'revisar', detalle: `${referencia}: pagó después de la hora de apartado (${Math.round(minutos)} min). Confirmar a mano si quedan balitas` };
-  }
-  const r = await confirmarReservaCilindro(res.id, `aviso automático ${referencia}`, { monto, asunto: a.asunto });
+  const tarde = minutos > HORAS_APARTADO * 60 + 30 ? ` (pagó ${Math.round(minutos)} min después de reservar)` : '';
+  const r = await confirmarReservaCilindro(res.id, `aviso automático ${referencia}${tarde}`, { monto, asunto: a.asunto });
   if (!r.ok) return { resultado: 'revisar', detalle: `${referencia}: ${r.error}` };
-  if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${referencia} pagada; PIN enviado por correo` };
+  if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${referencia} pagada; PIN enviado por correo${tarde}` };
   return {
     resultado: 'revisar',
     detalle: `${referencia} pagada (PIN ${r.data.pin}), pero ${r.correo === 'sin_email' ? 'el cliente no dejó email' : 'falló el correo'}: avísale el PIN`,
@@ -271,13 +278,13 @@ async function pedirReferencia(monto: number): Promise<{ numero: string; nombre:
         to: email,
         replyTo: ZELLE_DESTINO,
         subject: `¿Pagaste ${montoTxt} por Zelle? Falta tu número de reserva ${r.numero}`,
-        text: `Hola ${r.nombreComprador}. Recibimos un pago por Zelle de ${montoTxt} sin número de reserva en la nota. Tu compra ${r.numero} por ese importe aparece sin pagar${otras}. Si ese pago fue tuyo, responde a este correo con tu número ${r.numero} y el nombre de la persona que hizo el Zelle, para registrarlo y enviarte el PIN de recogida. Si todavía no has pagado, ignora este correo y recuerda escribir ${r.numero} en la nota (memo) del Zelle.`,
+        text: `Hola ${r.nombreComprador}. Recibimos un pago por Zelle de ${montoTxt} sin número de reserva en la nota. Tu compra ${r.numero} por ese importe aparece sin pagar${otras}. Si ese pago fue tuyo, responde a este correo (sin cambiar el asunto) y te enviamos el PIN de recogida automáticamente. Si todavía no has pagado, ignora este correo y recuerda escribir ${r.numero} en la nota (memo) del Zelle.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
           <h2 style="color:#071a46">¿Pagaste ${montoTxt} por Zelle?</h2>
           <p>Hola ${esc(r.nombreComprador)}, recibimos un pago por Zelle de <b>${montoTxt}</b> <b>sin número de reserva</b> en la nota, así que el sistema no sabe de quién es.</p>
           <p>Tu compra <b>${esc(r.numero)}</b> por ese importe aparece todavía sin pagar${esc(otras)}.</p>
-          <p style="padding:12px;border-radius:10px;background:#ecfdf5;border:1px solid #a7f3d0"><b>Si ese pago fue tuyo:</b> responde a este correo con tu número
-          <b style="font-family:monospace;font-size:18px">${esc(r.numero)}</b> y el nombre de la persona que hizo el Zelle. Lo registramos y te enviamos el PIN de recogida.</p>
+          <p style="padding:12px;border-radius:10px;background:#ecfdf5;border:1px solid #a7f3d0"><b>Si ese pago fue tuyo:</b> responde a este correo sin cambiar el asunto (basta con escribir
+          <b style="font-family:monospace;font-size:18px">${esc(r.numero)}</b>). Lo registramos y te enviamos el PIN de recogida automáticamente.</p>
           <p style="color:#6b7280;font-size:13px">Si todavía no has pagado, ignora este correo y recuerda escribir ${esc(r.numero)} en la nota (memo) del Zelle.</p>
         </div>`,
       });
@@ -287,4 +294,83 @@ async function pedirReferencia(monto: number): Promise<{ numero: string; nombre:
     }
   }
   return enviados;
+}
+
+const VENTANA_SIN_REF_HORAS = 24;
+
+/** Correo del remitente, si Gmail verificó la firma (DKIM) de su dominio. */
+function remitenteFirmado(a: Aviso): string | null {
+  if (!/^authentication-results:\s*mx\.google\.com/i.test(a.autenticacion.trim())) return null;
+  const correo = (a.from.match(/<([^>]+)>/)?.[1] || a.from).trim().toLowerCase();
+  const dominio = correo.split('@')[1] || '';
+  if (!dominio) return null;
+  const firmas = [...a.autenticacion.toLowerCase().matchAll(/dkim=pass[^;]*?header\.(?:d|i)=@?([a-z0-9.-]+)/g)].map((m) => m[1]);
+  return firmas.some((d) => d === dominio || dominio.endsWith('.' + d)) ? correo : null;
+}
+
+/**
+ * Llegó un Zelle de verdad sin RC- en la nota. Si solo una persona tiene compras
+ * sin pagar por ese importe (últimas 24 h, hechas antes del pago), es suya: se
+ * confirma y se envía el PIN. Si hay varias, queda para que el cliente responda.
+ */
+async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultado: Resultado; detalle: string; asignada?: string }> {
+  await asegurarTablaReservas();
+  const filas = await db.$queryRawUnsafe<Reserva[]>(
+    `SELECT * FROM "ReservaCilindro"
+     WHERE "estado" = 'pendiente_pago' AND ABS("montoUsd"::float8 - $1::float8) < 0.01
+       AND "createdAt" > NOW() - INTERVAL '${VENTANA_SIN_REF_HORAS} hours'
+     ORDER BY "createdAt" DESC`,
+    monto
+  );
+  const persona = (r: Reserva) => (r.emailComprador || '').trim().toLowerCase() || String(r.telefonoComprador || '').replace(/\D/g, '').slice(-8);
+  const personas = new Set(filas.map(persona));
+  const base = `Pago de $${monto.toFixed(2)} sin referencia en la nota`;
+  if (filas.length === 0) return { resultado: 'revisar', detalle: `${base}: no hay compras sin pagar por ese importe` };
+  if (personas.size > 1) return { resultado: 'revisar', detalle: `${base}: ${personas.size} personas tienen compras sin pagar por ese importe (${filas.map((f) => f.numero).join(', ')})` };
+  const res = filas[0]; // la más reciente de esa persona
+  const r = await confirmarReservaCilindro(res.id, `Zelle sin referencia: única compra de $${monto.toFixed(2)}`, { monto, asunto: a.asunto });
+  if (!r.ok) return { resultado: 'revisar', detalle: `${base}; se intentó ${res.numero}: ${r.error}` };
+  const detalle = `${base}: era la única compra por ese importe, ${res.numero} pagada`;
+  if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${detalle}; PIN enviado por correo`, asignada: res.numero };
+  return { resultado: 'revisar', detalle: `${detalle} (PIN ${r.data.pin}), pero ${r.correo === 'sin_email' ? 'el cliente no dejó email' : 'falló el correo'}: avísale el PIN`, asignada: res.numero };
+}
+
+/**
+ * Respuesta del cliente al correo "¿Pagaste $X por Zelle?": si escribe desde el
+ * mismo correo de la compra RC- y hay un Zelle real sin referencia por ese importe
+ * aún sin asignar, se le asigna, se confirma y se envía el PIN.
+ */
+async function reclamarPorRespuesta(a: Aviso, referencia: string | null): Promise<{ resultado: Resultado; detalle: string; asignada?: string } | null> {
+  if (!referencia || !referencia.startsWith('RC-')) return null;
+  if (!/^\s*re\s*:/i.test(a.asunto) || !/falta tu n[uú]mero de reserva/i.test(a.asunto)) return null;
+  const correo = remitenteFirmado(a);
+  if (!correo) return { resultado: 'ignorado', detalle: 'Respuesta de cliente sin firma verificada' };
+  await asegurarTablaReservas();
+  const filas = await db.$queryRawUnsafe<Reserva[]>(`SELECT * FROM "ReservaCilindro" WHERE "numero" = $1`, referencia);
+  const res = filas[0];
+  if (!res || res.estado !== 'pendiente_pago') return { resultado: 'ignorado', detalle: `Respuesta de cliente: ${referencia} no está pendiente de pago` };
+  if ((res.emailComprador || '').trim().toLowerCase() !== correo) {
+    return { resultado: 'ignorado', detalle: `Respuesta de ${correo}: no es el correo de la compra ${referencia}` };
+  }
+  await asegurarTablaAvisos();
+  // Se toma el Zelle sin referencia por ese importe, llegado después de la compra; un solo dueño por Zelle
+  const tomado = await db.$queryRawUnsafe<{ id: number; monto: number }[]>(
+    `UPDATE "AvisoZelle" SET "referencia" = $1, "resultado" = 'aplicado',
+       "detalle" = LEFT(COALESCE("detalle", '') || ' → asignado a ' || $1 || ' por respuesta del cliente', 500)
+     WHERE "id" = (
+       SELECT "id" FROM "AvisoZelle"
+       WHERE "resultado" = 'revisar' AND "referencia" IS NULL AND ABS("monto" - $2::float8) < 0.01
+         AND "createdAt" > NOW() - INTERVAL '${VENTANA_SIN_REF_HORAS} hours'
+         AND "createdAt" >= $3::timestamp - INTERVAL '5 minutes'
+       ORDER BY "createdAt" LIMIT 1 FOR UPDATE SKIP LOCKED)
+     RETURNING "id", "monto"`,
+    referencia,
+    Number(res.montoUsd),
+    new Date(res.createdAt)
+  );
+  if (!tomado[0]) return { resultado: 'ignorado', detalle: `${referencia} dice que pagó, pero no hay un Zelle sin referencia de $${Number(res.montoUsd).toFixed(2)} sin asignar` };
+  const r = await confirmarReservaCilindro(res.id, `Zelle sin referencia, confirmado por respuesta del cliente`, { monto: tomado[0].monto, asunto: a.asunto });
+  if (!r.ok) return { resultado: 'revisar', detalle: `${referencia}: ${r.error}` };
+  if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${referencia} pagada por respuesta del cliente; PIN enviado`, asignada: referencia };
+  return { resultado: 'revisar', detalle: `${referencia} pagada (PIN ${r.data.pin}), pero falló el correo: avísale el PIN`, asignada: referencia };
 }
