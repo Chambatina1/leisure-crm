@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
+import { destinoCorreo } from '@/lib/modo-pruebas';
 
 // ─── Validación ────────────────────────────────────────────────────────
 const emailSchema = z.object({
@@ -93,10 +94,11 @@ export async function POST(request: NextRequest) {
     if (transporter && emailFrom) {
       // ── Enviar correo real ─────────────────────────────────────────
       try {
+        const destino = destinoCorreo(to, subject);
         const info = await transporter.sendMail({
           from: emailFrom,
-          to,
-          subject,
+          to: destino.to,
+          subject: destino.subject,
           html,
         });
         messageId = info.messageId;

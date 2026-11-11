@@ -3,6 +3,7 @@ import { enlaceWhatsapp } from '@/lib/contacto';
 // y por /api/email/welcome). Se llama directamente, sin pasar por HTTP.
 import { db } from '@/lib/db';
 import nodemailer from 'nodemailer';
+import { destinoCorreo } from '@/lib/modo-pruebas';
 
 // ─── Obtener configuración desde la tabla Config ───────────────────────
 async function getPlatformConfig() {
@@ -420,10 +421,11 @@ export async function enviarCorreoBienvenida(nombre: string, email: string) {
         auth: { user: smtpUser, pass: smtpPass },
       });
 
+      const destino = destinoCorreo(email, `¡Bienvenido a Ambitosmax, ${nombre}! 📦`);
       const info = await transporter.sendMail({
         from: emailFrom.includes('<') ? emailFrom : `"Ambitosmax" <${emailFrom}>`,
-        to: email,
-        subject: `¡Bienvenido a Ambitosmax, ${nombre}! 📦`,
+        to: destino.to,
+        subject: destino.subject,
         html,
       });
 

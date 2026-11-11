@@ -3,6 +3,10 @@ import { SITIO } from '@/lib/seo-paginas';
 
 export default function robots(): MetadataRoute.Robots {
   const base = process.env.NEXT_PUBLIC_SITE_URL || SITIO;
+  // Sitio de pruebas: que Google no lo indexe nunca
+  if (process.env.MODO_PRUEBAS === '1') {
+    return { rules: [{ userAgent: '*', disallow: '/' }] };
+  }
   return {
     rules: [
       {

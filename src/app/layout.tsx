@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ORGANIZACION_JSONLD } from "@/lib/seo-paginas";
+import { MODO_PRUEBAS } from "@/lib/modo-pruebas";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     title: "Ambitosmax — Balitas de gas, diésel y gasolina en Cuba",
     description: "Compras desde Estados Unidos y se entrega en Cuba: balitas de gas, diésel, gasolina y triciclos.",
   },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+  robots: MODO_PRUEBAS ? { index: false, follow: false } : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
   category: "shopping",
   ...(process.env.GOOGLE_SITE_VERIFICATION
     ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
@@ -99,6 +100,11 @@ export default function RootLayout({
           defaultTheme="light"
           disableTransitionOnChange
         >
+          {MODO_PRUEBAS && (
+            <div style={{ position: 'sticky', top: 0, zIndex: 9999, background: '#f59e0b', color: '#111', textAlign: 'center', padding: '6px 12px', fontSize: 14, fontWeight: 700 }}>
+              SITIO DE PRUEBAS · No es la tienda real · No envíes pagos por Zelle
+            </div>
+          )}
           {children}
           <Toaster richColors position="top-right" />
         </ThemeProvider>
