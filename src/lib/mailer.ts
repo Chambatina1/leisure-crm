@@ -24,6 +24,12 @@ export async function correoConfigurado(): Promise<boolean> {
 }
 
 export async function enviarCorreo(opts: { to: string; subject: string; html: string; text: string; replyTo?: string }) {
+  // Solo para las pruebas automáticas: guarda el correo en un archivo en vez de enviarlo
+  if (process.env.CORREO_PRUEBAS_ARCHIVO) {
+    const fs = await import('fs');
+    fs.appendFileSync(process.env.CORREO_PRUEBAS_ARCHIVO, JSON.stringify(opts) + '\n');
+    return;
+  }
   const c = await smtpDesdeConfig();
   const host = process.env.SMTP_HOST || c.SMTP_HOST || '';
   const port = parseInt(process.env.SMTP_PORT || c.SMTP_PORT || '587', 10);

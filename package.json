@@ -10,7 +10,8 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "test:zelle": "npx -y tsx --test tests/zelle.test.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
