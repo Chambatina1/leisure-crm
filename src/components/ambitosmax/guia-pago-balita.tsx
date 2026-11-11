@@ -111,6 +111,7 @@ export function GuiaPagoBalita({
           <Paso n={3} icono={<DollarSign className="h-5 w-5" />} titulo="Escribe el monto exacto">
             <p className="text-xl font-black text-[#071a46]">{montoTxt}</p>
             <BotonCopiar valor={monto.toFixed(2)} aviso="Monto copiado" />
+            <p className="text-[11px] font-semibold text-emerald-700">Con los centavos exactos sabemos que el pago es tuyo.</p>
           </Paso>
           <Paso n={4} icono={<NotebookPen className="h-5 w-5" />} titulo="Pon la referencia en la nota (memo)">
             <p className="font-mono text-lg font-black text-[#071a46] rounded bg-zinc-100 px-2 py-1">{referencia}</p>

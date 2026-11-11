@@ -297,3 +297,24 @@ export function informeHtml(
     <p style="margin-top:16px;color:#6b7280;font-size:12px">Para entregar: el cliente presenta el carnet de identidad y dice su PIN. Se marca en el panel (Cilindros → Entregar).</p>
   </div>`;
 }
+
+/**
+ * Monto único para pagar por Zelle: el precio menos 1 a 99 centavos, distinto de
+ * cualquier compra sin pagar de las últimas 24 h. Así el importe del aviso del
+ * banco dice de quién es el pago aunque el cliente no escriba el RC- en la nota.
+ */
+export async function montoUnico(total: number): Promise<number> {
+  await asegurarTablaReservas();
+  const usados = await db.$queryRawUnsafe<{ m: number }[]>(
+    `SELECT ROUND("montoUsd"::numeric, 2)::float8 AS m FROM "ReservaCilindro"
+     WHERE "estado" = 'pendiente_pago' AND "createdAt" > NOW() - INTERVAL '24 hours'
+       AND "montoUsd" > $1::float8 - 1 AND "montoUsd" <= $1::float8`,
+    total
+  );
+  const ocupados = new Set(usados.map((u) => Math.round(Number(u.m) * 100)));
+  const base = Math.round(total * 100);
+  for (let c = 1; c <= 99; c++) {
+    if (!ocupados.has(base - c)) return (base - c) / 100;
+  }
+  return total; // más de 99 compras sin pagar del mismo precio: se usa el precio normal
+}
