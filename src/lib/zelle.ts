@@ -155,28 +155,17 @@ export async function procesarAviso(a: Aviso): Promise<{ resultado: Resultado; d
     });
   }
 
-  // Un Zelle real que entró pero no se pudo aplicar solo: avisar a ventas para revisarlo
+  // Un Zelle real que entró pero no se pudo aplicar solo: avisar a ventas, en palabras claras
   if (salida.resultado === 'revisar' && monto) {
-    const pedidosTxt = pedidos.length
-      ? `Se pidió el número de reserva por correo a: ${pedidos.map((p) => `${p.numero} ${p.nombre} (${p.email})`).join(', ')}.`
-      : referencia ? '' : 'No había compras sin pagar por ese importe con correo: no se pidió la referencia a nadie.';
-    await enviarCorreo({
-      to: ZELLE_DESTINO,
-      subject: `Zelle recibido SIN aplicar · $${monto.toFixed(2)}${referencia ? ` · ${referencia}` : ''} — revisar`,
-      text: `Llegó un Zelle de $${monto.toFixed(2)} pero no se confirmó solo: ${salida.detalle}. Aviso del banco: ${a.asunto}. No se descontó nada ni se envió PIN. ${pedidosTxt}`,
-      html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
-        <h2 style="color:#b45309">Zelle recibido sin aplicar: $${monto.toFixed(2)}</h2>
-        <p><b>Motivo:</b> ${esc(salida.detalle)}</p>
-        <p><b>Aviso del banco:</b> ${esc(a.asunto)}</p>
-        <p>No se descontó nada del inventario ni se envió PIN. Si es de un cliente, confírmalo a mano en el panel.</p>
-        ${pedidosTxt ? `<p style="padding:10px;border-radius:8px;background:#eff6ff">${esc(pedidosTxt)} Las respuestas llegan a este correo.</p>` : ''}
-      </div>`,
-    }).catch((e) => console.error('[zelle] No se pudo avisar a ventas:', e instanceof Error ? e.message : e));
+    const aviso = avisoVentas(monto, referencia, salida.detalle, salida.candidatas ?? [], pedidos);
+    await enviarCorreo({ to: ZELLE_DESTINO, ...aviso }).catch((e) =>
+      console.error('[zelle] No se pudo avisar a ventas:', e instanceof Error ? e.message : e)
+    );
   }
   return { resultado: salida.resultado, detalle: salida.detalle, referencia: salida.asignada ?? referencia, monto };
 }
 
-async function decidir(a: Aviso, monto: number | null, referencia: string | null): Promise<{ resultado: Resultado; detalle: string; asignada?: string }> {
+async function decidir(a: Aviso, monto: number | null, referencia: string | null): Promise<{ resultado: Resultado; detalle: string; asignada?: string; candidatas?: Reserva[] }> {
   const remitente = remitenteVerificado(a.from, a.autenticacion);
   if (!remitente.ok) {
     // El cliente respondió desde su correo con su RC-: se le asigna el Zelle sin referencia que llegó por ese importe
@@ -313,7 +302,7 @@ function remitenteFirmado(a: Aviso): string | null {
  * sin pagar por ese importe (últimas 24 h, hechas antes del pago), es suya: se
  * confirma y se envía el PIN. Si hay varias, queda para que el cliente responda.
  */
-async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultado: Resultado; detalle: string; asignada?: string }> {
+async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultado: Resultado; detalle: string; asignada?: string; candidatas?: Reserva[] }> {
   await asegurarTablaReservas();
   const filas = await db.$queryRawUnsafe<Reserva[]>(
     `SELECT * FROM "ReservaCilindro"
@@ -326,7 +315,7 @@ async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultad
   const personas = new Set(filas.map(persona));
   const base = `Pago de $${monto.toFixed(2)} sin referencia en la nota`;
   if (filas.length === 0) return { resultado: 'revisar', detalle: `${base}: no hay compras sin pagar por ese importe` };
-  if (personas.size > 1) return { resultado: 'revisar', detalle: `${base}: ${personas.size} personas tienen compras sin pagar por ese importe (${filas.map((f) => f.numero).join(', ')})` };
+  if (personas.size > 1) return { resultado: 'revisar', detalle: `${base}: ${personas.size} personas tienen compras sin pagar por ese importe (${filas.map((f) => f.numero).join(', ')})`, candidatas: filas };
   const res = filas[0]; // la más reciente de esa persona
   const r = await confirmarReservaCilindro(res.id, `Zelle sin referencia: única compra de $${monto.toFixed(2)}`, { monto, asunto: a.asunto });
   if (!r.ok) return { resultado: 'revisar', detalle: `${base}; se intentó ${res.numero}: ${r.error}` };
@@ -373,4 +362,82 @@ async function reclamarPorRespuesta(a: Aviso, referencia: string | null): Promis
   if (!r.ok) return { resultado: 'revisar', detalle: `${referencia}: ${r.error}` };
   if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${referencia} pagada por respuesta del cliente; PIN enviado`, asignada: referencia };
   return { resultado: 'revisar', detalle: `${referencia} pagada (PIN ${r.data.pin}), pero falló el correo: avísale el PIN`, asignada: referencia };
+}
+
+const horaCuba = (d: Date | string) =>
+  new Date(d).toLocaleString('es-ES', { timeZone: 'America/Havana', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+
+/** Correo a ventas cuando un Zelle no se pudo confirmar solo: qué pasó, de quién puede ser y qué hacer. */
+export function avisoVentas(
+  monto: number,
+  referencia: string | null,
+  detalle: string,
+  candidatas: Reserva[],
+  pedidos: { numero: string; nombre: string; email: string }[]
+): { subject: string; text: string; html: string } {
+  const montoTxt = `$${monto.toFixed(2)}`;
+  const ahora = Date.now();
+  const sinRef = !referencia;
+  const que = sinRef
+    ? `Entró un Zelle de ${montoTxt} (${horaCuba(new Date())}, hora de Cuba) pero quien pagó NO escribió el número RC- en la nota. La página no sabe de quién es, así que no confirmó ninguna compra ni envió PIN.`
+    : `Entró un Zelle de ${montoTxt} con la referencia ${referencia}, pero no se pudo confirmar solo: ${detalle}.`;
+  const filas = candidatas.map((c, i) => {
+    const min = Math.round((ahora - new Date(c.createdAt).getTime()) / 60000);
+    const hace = min < 120 ? `hace ${min} min` : `hace ${Math.round(min / 60)} h`;
+    return { c, hace, probable: i === 0 };
+  });
+  const pedidosTxt = pedidos.length
+    ? `Ya le escribimos a ${pedidos.map((p) => `${p.nombre} (${p.numero})`).join(', ')} preguntándole si el pago es suyo. Si responde al correo, su compra se confirma sola y le llega el PIN.`
+    : '';
+  const pasos = sinRef
+    ? [
+        'Abre el aviso del banco (Wells Fargo) de este pago y mira el NOMBRE de quien envió el dinero.',
+        'Busca a esa persona en la lista de abajo (o en ambitosmax.com/admin → Cilindros → Registro / buscador).',
+        'En ambitosmax.com/admin → Cilindros, pulsa "Confirmar pago" en su número RC-. Le llega el PIN por correo.',
+      ]
+    : [`Revisa la compra ${referencia} en ambitosmax.com/admin → Cilindros y, si corresponde, pulsa "Confirmar pago". Le llega el PIN por correo.`];
+
+  const text = [
+    `QUÉ PASÓ: ${que}`,
+    '',
+    'QUÉ HACER:',
+    ...pasos.map((p, i) => `${i + 1}. ${p}`),
+    ...(filas.length ? ['', `COMPRAS SIN PAGAR POR ${montoTxt} (la primera es la más probable):`] : []),
+    ...filas.map(({ c, hace, probable }) =>
+      `- ${c.numero}${probable ? ' (MÁS PROBABLE)' : ''} · ${c.nombreComprador} · tel ${c.telefonoComprador} · recoge ${c.nombreRecoge} · compró ${hace}`),
+    ...(pedidosTxt ? ['', pedidosTxt] : []),
+    '',
+    'Mientras no se confirme, no se descuenta inventario ni se envía PIN.',
+  ].join('\n');
+
+  const tabla = filas.length
+    ? `<p style="margin:16px 0 6px"><b>Compras sin pagar por ${montoTxt}</b> (la primera es la más probable):</p>
+       <table style="width:100%;border-collapse:collapse;font-size:13px">${filas
+         .map(({ c, hace, probable }) => `<tr style="background:${probable ? '#ecfdf5' : '#fff'}">
+           <td style="padding:6px;border:1px solid #e5e7eb;font-family:monospace;font-weight:bold">${esc(c.numero)}${probable ? '<br><span style="color:#047857;font-family:Arial">más probable</span>' : ''}</td>
+           <td style="padding:6px;border:1px solid #e5e7eb"><b>${esc(c.nombreComprador)}</b><br>${esc(c.telefonoComprador)}</td>
+           <td style="padding:6px;border:1px solid #e5e7eb">Recoge: ${esc(c.nombreRecoge)}</td>
+           <td style="padding:6px;border:1px solid #e5e7eb;white-space:nowrap">compró ${hace}</td></tr>`)
+         .join('')}</table>`
+    : '';
+
+  const html = `<div style="font-family:Arial,sans-serif;max-width:560px;color:#111827">
+    <h2 style="color:#b45309;margin-bottom:4px">${sinRef ? `Zelle de ${montoTxt} sin número RC-: falta saber de quién es` : `Zelle de ${montoTxt} (${esc(referencia!)}) sin confirmar`}</h2>
+    <p><b>Qué pasó:</b> ${esc(que)}</p>
+    <div style="padding:12px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe">
+      <b>Qué hacer:</b><ol style="margin:6px 0 0;padding-left:20px">${pasos.map((p) => `<li style="margin-bottom:4px">${esc(p)}</li>`).join('')}</ol>
+    </div>
+    ${tabla}
+    ${pedidosTxt ? `<p style="padding:10px;border-radius:8px;background:#f0fdf4;border:1px solid #bbf7d0">${esc(pedidosTxt)}</p>` : ''}
+    <p style="color:#6b7280;font-size:12px">Mientras no se confirme, no se descuenta inventario ni se envía PIN.</p>
+  </div>`;
+
+  const quien = filas[0] ? ` · probable ${filas[0].c.numero} ${filas[0].c.nombreComprador}` : '';
+  return {
+    subject: sinRef
+      ? `Zelle de ${montoTxt} SIN número RC- — confirmar a quién${quien}`
+      : `Zelle de ${montoTxt} ${referencia} sin confirmar — revisar`,
+    text,
+    html,
+  };
 }
