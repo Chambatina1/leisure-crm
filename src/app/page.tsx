@@ -22,6 +22,7 @@ import { ChatIA } from '@/components/ambitosmax/chat-ia';
 import { TiendaAdmin } from '@/components/ambitosmax/tienda-admin';
 import { CombustibleAdmin } from '@/components/ambitosmax/combustible-admin';
 import { CilindrosAdmin } from '@/components/ambitosmax/cilindros-admin';
+import { ContabilidadPanel } from '@/components/ambitosmax/contabilidad-panel';
 import { ReservaCilindro } from '@/components/ambitosmax/reserva-cilindro';
 import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
@@ -201,6 +202,12 @@ export default function Page() {
     }
   }, [setCurrentView]);
 
+  // Vuelta de la conexión con QuickBooks → abrir Contabilidad en el panel
+  useEffect(() => {
+    if (!new URLSearchParams(window.location.search).has('qbo')) return;
+    if (useAppStore.getState().isAdmin) useAppStore.setState({ mode: 'admin', adminView: 'contabilidad' });
+  }, []);
+
   // Vuelta desde Stripe Checkout: /?pago=ok&pedido=123 o /?pago=cancelado
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
@@ -265,6 +272,7 @@ export default function Page() {
         case 'tienda-admin': return <TiendaAdmin />;
         case 'combustible-admin': return <CombustibleAdmin />;
         case 'cilindros': return <CilindrosAdmin />;
+        case 'contabilidad': return <ContabilidadPanel />;
         case 'ai-training': return <AITrainingPanel />;
         case 'apariencia': return <AparienciaPanel />;
         case 'users': return <UsersPanel />;
