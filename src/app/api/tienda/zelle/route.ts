@@ -15,6 +15,7 @@ import {
   ahoraEnCuba,
   HORA_CIERRE,
   textoRecogida,
+  montoUnico,
 } from '@/lib/cilindros';
 
 // POST /api/tienda/zelle — compra de la tienda pagada por Zelle.
@@ -105,6 +106,7 @@ export async function POST(request: NextRequest) {
 
       await asegurarTablaReservas();
       const lote = loteActual();
+      const aPagar = await montoUnico(total);
       let numero = '';
       for (let intento = 0; intento < 3; intento++) {
         numero = await siguienteNumero();
@@ -121,7 +123,7 @@ export async function POST(request: NextRequest) {
             carnet,
             data.telefonoDestinatario,
             balitas,
-            total,
+            aPagar,
             lote,
             punto.id,
             lugar,
@@ -139,7 +141,7 @@ export async function POST(request: NextRequest) {
           data: {
             tipo: 'balitas',
             referencia: numero,
-            montoUsd: total,
+            montoUsd: aPagar,
             zelle: ZELLE_CILINDROS,
             puntoRecogida: lugar,
             resumen,

@@ -245,7 +245,7 @@ async function pedirReferencia(monto: number): Promise<{ numero: string; nombre:
   const filas = await db.$queryRawUnsafe<Pick<Reserva, 'numero' | 'nombreComprador' | 'emailComprador' | 'montoUsd'>[]>(
     `SELECT "numero", "nombreComprador", "emailComprador", "montoUsd" FROM "ReservaCilindro"
      WHERE "estado" = 'pendiente_pago' AND "emailComprador" IS NOT NULL AND "emailComprador" <> ''
-       AND ABS("montoUsd"::float8 - $1::float8) < 0.01 AND "createdAt" > NOW() - INTERVAL '3 hours'
+       AND "montoUsd"::float8 <= $1::float8 + 0.005 AND "montoUsd"::float8 > $1::float8 - 1 AND "createdAt" > NOW() - INTERVAL '3 hours'
      ORDER BY "createdAt" DESC LIMIT 20`,
     monto
   );
@@ -306,12 +306,15 @@ async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultad
   await asegurarTablaReservas();
   const filas = await db.$queryRawUnsafe<Reserva[]>(
     `SELECT * FROM "ReservaCilindro"
-     WHERE "estado" = 'pendiente_pago' AND ABS("montoUsd"::float8 - $1::float8) < 0.01
+     WHERE "estado" = 'pendiente_pago' AND "montoUsd"::float8 <= $1::float8 + 0.005 AND "montoUsd"::float8 > $1::float8 - 1
        AND "createdAt" > NOW() - INTERVAL '${VENTANA_SIN_REF_HORAS} hours'
      ORDER BY "createdAt" DESC`,
     monto
   );
   const persona = (r: Reserva) => (r.emailComprador || '').trim().toLowerCase() || String(r.telefonoComprador || '').replace(/\D/g, '').slice(-8);
+  // El monto exacto (con sus centavos únicos) identifica la compra
+  const exactas = filas.filter((f) => Math.abs(Number(f.montoUsd) - monto) < 0.005);
+  if (exactas.length && new Set(exactas.map(persona)).size === 1) filas.splice(0, filas.length, ...exactas);
   const personas = new Set(filas.map(persona));
   const base = `Pago de $${monto.toFixed(2)} sin referencia en la nota`;
   if (filas.length === 0) return { resultado: 'revisar', detalle: `${base}: no hay compras sin pagar por ese importe` };
@@ -319,7 +322,7 @@ async function asignarSinReferencia(monto: number, a: Aviso): Promise<{ resultad
   const res = filas[0]; // la más reciente de esa persona
   const r = await confirmarReservaCilindro(res.id, `Zelle sin referencia: única compra de $${monto.toFixed(2)}`, { monto, asunto: a.asunto });
   if (!r.ok) return { resultado: 'revisar', detalle: `${base}; se intentó ${res.numero}: ${r.error}` };
-  const detalle = `${base}: era la única compra por ese importe, ${res.numero} pagada`;
+  const detalle = `${base}: ${Math.abs(Number(res.montoUsd) - monto) < 0.005 ? 'el monto exacto' : 'el importe'} coincide solo con ${res.numero}, pagada`;
   if (r.correo === 'enviado') return { resultado: 'aplicado', detalle: `${detalle}; PIN enviado por correo`, asignada: res.numero };
   return { resultado: 'revisar', detalle: `${detalle} (PIN ${r.data.pin}), pero ${r.correo === 'sin_email' ? 'el cliente no dejó email' : 'falló el correo'}: avísale el PIN`, asignada: res.numero };
 }
@@ -348,7 +351,7 @@ async function reclamarPorRespuesta(a: Aviso, referencia: string | null): Promis
        "detalle" = LEFT(COALESCE("detalle", '') || ' → asignado a ' || $1 || ' por respuesta del cliente', 500)
      WHERE "id" = (
        SELECT "id" FROM "AvisoZelle"
-       WHERE "resultado" = 'revisar' AND "referencia" IS NULL AND ABS("monto" - $2::float8) < 0.01
+       WHERE "resultado" = 'revisar' AND "referencia" IS NULL AND "monto" >= $2::float8 - 0.005 AND "monto" < $2::float8 + 1
          AND "createdAt" > NOW() - INTERVAL '${VENTANA_SIN_REF_HORAS} hours'
          AND "createdAt" >= $3::timestamp - INTERVAL '5 minutes'
        ORDER BY "createdAt" LIMIT 1 FOR UPDATE SKIP LOCKED)
