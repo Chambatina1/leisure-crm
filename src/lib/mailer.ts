@@ -3,6 +3,7 @@
 // de la tabla Config (claves SMTP_*), igual que el resto del proyecto.
 import nodemailer from 'nodemailer';
 import { db } from '@/lib/db';
+import { destinoCorreo } from '@/lib/modo-pruebas';
 
 async function smtpDesdeConfig(): Promise<Record<string, string>> {
   try {
@@ -42,10 +43,11 @@ export async function enviarCorreo(opts: { to: string; subject: string; html: st
     auth: { user, pass },
   });
 
+  const destino = destinoCorreo(opts.to, opts.subject);
   await transporter.sendMail({
     from: from.includes('<') ? from : `"Ambitosmax" <${from}>`,
-    to: opts.to,
-    subject: opts.subject,
+    to: destino.to,
+    subject: destino.subject,
     html: opts.html,
     text: opts.text,
     ...(opts.replyTo ? { replyTo: opts.replyTo } : {}),

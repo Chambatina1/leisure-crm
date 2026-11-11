@@ -5,6 +5,12 @@ import { NextRequest, NextResponse } from 'next/server';
 // como "Render" ni la tome por contenido duplicado.
 export function middleware(request: NextRequest) {
   const host = (request.headers.get('host') || '').toLowerCase();
+  // El sitio de pruebas vive en *.onrender.com: ahí no se redirige.
+  if (process.env.MODO_PRUEBAS === '1') {
+    const res = NextResponse.next();
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    return res;
+  }
   if (host.endsWith('.onrender.com')) {
     const url = new URL(request.nextUrl.pathname + request.nextUrl.search, 'https://ambitosmax.com');
     return NextResponse.redirect(url, 301);
