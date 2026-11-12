@@ -23,6 +23,7 @@ import { TiendaAdmin } from '@/components/ambitosmax/tienda-admin';
 import { CombustibleAdmin } from '@/components/ambitosmax/combustible-admin';
 import { CilindrosAdmin } from '@/components/ambitosmax/cilindros-admin';
 import { PuntosRecogidaAdmin } from '@/components/ambitosmax/puntos-recogida-admin';
+import { ContabilidadPuntos } from '@/components/ambitosmax/contabilidad-puntos';
 import { ReservaCilindro } from '@/components/ambitosmax/reserva-cilindro';
 import { AITrainingPanel } from '@/components/ambitosmax/ai-training-panel';
 import { AparienciaPanel } from '@/components/ambitosmax/apariencia-panel';
@@ -277,6 +278,7 @@ export default function Page() {
         case 'combustible-admin': return <CombustibleAdmin />;
         case 'cilindros': return <CilindrosAdmin />;
         case 'puntos': return <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 pb-28"><PuntosRecogidaAdmin /></div>;
+        case 'puntos-venta': return <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-28"><ContabilidadPuntos /></div>;
         case 'ai-training': return <AITrainingPanel />;
         case 'apariencia': return <AparienciaPanel />;
         case 'users': return <UsersPanel />;
