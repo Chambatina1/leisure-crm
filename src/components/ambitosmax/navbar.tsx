@@ -16,6 +16,7 @@ import {
   Globe,
   BarChart3,
   MapPin,
+  Calculator,
   ClipboardList,
   Database,
   Settings,
@@ -199,6 +200,7 @@ function PublicNavbar() {
 
 const adminNavItems: { view: AdminView; label: string; icon: typeof BarChart3 }[] = [
   { view: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+  { view: 'puntos-venta', label: 'Ventas gas', icon: Calculator },
   { view: 'puntos', label: 'Puntos gas', icon: MapPin },
   { view: 'pedidos', label: 'Pedidos', icon: ClipboardList },
   { view: 'tracking', label: 'Tracking', icon: Database },
