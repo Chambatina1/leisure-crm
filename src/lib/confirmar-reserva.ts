@@ -29,6 +29,8 @@ export type ResultadoReserva =
 export interface ZelleRecibido {
   monto: number;
   asunto: string;
+  /** Si se pagó con el saldo de la billetera: su código BM-12345 */
+  billetera?: string;
 }
 
 export async function confirmarReservaCilindro(
@@ -83,7 +85,7 @@ export async function confirmarReservaCilindro(
         text: `Tu pago se registró con éxito. PIN de recogida: ${pin}. Reserva ${reserva.numero}: ${reserva.cantidad} cilindro(s). Recoge ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) a partir de ${textoRecogida(reserva.lote)} en ${lugarDe(reserva)}. Debe presentar el carnet y decir el PIN.`,
         html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#111827">
           <h2 style="color:#071a46">¡Tu pago se registró con éxito!</h2>
-          <p>Hola ${esc(reserva.nombreComprador)}, recibimos tu pago por Zelle. Tu compra <b>${esc(reserva.numero)}</b> está pagada y este es tu PIN de recogida:</p>
+          <p>Hola ${esc(reserva.nombreComprador)}, recibimos tu pago${zelle?.billetera ? ` con el saldo de tu billetera ${esc(zelle.billetera)}` : " por Zelle"}. Tu compra <b>${esc(reserva.numero)}</b> está pagada y este es tu PIN de recogida:</p>
           <p style="font-size:34px;font-weight:800;letter-spacing:8px;background:#071a46;color:#7ed957;text-align:center;padding:18px;border-radius:12px;font-family:monospace">${pin}</p>
           <p><b>${reserva.cantidad}</b> balita(s) de gas.<br>
           Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)}<br>
@@ -101,17 +103,19 @@ export async function confirmarReservaCilindro(
 
   // Aviso a ventas: cada pago confirmado (es lo único que descuenta inventario)
   const monto = `$${Number(reserva.montoUsd).toFixed(2)}`;
-  const origen = zelle
+  const origen = zelle?.billetera
+    ? `Pagado con el SALDO de la billetera ${zelle.billetera} (el dinero ya había entrado antes por Zelle como recarga)`
+    : zelle
     ? `Zelle recibido en el banco: $${zelle.monto.toFixed(2)} (aviso: ${zelle.asunto})`
     : 'Confirmado A MANO desde el panel (no vino de un aviso automático del banco). Comprueba que el Zelle esté en la cuenta.';
   try {
     await enviarCorreo({
       to: ZELLE_DESTINO,
-      subject: `${zelle ? 'Zelle recibido' : 'Pago confirmado a mano'} ${reserva.numero} · ${monto} · ${reserva.cantidad} balita(s)`,
+      subject: `${zelle?.billetera ? 'Pagado con saldo' : zelle ? 'Zelle recibido' : 'Pago confirmado a mano'} ${reserva.numero} · ${monto} · ${reserva.cantidad} balita(s)`,
       text: `Pago confirmado ${reserva.numero} por ${monto}. ${origen}. ${reserva.cantidad} balita(s) descontada(s) del inventario. Comprador: ${reserva.nombreComprador}. Recoge: ${reserva.nombreRecoge} (carnet ${reserva.carnetRecoge}) en ${lugarDe(reserva)} a partir de ${textoRecogida(reserva.lote)}. PIN ${pin}.`,
       html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
         <h2 style="color:#071a46">Pago confirmado ${esc(reserva.numero)}</h2>
-        <p style="padding:10px;border-radius:8px;background:${zelle ? '#ecfdf5' : '#fef3c7'}"><b>${zelle ? 'Zelle real recibido' : 'Confirmado a mano'}</b><br>${esc(origen)}</p>
+        <p style="padding:10px;border-radius:8px;background:${zelle ? '#ecfdf5' : '#fef3c7'}"><b>${zelle?.billetera ? 'Pagado con saldo de billetera' : zelle ? 'Zelle real recibido' : 'Confirmado a mano'}</b><br>${esc(origen)}</p>
         <p>Compra de <b>${monto}</b>. Se descontaron <b>${reserva.cantidad}</b> balita(s) del inventario.</p>
         <p>Comprador: <b>${esc(reserva.nombreComprador)}</b><br>
         Recoge: <b>${esc(reserva.nombreRecoge)}</b> · Carnet ${esc(reserva.carnetRecoge)} · PIN <b>${pin}</b><br>

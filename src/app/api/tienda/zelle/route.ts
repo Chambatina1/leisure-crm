@@ -15,7 +15,11 @@ import {
   ahoraEnCuba,
   HORA_CIERRE,
   textoRecogida,
+  esc,
 } from '@/lib/cilindros';
+import { confirmarReservaCilindro } from '@/lib/confirmar-reserva';
+import { enviarCorreo } from '@/lib/mailer';
+import { billeteraDeUsuario, saldoCentavos, cobrarCompra, reintegrarCompra, usd } from '@/lib/billetera';
 
 // POST /api/tienda/zelle — compra de la tienda pagada por Zelle.
 //  - Carrito de balitas de gas: se crea una reserva RC-000123. Cuando llega el
@@ -36,6 +40,8 @@ const schema = z.object({
     .min(1, 'El carrito está vacío')
     .max(30),
   puntoRecogida: z.string().max(60).optional(),
+  // Pagar con el saldo de la billetera en vez de mandar un Zelle nuevo
+  pagarConSaldo: z.boolean().optional(),
 });
 
 const fallo = (body: Record<string, unknown>, status: number) => NextResponse.json({ ok: false, ...body }, { status });
@@ -64,6 +70,16 @@ export async function POST(request: NextRequest) {
     const total = lineas.reduce((s, l) => s + Math.round(l.p.precio * 100) * l.qty, 0) / 100;
     const resumen = lineas.map((l) => `${l.qty}x ${l.p.nombre} ($${l.p.precio.toFixed(2)})`).join(', ');
     const gas = lineas.filter((l) => esBalitaGas(l.p.nombre));
+    const centavos = lineas.reduce((s, l) => s + Math.round(l.p.precio * 100) * l.qty, 0);
+
+    // Pago con saldo: comprobar antes de crear nada (se vuelve a comprobar al cobrar)
+    const billetera = data.pagarConSaldo ? await billeteraDeUsuario(cliente.id) : null;
+    if (billetera) {
+      const saldo = await saldoCentavos(billetera.id);
+      if (saldo < centavos) {
+        return fallo({ sinSaldo: true, saldo: saldo / 100, error: `Tu saldo es ${usd(saldo)} y la compra cuesta ${usd(centavos)}. Recarga tu billetera o paga por Zelle.` }, 402);
+      }
+    }
 
     // No vender más de lo que queda (la existencia solo baja con pagos confirmados)
     const stock = await existenciasDisponibles([...cantidades.keys()]);
@@ -106,13 +122,14 @@ export async function POST(request: NextRequest) {
       await asegurarTablaReservas();
       const lote = loteActual();
       let numero = '';
+      let reservaId = 0;
       for (let intento = 0; intento < 3; intento++) {
         numero = await siguienteNumero();
         try {
-          await db.$executeRawUnsafe(
+          const ins = await db.$queryRawUnsafe<{ id: number }[]>(
             `INSERT INTO "ReservaCilindro"
               ("numero","nombreComprador","telefonoComprador","emailComprador","nombreRecoge","carnetRecoge","telefonoRecoge","cantidad","montoUsd","lote","puntoId","puntoRecogida","items")
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING "id"`,
             numero,
             data.nombreComprador,
             data.telefonoComprador,
@@ -127,11 +144,45 @@ export async function POST(request: NextRequest) {
             lugar,
             itemsAMetadata(gas.map((l) => ({ id: l.p.id, qty: l.qty })))
           );
+          reservaId = ins[0].id;
           break;
         } catch (e) {
           if (intento === 2) throw e;
         }
       }
+      // ── Pagada con saldo: se cobra y se confirma en el acto (PIN por correo) ──
+      if (billetera) {
+        const cobro = await cobrarCompra(billetera.id, centavos, numero, `${numero}: ${resumen}`);
+        if (!cobro.ok) {
+          await db.$executeRawUnsafe(`UPDATE "ReservaCilindro" SET "estado"='anulada', "notas"='No alcanzó el saldo de la billetera' WHERE "id"=$1`, reservaId);
+          return fallo({ sinSaldo: true, saldo: cobro.saldo / 100, error: `Tu saldo (${usd(cobro.saldo)}) no alcanza para esta compra.` }, 402);
+        }
+        const conf = await confirmarReservaCilindro(reservaId, `Pagado con saldo ${billetera.codigo}`, { monto: total, asunto: `Saldo de billetera ${billetera.codigo}`, billetera: billetera.codigo });
+        if (!conf.ok) {
+          await reintegrarCompra(billetera.id, centavos, numero, `No se pudo confirmar ${numero}: ${conf.error}`);
+          await db.$executeRawUnsafe(`UPDATE "ReservaCilindro" SET "estado"='anulada' WHERE "id"=$1 AND "estado"='pendiente_pago'`, reservaId);
+          return fallo({ error: 'No se pudo completar la compra. No se te cobró nada.' }, 500);
+        }
+        return NextResponse.json(
+          {
+            ok: true,
+            data: {
+              tipo: 'balitas',
+              pagadoConSaldo: true,
+              referencia: numero,
+              montoUsd: total,
+              saldo: cobro.saldo / 100,
+              pin: conf.data.pin,
+              correo: conf.correo,
+              puntoRecogida: lugar,
+              resumen,
+              recogida: textoRecogida(conf.data.lote),
+            },
+          },
+          { status: 201 }
+        );
+      }
+
       const { hora } = ahoraEnCuba();
       return NextResponse.json(
         {
@@ -162,10 +213,33 @@ export async function POST(request: NextRequest) {
         carnetDestinatario: data.carnetDestinatario || null,
         direccionDestinatario: data.direccionDestinatario,
         producto: `${resumen} — Total $${total.toFixed(2)}`,
-        notas: ['Pago por Zelle pendiente', data.notas].filter(Boolean).join('\n'),
-        estado: 'pendiente_pago',
+        notas: [billetera ? `Pagado con saldo de la billetera ${billetera.codigo}` : 'Pago por Zelle pendiente', data.notas].filter(Boolean).join('\n'),
+        estado: billetera ? 'pagado' : 'pendiente_pago',
       },
     });
+    if (billetera) {
+      const ref = `Pedido ${pedido.id}`;
+      const cobro = await cobrarCompra(billetera.id, centavos, ref, `${ref}: ${resumen}`);
+      if (!cobro.ok) {
+        await db.pedido.update({ where: { id: pedido.id }, data: { estado: 'cancelado', notas: 'No alcanzó el saldo de la billetera' } });
+        return fallo({ sinSaldo: true, saldo: cobro.saldo / 100, error: `Tu saldo (${usd(cobro.saldo)}) no alcanza para esta compra.` }, 402);
+      }
+      await enviarCorreo({
+        to: ZELLE_DESTINO,
+        subject: `Pagado con saldo ${ref} · ${usd(centavos)} · ${billetera.codigo}`,
+        text: `${ref} pagado con el saldo de la billetera ${billetera.codigo} (${cliente.nombre}, ${cliente.email}): ${resumen}. Total ${usd(centavos)}. Entrega a ${data.nombreDestinatario}, ${data.telefonoDestinatario}, ${data.direccionDestinatario}.`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
+          <h2 style="color:#071a46">${esc(ref)} pagado con saldo</h2>
+          <p>Billetera <b>${esc(billetera.codigo)}</b> · ${esc(cliente.nombre)} · ${esc(cliente.email)}</p>
+          <p>${esc(resumen)}<br>Total <b>${usd(centavos)}</b></p>
+          <p>Entrega: ${esc(data.nombreDestinatario)} · ${esc(data.telefonoDestinatario)}<br>${esc(data.direccionDestinatario)}</p>
+        </div>`,
+      }).catch((e) => console.error('[tienda/saldo] No se pudo avisar a ventas:', e instanceof Error ? e.message : e));
+      return NextResponse.json(
+        { ok: true, data: { tipo: 'pedido', pagadoConSaldo: true, referencia: ref, montoUsd: total, saldo: cobro.saldo / 100, resumen } },
+        { status: 201 }
+      );
+    }
     return NextResponse.json(
       { ok: true, data: { tipo: 'pedido', referencia: `Pedido ${pedido.id}`, montoUsd: total, zelle: ZELLE_DESTINO, resumen } },
       { status: 201 }

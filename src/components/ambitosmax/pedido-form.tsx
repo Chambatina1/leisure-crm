@@ -13,7 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2, Copy } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, ShoppingCart, MapPin, Banknote, CheckCircle2, Copy, Wallet } from 'lucide-react';
+import { useBilletera } from './billetera';
 import { toast } from 'sonner';
 import { AceptarReferencia } from './aceptar-referencia';
 import { PasosZelle } from './pasos-zelle';
@@ -68,6 +69,9 @@ export function PedidoForm() {
   const pagaConZelle = isPublic && !isEdit && lineas.length > 0;
   const [pagoZelle, setPagoZelle] = useState<PagoZelle | null>(null);
   const totalCarrito = lineas.reduce((s, l) => s + l.precio * l.qty, 0);
+  // Billetera: si el saldo alcanza, se puede pagar sin mandar un Zelle nuevo
+  const { datos: billetera } = useBilletera(pagaConZelle);
+  const alcanzaSaldo = !!billetera && Math.round(billetera.saldo * 100) >= Math.round(totalCarrito * 100);
   // Las balitas de gas se recogen en uno de los dos puntos: hay que elegirlo
   const llevaGas = pagaConZelle && lineas.some((l) => esBalitaGas(l.nombre));
   const nBalitas = lineas.filter((l) => esBalitaGas(l.nombre)).reduce((s, l) => s + l.qty, 0);
@@ -146,7 +150,7 @@ export function PedidoForm() {
 
   // Pago por Zelle: el servidor crea la compra y devuelve la referencia que
   // el cliente escribe en la nota del Zelle. Las balitas se confirman solas.
-  const pagarConZelle = async () => {
+  const pagarConZelle = async (conSaldo = false) => {
     const res = await fetch('/api/tienda/zelle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -154,6 +158,7 @@ export function PedidoForm() {
         ...data,
         items: lineas.map((l) => ({ id: l.id, qty: l.qty })),
         ...(llevaGas && punto ? { puntoRecogida: punto } : {}),
+        ...(conSaldo ? { pagarConSaldo: true } : {}),
       }),
     });
     const json = await res.json();
@@ -174,11 +179,11 @@ export function PedidoForm() {
     } else toast.error(json.error || 'No se pudo crear la compra');
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (conSaldo = false) => {
     if (!validate()) return;
     setSaving(true);
     try {
-      if (pagaConZelle) return await pagarConZelle();
+      if (pagaConZelle) return await pagarConZelle(conSaldo);
       const url = isEdit ? `/api/pedidos/${selectedPedidoId}` : '/api/pedidos';
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -508,6 +513,29 @@ export function PedidoForm() {
             </>
           )}
 
+          {pagaConZelle && billetera && (
+            <div className={`rounded-xl border-2 px-4 py-3 mt-4 ${alcanzaSaldo ? 'border-[#55b949] bg-emerald-50' : 'border-zinc-200 bg-zinc-50'}`}>
+              <p className="flex items-center gap-2 font-semibold text-[#071a46]"><Wallet className="h-4 w-4" /> Tu saldo: ${billetera.saldo.toFixed(2)}</p>
+              {alcanzaSaldo ? (
+                <>
+                  <p className="text-sm text-zinc-600 mt-1">Te alcanza para esta compra. Si pagas con tu saldo, la compra queda pagada al momento{llevaGas ? ' y te llega el PIN enseguida' : ''}.</p>
+                  <Button
+                    onClick={() => handleSubmit(true)}
+                    disabled={saving}
+                    className="mt-3 w-full h-auto min-h-12 py-3 whitespace-normal text-base font-bold bg-[#55b949] hover:bg-[#3f9a35] text-white"
+                  >
+                    {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Wallet className="h-4 w-4 mr-2" />}
+                    Pagar ${totalCarrito.toFixed(2)} con mi saldo
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-zinc-600 mt-1">
+                  No alcanza para esta compra (${totalCarrito.toFixed(2)}). Puedes pagar por Zelle abajo o{' '}
+                  <button type="button" className="font-semibold text-[#123d83] underline" onClick={() => setCurrentView('billetera')}>recargar tu billetera</button>.
+                </p>
+              )}
+            </div>
+          )}
           {pagaConZelle && (
             <p className="text-sm text-zinc-600 rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2 mt-4">
               Al continuar te damos el correo de Zelle, el monto y una referencia. El pago lo haces desde la app de tu banco.
@@ -515,7 +543,7 @@ export function PedidoForm() {
           )}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button
-              onClick={handleSubmit}
+              onClick={() => handleSubmit()}
               disabled={saving}
               className="bg-[#123d83] hover:bg-[#071a46] text-white w-full sm:w-auto h-auto min-h-12 py-3 whitespace-normal text-base font-bold"
             >
@@ -543,6 +571,10 @@ export function PedidoForm() {
 
 interface PagoZelle {
   tipo: 'balitas' | 'pedido';
+  pagadoConSaldo?: boolean;
+  saldo?: number;
+  pin?: string;
+  correo?: 'enviado' | 'sin_email' | 'fallo';
   referencia: string;
   montoUsd: number;
   zelle: string;
@@ -591,6 +623,38 @@ function Paso({ n, titulo, children }: { n: number; titulo: string; children?: R
 
 function ResultadoZelle({ pago, onVolver }: { pago: PagoZelle; onVolver: () => void }) {
   const balitas = pago.tipo === 'balitas';
+  if (pago.pagadoConSaldo) {
+    return (
+      <div className="max-w-xl mx-auto px-4 sm:px-6 py-8 pb-28 md:pb-8">
+        <Card className="border-emerald-300">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-9 w-9 text-[#55b949] shrink-0" />
+              <div>
+                <h1 className="text-xl font-bold text-zinc-900">¡Compra {pago.referencia} pagada con tu saldo!</h1>
+                <p className="text-sm text-zinc-600">{pago.resumen}</p>
+              </div>
+            </div>
+            {balitas && pago.pin && (
+              <div className="text-center">
+                <p className="text-sm text-zinc-600">PIN de recogida</p>
+                <p className="text-4xl font-black tracking-[0.3em] font-mono bg-[#071a46] text-[#7ed957] rounded-xl py-4 mt-1">{pago.pin}</p>
+                <p className="text-xs text-zinc-500 mt-2">{pago.correo === 'enviado' ? 'También te lo enviamos por correo.' : 'Guárdalo: quien recoge debe presentar el carnet y decir este PIN.'}</p>
+              </div>
+            )}
+            {pago.puntoRecogida && <Dato etiqueta="Recoges en" valor={pago.puntoRecogida} />}
+            {balitas && pago.recogida && <Dato etiqueta="A partir de" valor={pago.recogida} />}
+            {!balitas && <p className="text-sm text-zinc-600">Ya recibimos el pago. Te contactamos para coordinar la entrega.</p>}
+            {typeof pago.saldo === 'number' && <Dato etiqueta="Saldo que te queda" valor={`$${pago.saldo.toFixed(2)}`} />}
+            <div className="grid gap-2">
+              <Button variant="outline" onClick={() => useAppStore.getState().setCurrentView('billetera')}><Wallet className="h-4 w-4 mr-2" />Ver mi billetera</Button>
+              <Button onClick={onVolver} className="bg-[#123d83] hover:bg-[#071a46] text-white">Volver a la tienda</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   if (balitas) {
     return (
       <div className="max-w-3xl mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-28 md:pb-8 space-y-3">
