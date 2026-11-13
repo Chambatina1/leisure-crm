@@ -16,6 +16,7 @@ import {
   Globe,
   BarChart3,
   MapPin,
+  Calculator,
   ClipboardList,
   Database,
   Settings,
@@ -26,6 +27,7 @@ import {
   UserPlus,
   Zap,
   Flame,
+  Wallet,
 } from 'lucide-react';
 
 // ---- PUBLIC NAV ----
@@ -99,6 +101,12 @@ function PublicNavbar() {
                 </Button>
               ) : (
                 <span className="ml-2 text-sm text-zinc-500 flex items-center gap-2">
+                  <button
+                    onClick={() => handleNav('billetera')}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold ${isActive('billetera') ? 'bg-[#123d83] text-white' : 'text-[#123d83] hover:bg-blue-50'}`}
+                  >
+                    <Wallet className="h-4 w-4" /> Mi saldo
+                  </button>
                   <span className="hidden lg:inline">{currentUser.nombre}</span>
                   <button onClick={logoutCliente} className="text-xs text-zinc-400 hover:text-red-600 underline">Salir</button>
                 </span>
@@ -148,6 +156,15 @@ function PublicNavbar() {
                     })}
                   </nav>
                   <div className="p-2 border-t border-zinc-100 space-y-1">
+                    {currentUser && (
+                      <button
+                        onClick={() => handleNav('billetera')}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-[#123d83] hover:bg-blue-50 transition-all duration-200"
+                      >
+                        <Wallet className="h-5 w-5" />
+                        Mi billetera (saldo)
+                      </button>
+                    )}
                     {!currentUser && (
                       <button
                         onClick={() => { setShowRegisterDialog(true); setSheetOpen(false); }}
@@ -199,12 +216,14 @@ function PublicNavbar() {
 
 const adminNavItems: { view: AdminView; label: string; icon: typeof BarChart3 }[] = [
   { view: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+  { view: 'puntos-venta', label: 'Ventas gas', icon: Calculator },
   { view: 'puntos', label: 'Puntos gas', icon: MapPin },
   { view: 'pedidos', label: 'Pedidos', icon: ClipboardList },
   { view: 'tracking', label: 'Tracking', icon: Database },
   { view: 'tienda-admin', label: 'Tienda', icon: Store },
   { view: 'combustible-admin', label: 'Combustible', icon: Zap },
   { view: 'cilindros', label: 'Cilindros', icon: Flame },
+  { view: 'billeteras', label: 'Billeteras', icon: Wallet },
   { view: 'ai-training', label: 'IA Chat', icon: Brain },
   { view: 'apariencia', label: 'Apariencia', icon: Palette },
   { view: 'users', label: 'Usuarios', icon: Users },

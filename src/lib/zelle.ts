@@ -6,6 +6,7 @@ import { enviarCorreo } from '@/lib/mailer';
 import { confirmarSolicitudCombustible, enviarPinCombustible } from '@/lib/pin-combustible';
 import { confirmarReservaCilindro } from '@/lib/confirmar-reserva';
 import { HORAS_APARTADO } from '@/lib/existencia';
+import { normalizarCodigo, billeteraPorCodigo, anotarMovimiento, aCentavos, avisarMovimiento, duenoBilletera, topeSaldo, usd } from '@/lib/billetera';
 
 // ═══════════════════════════════════════════════════════════════
 // Pagos por Zelle automáticos.
@@ -77,7 +78,7 @@ export interface AvisoLeido {
   referencia: string | null;
 }
 
-/** Saca del aviso el monto recibido y la referencia SC-/RC- que puso el cliente. */
+/** Saca del aviso el monto recibido y la referencia SC-/RC- (o el código de billetera BM-) que puso el cliente. */
 export function leerAviso(asunto: string, cuerpo: string): AvisoLeido {
   const texto = `${asunto}\n${cuerpo}`.replace(/ /g, ' ');
   // Si el aviso trae varios importes (saldo, límites...), se toma el menor:
@@ -87,7 +88,8 @@ export function leerAviso(asunto: string, cuerpo: string): AvisoLeido {
     .filter((n) => n > 0);
   const monto = importes.length ? Math.min(...importes) : null;
   const r = texto.match(/\b(SC|RC)\s*[-–]?\s*(\d{1,6})\b/i);
-  const referencia = r ? `${r[1].toUpperCase()}-${r[2].padStart(6, '0')}` : null;
+  // Sin RC-/SC-, puede ser una recarga de billetera (código fijo BM-12345)
+  const referencia = r ? `${r[1].toUpperCase()}-${r[2].padStart(6, '0')}` : normalizarCodigo(texto);
   return { monto: monto && monto > 0 ? monto : null, referencia };
 }
 
@@ -180,6 +182,7 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
   // Sin importe no es un aviso de pago (alta en Zelle, códigos de verificación...)
   if (!monto) return { resultado: 'ignorado', detalle: 'Aviso de Zelle sin importe: no es un pago' };
   if (!referencia) return asignarSinReferencia(monto, a);
+  if (referencia.startsWith('BM-')) return recargarBilletera(referencia, monto, a);
 
   // Solo se automatizan las balitas de gas (RC-). El combustible (SC-) se
   // sigue confirmando a mano en el panel.
@@ -232,6 +235,46 @@ async function decidir(a: Aviso, monto: number | null, referencia: string | null
     resultado: 'revisar',
     detalle: `${referencia} pagada (PIN ${r.data.pin}), pero ${r.correo === 'sin_email' ? 'el cliente no dejó email' : 'falló el correo'}: avísale el PIN`,
   };
+}
+
+/**
+ * Recarga de billetera: Zelle con el código fijo BM-12345 en la nota. Se suma
+ * el importe al saldo (una sola vez por aviso) y se avisa al cliente y a ventas.
+ * Si pasaría del tope, no se suma solo: ventas lo revisa.
+ */
+async function recargarBilletera(codigo: string, monto: number, a: Aviso): Promise<{ resultado: Resultado; detalle: string }> {
+  const b = await billeteraPorCodigo(codigo);
+  if (!b) return { resultado: 'revisar', detalle: `Recarga de $${monto.toFixed(2)}: no existe la billetera ${codigo}` };
+  const centavos = aCentavos(monto);
+  const r = await anotarMovimiento({
+    billeteraId: b.id,
+    tipo: 'recarga',
+    centavos,
+    referencia: `zelle ${a.mensajeId}`,
+    detalle: `Zelle recibido: ${a.asunto}`.slice(0, 300),
+    respetarTope: true,
+  });
+  if (!r.ok) {
+    if (r.motivo === 'duplicado') return { resultado: 'ya_pagado', detalle: `${codigo}: esta recarga ya estaba sumada` };
+    return {
+      resultado: 'revisar',
+      detalle: `Recarga ${codigo} de $${monto.toFixed(2)}: pasaría del tope de $${topeSaldo().toFixed(2)} (saldo actual ${usd(r.saldo)}). Súmala a mano o devuélvela`,
+    };
+  }
+  await avisarMovimiento(b.id, 'recarga', centavos, r.saldo);
+  const d = await duenoBilletera(b.id);
+  await enviarCorreo({
+    to: ZELLE_DESTINO,
+    subject: `Recarga de billetera ${codigo} · $${monto.toFixed(2)} · saldo ${usd(r.saldo)}`,
+    text: `Zelle recibido en el banco: $${monto.toFixed(2)} (aviso: ${a.asunto}). Se sumó a la billetera ${codigo} de ${d?.nombre ?? '?'} (${d?.email ?? '?'}). Saldo ahora: ${usd(r.saldo)}. Este dinero todavía NO es venta: es saldo del cliente hasta que compre.`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:520px;color:#111827">
+      <h2 style="color:#071a46">Recarga de billetera ${esc(codigo)}</h2>
+      <p style="padding:10px;border-radius:8px;background:#ecfdf5"><b>Zelle real recibido</b>: $${monto.toFixed(2)}<br>${esc(a.asunto)}</p>
+      <p>Cliente: <b>${esc(d?.nombre ?? '?')}</b> · ${esc(d?.email ?? '?')}<br>Saldo ahora: <b>${usd(r.saldo)}</b></p>
+      <p style="color:#6b7280;font-size:12px">Este dinero todavía no es venta: es saldo del cliente hasta que compre.</p>
+    </div>`,
+  }).catch((e) => console.error('[zelle] No se pudo avisar a ventas de la recarga:', e instanceof Error ? e.message : e));
+  return { resultado: 'aplicado', detalle: `Recarga ${codigo}: +$${monto.toFixed(2)}, saldo ${usd(r.saldo)}` };
 }
 
 /**
@@ -395,6 +438,8 @@ export function avisoVentas(
         'Busca a esa persona en la lista de abajo (o en ambitosmax.com/admin → Cilindros → Registro / buscador).',
         'En ambitosmax.com/admin → Cilindros, pulsa "Confirmar pago" en su número RC-. Le llega el PIN por correo.',
       ]
+    : referencia!.startsWith('BM-')
+    ? [`Es una recarga de billetera. En ambitosmax.com/admin → Billeteras busca ${referencia} y súmala a mano con "Recarga a mano", o devuelve el dinero por Zelle.`]
     : [`Revisa la compra ${referencia} en ambitosmax.com/admin → Cilindros y, si corresponde, pulsa "Confirmar pago". Le llega el PIN por correo.`];
 
   const text = [
